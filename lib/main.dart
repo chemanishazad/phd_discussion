@@ -1,40 +1,52 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:phd_discussion/core/theme/theme_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart';
-import 'package:phd_discussion/core/theme/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/route/routes.dart';
+import 'package:phd_discussion/firebase_options.dart';
+import 'package:phd_discussion/notification_service.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
+  // Handle background message here, like showing a notification
+}
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  NotificationServices.navigatorKey = navigatorKey;
+  await NotificationServices.init();
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  final deviceToken = await NotificationServices.getDeviceToken();
+  print('Device Token: $deviceToken');
+
+  final serverAccessToken = await NotificationServices.sendNotification();
+  print('Server Access Token: $serverAccessToken');
+
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(
-            create: (_) => ThemeProvider()), // Add ThemeProvider
-      ],
-      child: const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
-          title: 'PhD',
-          themeMode: themeProvider.themeMode,
-          theme: lightTheme,
-          darkTheme: darkTheme,
+          title: 'RIM',
+          theme: ThemeData(),
           initialRoute: '/',
           routes: AppRoutes.routes,
           navigatorKey: navigatorKey,

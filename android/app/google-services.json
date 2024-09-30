@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "400985329837",
+    "project_id": "phd-discussions",
+    "storage_bucket": "phd-discussions.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400985329837:android:e3708d5daf7d84c2917624",
+        "android_client_info": {
+          "package_name": "com.example.phd_discussion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbkUB2y3UIqVuD-FS3xl4ATBHrAulV31s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,11 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:phd_discussion/core/utils/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:phd_discussion/main.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 
 enum HttpMethod {
   $get,
@@ -18,12 +20,24 @@ enum MultipartFileType { image, audio, video, text }
 enum ContentType { json, formData, urlEncoded }
 
 class ApiMaster {
+  static String? _token; // Store token in memory
+
   ApiMaster._();
 
   static final ApiMaster _instance = ApiMaster._();
 
   factory ApiMaster() {
     return _instance;
+  }
+
+  // Set the token after login
+  static void setToken(String token) {
+    _token = token;
+  }
+
+  // Clear the token on logout
+  static void clearToken() {
+    _token = null;
   }
 
   Future<dynamic> fire({
@@ -54,17 +68,11 @@ class ApiMaster {
               ...headersInit,
               ...headers!,
             };
+
       if (auth!) {
-        final SharedPreferences sharedPref =
-            await SharedPreferences.getInstance();
-
-        final String cookies =
-            '${sharedPref.getString('PHPSESSID')}; ${sharedPref.getString('user')}';
-
-        if (cookies.isNotEmpty) {
-          finalHeaders = {...?finalHeaders, "Cookie": cookies};
-          print(finalHeaders);
-          await sharedPref.setString('cookie', cookies);
+        if (_token != null) {
+          finalHeaders = {...?finalHeaders, "Authorization": "Bearer $_token"};
+          print('Using headers: $finalHeaders'); // Debug print
         } else {
           throw Exception("Access token is null");
         }
@@ -73,72 +81,60 @@ class ApiMaster {
       final config = Config();
       final Uri apiEndpoint =
           config.apiUri(path, queryParameters: queryParameters);
+
       if (kDebugMode) {
         print("Request : $method > $path ~ $apiEndpoint");
       }
 
       switch (method) {
         case HttpMethod.$get:
-          response = await http.get(
-            apiEndpoint,
-            headers: finalHeaders,
-          );
+          response = await http.get(apiEndpoint, headers: finalHeaders);
           break;
-
         case HttpMethod.$post:
-          response = await _handlePostRequest(
-            apiEndpoint,
-            finalHeaders,
-            body,
-            contentType,
-            multipartFileType,
-            multipartFields,
-            files,
-          );
+          response = await _handlePostRequest(apiEndpoint, finalHeaders, body,
+              contentType, multipartFileType, multipartFields, files);
           break;
-
         case HttpMethod.$delete:
-          response = await _handleDeleteRequest(
-            apiEndpoint,
-            finalHeaders,
-            body,
-          );
+          response =
+              await _handleDeleteRequest(apiEndpoint, finalHeaders, body);
           break;
-
         case HttpMethod.$patch:
-          response = await _handlePatchRequest(
-            apiEndpoint,
-            finalHeaders,
-            body,
-          );
+          response = await _handlePatchRequest(apiEndpoint, finalHeaders, body);
           break;
-
         case HttpMethod.$put:
-          response = await _handlePutRequest(
-            apiEndpoint,
-            finalHeaders,
-            body,
-          );
+          response = await _handlePutRequest(apiEndpoint, finalHeaders, body);
           break;
       }
 
-      if (kDebugMode) {
-        print(response);
-      }
       if (response != null) {
-        try {
-          var response1 = response as http.Response;
-          if (response1.statusCode == 440) {
-            throw Exception("jwt expired");
-          }
-        } catch (e) {}
+        if (kDebugMode) {
+          print('Response Status Code: ${response.statusCode}');
+        }
+
+        if (response.statusCode == 401) {
+          // Trigger logout and notify app
+          _handleUnauthorized();
+          throw Exception("Unauthorized access. Please log in again.");
+        }
       }
       return response;
     } on SocketException catch (e) {
       throw Exception("error > $e");
     } catch (e) {
       throw Exception("error > $e");
-    } finally {}
+    }
+  }
+
+  void _handleUnauthorized() {
+    // Notify the app to refresh or navigate to login screen
+    ApiMaster.clearToken();
+    AuthProvider().logout(); // Trigger logout from AuthProvider
+    // Navigate to the login page or handle app-wide state updates
+    // Use a global navigator key or state management solution
+    if (navigatorKey.currentContext != null) {
+      Navigator.of(navigatorKey.currentContext!)
+          .pushNamedAndRemoveUntil('/login', (route) => false);
+    }
   }
 
   String _getContentType(ContentType contentType) {
@@ -196,13 +192,9 @@ class ApiMaster {
   }
 
   Future<http.Response> _handleDeleteRequest(
-    Uri apiEndpoint,
-    Map<String, String>? finalHeaders,
-    Object? body,
-  ) async {
+      Uri apiEndpoint, Map<String, String>? finalHeaders, Object? body) async {
     var request = http.Request("DELETE", apiEndpoint);
     request.headers.addAll(finalHeaders!);
-
     if (body != null) {
       request.body = jsonEncode(body);
     }
@@ -212,26 +204,12 @@ class ApiMaster {
   }
 
   Future<http.Response> _handlePatchRequest(
-    Uri apiEndpoint,
-    Map<String, String>? finalHeaders,
-    Object? body,
-  ) async {
-    return await http.patch(
-      apiEndpoint,
-      headers: finalHeaders,
-      body: body,
-    );
+      Uri apiEndpoint, Map<String, String>? finalHeaders, Object? body) async {
+    return await http.patch(apiEndpoint, headers: finalHeaders, body: body);
   }
 
   Future<http.Response> _handlePutRequest(
-    Uri apiEndpoint,
-    Map<String, String>? finalHeaders,
-    Object? body,
-  ) async {
-    return await http.put(
-      apiEndpoint,
-      headers: finalHeaders,
-      body: body,
-    );
+      Uri apiEndpoint, Map<String, String>? finalHeaders, Object? body) async {
+    return await http.put(apiEndpoint, headers: finalHeaders, body: body);
   }
 }

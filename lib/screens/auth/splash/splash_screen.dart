@@ -1,29 +1,30 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phd_discussion/notification_service.dart';
+import 'package:phd_discussion/provider/authProvider/authProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
-
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 500),
     );
-
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
@@ -33,7 +34,6 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.0, 0.7, curve: Curves.easeInOut),
       ),
     );
-
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -44,17 +44,38 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    _controller.forward().then((_) => _checkLoginStatus());
+    _controller.forward();
+
+    _initializeAndNavigate();
   }
 
-  Future<void> _checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _initializeAndNavigate() async {
+    await Future.delayed(const Duration(seconds: 1));
+    await ref.read(authProvider.notifier).loadUserFromPrefs();
 
-    final userProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (userProvider.isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/home');
+    final authState = ref.read(authProvider);
+    print('Auth state after loading: $authState');
+
+    String? deviceToken = await NotificationServices.getDeviceToken();
+    print('Device token: $deviceToken');
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (deviceToken != null) {
+      await prefs.setString('deviceToken', deviceToken);
+    }
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      NotificationServices.handleNotificationTapFromTerminated(
+          initialMessage.data);
     } else {
-      Navigator.pushReplacementNamed(context, '/onBoard');
+      Navigator.pushNamed(context, '/onBoard');
+      // if (authState == null) {
+      //   print('Navigating to login');
+      //   Navigator.pushNamed(context, '/login');
+      // } else {
+      //   print('Navigating to home');
+      //   Navigator.pushNamed(context, '/bottomNavigation');
+      // }
     }
   }
 
