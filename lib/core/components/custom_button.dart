@@ -1,7 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/core/const/palette.dart';
-
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -12,6 +10,7 @@ class CustomButton extends StatelessWidget {
   final double padding;
   final double? height;
   final double? width;
+  final Icon? icon;
 
   const CustomButton({
     super.key,
@@ -23,11 +22,12 @@ class CustomButton extends StatelessWidget {
     this.padding = 6.0,
     this.height,
     this.width,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: height,
       width: width,
       child: Material(
@@ -38,9 +38,17 @@ class CustomButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(borderRadius),
           child: Container(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 8),
-            child: child,
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  icon!,
+                  const SizedBox(width: 8),
+                ],
+                child,
+              ],
+            ),
           ),
         ),
       ),

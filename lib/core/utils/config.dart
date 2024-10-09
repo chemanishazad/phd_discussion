@@ -1,6 +1,6 @@
 class Config {
-  final String _apiDomain = 'www.apacvault.com';
-  final String _basePath = 'reimbursement/api';
+  final String _apiDomain = 'phddiscussions.in';
+  final String _basePath = '/api';
 
   Uri apiUri(String path, {Map<String, dynamic>? queryParameters}) {
     return Uri.https(

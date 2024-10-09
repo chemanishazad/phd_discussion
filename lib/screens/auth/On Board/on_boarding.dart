@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'data.dart';
 
@@ -26,9 +27,7 @@ class _OnBoardingState extends State<OnBoarding> {
         itemCount: onboardingData.length,
         itemBuilder: (context, index) {
           return Container(
-            color: index == 2
-                ? Colors.grey.shade200
-                : Colors.white, // Grey background for 3rd screen
+            color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -63,23 +62,24 @@ class _OnBoardingState extends State<OnBoarding> {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                if (index == onboardingData.length - 1)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40.0),
+                    child: CustomButton(
+                      onTap: () {
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      },
+                      child: const Text('Get Started',
+                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                    ),
+                  ),
               ],
             ),
           );
         },
       ),
-      bottomSheet: _currentPage == onboardingData.length - 1
+      bottomNavigationBar: _currentPage < onboardingData.length - 1
           ? Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                },
-                child:
-                    const Text('Get Started', style: TextStyle(fontSize: 18)),
-              ),
-            )
-          : Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +119,8 @@ class _OnBoardingState extends State<OnBoarding> {
                   ),
                 ],
               ),
-            ),
+            )
+          : null,
     );
   }
 }
