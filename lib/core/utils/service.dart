@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:phd_discussion/core/utils/config.dart';
 import 'package:phd_discussion/main.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart';
 
 enum HttpMethod {
   $get,
@@ -128,9 +127,7 @@ class ApiMaster {
   void _handleUnauthorized() {
     // Notify the app to refresh or navigate to login screen
     ApiMaster.clearToken();
-    AuthProvider().logout(); // Trigger logout from AuthProvider
-    // Navigate to the login page or handle app-wide state updates
-    // Use a global navigator key or state management solution
+
     if (navigatorKey.currentContext != null) {
       Navigator.of(navigatorKey.currentContext!)
           .pushNamedAndRemoveUntil('/login', (route) => false);

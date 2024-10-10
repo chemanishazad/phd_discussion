@@ -31,7 +31,7 @@ class _SigUupScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return SafeArea(
       child: Scaffold(

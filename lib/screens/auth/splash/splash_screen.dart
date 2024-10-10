@@ -2,7 +2,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/notification_service.dart';
-import 'package:phd_discussion/provider/authProvider/authProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -51,10 +50,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _initializeAndNavigate() async {
     await Future.delayed(const Duration(seconds: 1));
-    await ref.read(authProvider.notifier).loadUserFromPrefs();
-
-    final authState = ref.read(authProvider);
-    print('Auth state after loading: $authState');
 
     String? deviceToken = await NotificationServices.getDeviceToken();
     print('Device token: $deviceToken');

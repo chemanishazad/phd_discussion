@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart';
-import 'package:provider/provider.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart'; // Import Riverpod auth provider
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
-
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final FormGroup form = FormGroup({
     'email': FormControl<String>(
         validators: [Validators.required, Validators.email]),
     'password': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(8)]),
+        validators: [Validators.required, Validators.minLength(6)]),
   });
 
   bool isLoading = false;
@@ -26,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authNotifier = ref.read(authProvider.notifier);
 
     return SafeArea(
       child: Scaffold(
@@ -138,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                                         form.control('password').value;
 
                                     try {
-                                      final message = await authProvider.login(
+                                      final message = await authNotifier.login(
                                           email, password);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -146,6 +145,11 @@ class _LoginPageState extends State<LoginPage> {
                                           content: Text(message),
                                         ),
                                       );
+                                      if (message.toLowerCase() ==
+                                          'login successful.') {
+                                        Navigator.pushReplacementNamed(
+                                            context, '/home');
+                                      }
                                     } catch (e) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(

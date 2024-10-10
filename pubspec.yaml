@@ -48,7 +48,6 @@ dependencies:
   googleapis_auth: ^1.6.0
   flutter_local_notifications: ^17.2.1+2
   flutter_riverpod: ^2.5.1
-  provider: ^6.1.2
   flutter_widget_from_html: ^0.15.2
 
 dev_dependencies:

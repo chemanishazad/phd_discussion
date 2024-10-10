@@ -2,93 +2,197 @@ import 'package:flutter/material.dart';
 
 class CustomDropDown2 extends StatefulWidget {
   final List<String> items;
-  final Function(String)? onSelectionChanged;
+  final Function(List<String>)? onSelectionChanged;
   final IconData icon;
   final String? title;
-  final String? initialValue; // Add this line to accept the initial value
+  final List<String>? initialValues;
+  final int? maxSelections; // Optional max selections
 
   const CustomDropDown2({
-    super.key,
+    Key? key,
     required this.items,
     this.onSelectionChanged,
     this.icon = Icons.arrow_drop_down,
     this.title,
-    this.initialValue, // Initialize the new property
-  });
+    this.initialValues,
+    this.maxSelections, // Add this parameter
+  }) : super(key: key);
 
   @override
   State<CustomDropDown2> createState() => _CustomDropDown2State();
 }
 
 class _CustomDropDown2State extends State<CustomDropDown2> {
-  String? _selectedItem;
+  late List<String> _selectedItems;
 
   @override
   void initState() {
     super.initState();
-    _selectedItem = widget.initialValue; // Set the initial value
+    _selectedItems = widget.initialValues ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue),
-        color: const Color.fromARGB(255, 223, 223, 223),
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
+    return GestureDetector(
+      onTap: () => _showMultiSelectDialog(context),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue),
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
         child: Row(
           children: [
-            Icon(widget.icon, color: Colors.black, size: 24), // Custom icon
-            SizedBox(width: 8), // Space between icon and dropdown button
+            Icon(widget.icon, color: Colors.black, size: 24),
+            const SizedBox(width: 8),
             Expanded(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                hint: Text(
-                  widget.title ?? 'Please select',
-                  style: TextStyle(fontSize: 14),
-                ),
-                value: _selectedItem,
-                icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                iconSize: 24,
-                elevation: 16,
-                style: const TextStyle(color: Colors.black, fontSize: 12),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedItem = newValue;
-                    });
-                    if (widget.onSelectionChanged != null) {
-                      widget.onSelectionChanged!(newValue);
-                    }
-                  }
-                },
-                items:
-                    widget.items.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: const TextStyle(fontSize: 16),
-                    ),
+              child: Text(
+                _selectedItems.isNotEmpty
+                    ? _selectedItems.join(', ') // Show selected names
+                    : (widget.title ?? 'Please select'),
+                style: const TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMultiSelectDialog(BuildContext context) async {
+    final List<String> selected = await showDialog(
+          context: context,
+          builder: (context) {
+            return MultiSelectDialog(
+              items: widget.items,
+              initialSelectedItems: _selectedItems,
+              maxSelections: widget.maxSelections, // Pass max selections
+            );
+          },
+        ) ??
+        _selectedItems;
+
+    setState(() {
+      _selectedItems = selected;
+    });
+
+    widget.onSelectionChanged?.call(_selectedItems);
+  }
+}
+
+class MultiSelectDialog extends StatefulWidget {
+  final List<String> items;
+  final List<String> initialSelectedItems;
+  final int? maxSelections; // Make maxSelections nullable
+
+  const MultiSelectDialog({
+    Key? key,
+    required this.items,
+    required this.initialSelectedItems,
+    this.maxSelections,
+  }) : super(key: key);
+
+  @override
+  State<MultiSelectDialog> createState() => _MultiSelectDialogState();
+}
+
+class _MultiSelectDialogState extends State<MultiSelectDialog> {
+  late List<String> _tempSelectedItems;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _tempSelectedItems = List.from(widget.initialSelectedItems);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredItems = widget.items
+        .where(
+            (item) => item.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+
+    return AlertDialog(
+      title: const Text('Select Options'),
+      content: SizedBox(
+        height: 400,
+        width: 300,
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredItems.length,
+                itemBuilder: (context, index) {
+                  final item = filteredItems[index];
+                  return CheckboxListTile(
+                    value: _tempSelectedItems.contains(item),
+                    title: Text(item),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    onChanged: (isChecked) {
+                      setState(() {
+                        if (isChecked == true) {
+                          if (widget.maxSelections == null ||
+                              _tempSelectedItems.length <
+                                  widget.maxSelections!) {
+                            _tempSelectedItems.add(item);
+                          } else {
+                            // Inform user about max selections
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Maximum selections reached'),
+                              ),
+                            );
+                          }
+                        } else {
+                          _tempSelectedItems.remove(item);
+                        }
+                      });
+                    },
                   );
-                }).toList(),
+                },
               ),
             ),
           ],
         ),
       ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Cancel'),
+          onPressed: () {
+            Navigator.pop(context, widget.initialSelectedItems);
+          },
+        ),
+        TextButton(
+          child: const Text('OK'),
+          onPressed: () {
+            Navigator.pop(context, _tempSelectedItems);
+          },
+        ),
+      ],
     );
   }
 }
