@@ -19,6 +19,10 @@ final categoryQuestionProvider =
   return await getCategoryQuestion(params['id']!,
       page: int.parse(params['page']!));
 });
+final tagQuestionProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await getTagQuestion(params['id']!, page: int.parse(params['page']!));
+});
 
 final postAnswerProvider =
     FutureProvider.family<Response, Map<String, String>>((ref, params) async {
@@ -88,6 +92,32 @@ Future<Response> getCategoryQuestion(String id, {int page = 1}) async {
 
     if (kDebugMode) {
       print('Related Questions Response Status Code: ${response.statusCode}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to load related questions: ${response.statusCode}');
+    }
+
+    return response;
+  } catch (e) {
+    throw Exception("Failed to fetch related questions: ${e.toString()}");
+  }
+}
+
+Future<Response> getTagQuestion(String id, {int page = 1}) async {
+  try {
+    final queryParams = {'tag': id, 'page': page.toString()};
+    Response response = await ApiMaster().fire(
+      path: '/getquestionsbytag',
+      method: HttpMethod.$get,
+      queryParameters: queryParams,
+      auth: false,
+    );
+
+    if (kDebugMode) {
+      print('Related Questions Response Status Code: ${response.statusCode}');
+      print('Related Questions Response Status : ${response.body}');
     }
 
     if (response.statusCode != 200) {

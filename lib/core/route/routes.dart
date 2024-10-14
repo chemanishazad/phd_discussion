@@ -10,6 +10,7 @@ import 'package:phd_discussion/screens/navBar/about/about_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
+import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
 
 class AppRoutes {
   static final Map<String, Widget Function(BuildContext)> routes = {
@@ -23,6 +24,7 @@ class AppRoutes {
     '/askQuestion': (context) => const AskQuestionScreen(),
     '/categories': (context) => const CategoriesScreen(),
     '/phdAdmission': (context) => const PhdAdmission(),
-    '/categoryScreen': (context) => const CategoryScreen(),
+    '/homeCategoryScreen': (context) => const HomeCategoryScreen(),
+    '/tagDetails': (context) => const TagDetails(),
   };
 }

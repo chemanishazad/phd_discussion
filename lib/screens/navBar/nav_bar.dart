@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class CustomMenu extends StatelessWidget {
+class CustomMenu extends ConsumerWidget {
   const CustomMenu({super.key});
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncTags = ref.watch(tagProvider);
+
     return Drawer(
       child: Container(
         decoration: const BoxDecoration(),
@@ -23,6 +26,7 @@ class CustomMenu extends StatelessWidget {
                   _buildMenuItem(Icons.help, 'Need Help', context, '/login'),
                   _buildMenuItem(
                       Icons.category, 'Categories', context, '/categories'),
+                  _buildMenuItem(Icons.info, 'About Us', context, '/about'),
                   const Divider(),
                   _buildSectionTitle('Related Tags'),
                   _buildMenuItem(
@@ -33,8 +37,21 @@ class CustomMenu extends StatelessWidget {
                       Icons.book, 'Annexure I Journals', context, ''),
                   _buildMenuItem(Icons.book, 'Academic Writing', context, ''),
                   const Divider(),
-                  _buildSectionTitle('About'),
-                  _buildMenuItem(Icons.info, 'About Us', context, '/about'),
+                  _buildSectionTitle('Various Subjects'),
+                  if (asyncTags.hasValue)
+                    ...asyncTags.value!.map((tag) {
+                      return ListTile(
+                        leading:
+                            const Icon(Icons.tag, color: Palette.iconColor),
+                        title: Text(tag.brand,
+                            style: const TextStyle(color: Colors.black)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, '/tagDetails',
+                              arguments: tag.id);
+                        },
+                      );
+                    }),
                   const Divider(),
                 ],
               ),

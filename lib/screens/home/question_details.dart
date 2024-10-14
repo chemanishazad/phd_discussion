@@ -222,7 +222,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                   });
                   print(categoryQuestions);
                   if (categoryQuestions.isNotEmpty) {
-                    await Navigator.pushNamed(context, '/categoryScreen',
+                    await Navigator.pushNamed(context, '/homeCategoryScreen',
                         arguments: categoryQuestions);
                     print("Navigated to Category Screen"); // Debug print
                   } else {

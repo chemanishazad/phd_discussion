@@ -6,14 +6,14 @@ import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'dart:convert';
 
-class CategoryScreen extends ConsumerStatefulWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
+class HomeCategoryScreen extends ConsumerStatefulWidget {
+  const HomeCategoryScreen({Key? key}) : super(key: key);
 
   @override
-  _CategoryScreenState createState() => _CategoryScreenState();
+  _HomeCategoryScreenState createState() => _HomeCategoryScreenState();
 }
 
-class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
   final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
   bool isLoading = false;
@@ -42,7 +42,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
     try {
       final response = await ref.read(categoryQuestionProvider({
-        'id': '4',
+        'id': '4', // Ensure the ID is passed dynamically
         'page': currentPage.toString(),
       }).future);
 

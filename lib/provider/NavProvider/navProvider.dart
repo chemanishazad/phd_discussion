@@ -8,6 +8,10 @@ import 'model/withoutLoginQuestionSave.dart';
 final tagDropdownProvider = FutureProvider<List<Tag>>((ref) async {
   return getTagDropdown();
 });
+final tagProvider = FutureProvider<List<Tag>>((ref) async {
+  return getTag();
+});
+
 final categoriesDropdownProvider = FutureProvider<List<Category>>((ref) async {
   return getCategoriesDropdown();
 });
@@ -36,6 +40,55 @@ Future<List<Tag>> getTagDropdown() async {
     }
   } catch (e) {
     print("Error fetching user data: $e");
+    rethrow;
+  }
+}
+
+Future<List<Tag>> getTag() async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/gettags',
+      method: HttpMethod.$get,
+      auth: false,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print(data);
+      if (data['tags'] is List) {
+        final List<dynamic> tagsJson = data['tags'];
+        return tagsJson.map<Tag>((tagJson) {
+          return Tag.fromJson(tagJson);
+        }).toList();
+      } else {
+        throw Exception('Invalid data format');
+      }
+    } else {
+      throw Exception('Failed to fetch user data: ${response.statusCode}');
+    }
+  } catch (e) {
+    print("Error fetching user data: $e");
+    rethrow;
+  }
+}
+
+Future<Map<String, dynamic>> getCategories() async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/getcategories',
+      method: HttpMethod.$get,
+      auth: false,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print(data);
+      return data;
+    } else {
+      throw Exception('Failed to fetch categories: ${response.statusCode}');
+    }
+  } catch (e) {
+    print("Error fetching categories: $e");
     rethrow;
   }
 }
