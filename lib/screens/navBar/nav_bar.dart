@@ -23,7 +23,19 @@ class CustomMenu extends ConsumerWidget {
                   _buildSectionTitle('General'),
                   _buildMenuItem(Icons.question_answer, 'Ask a Question',
                       context, '/askQuestion'),
-                  _buildMenuItem(Icons.help, 'Need Help', context, '/login'),
+                  ListTile(
+                    leading: Icon(Icons.help, color: Palette.iconColor),
+                    title: Text('Need Help',
+                        style: const TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/login', arguments: {
+                        'title':
+                            'Login to Ask more relevant questions or Answer the Questions on PhDdiscussions.'
+                      });
+                    },
+                  ),
+                  // _buildMenuItem(Icons.help, 'Need Help', context, '/login'),
                   _buildMenuItem(
                       Icons.category, 'Categories', context, '/categories'),
                   _buildMenuItem(Icons.info, 'About Us', context, '/about'),
@@ -31,11 +43,14 @@ class CustomMenu extends ConsumerWidget {
                   _buildSectionTitle('Related Tags'),
                   _buildMenuItem(
                       Icons.book, 'PhD Admission', context, '/phdAdmission'),
-                  _buildMenuItem(Icons.book, 'Action Research', context, ''),
-                  _buildMenuItem(Icons.book, 'APA Style', context, ''),
                   _buildMenuItem(
-                      Icons.book, 'Annexure I Journals', context, ''),
-                  _buildMenuItem(Icons.book, 'Academic Writing', context, ''),
+                      Icons.book, 'Action Research', context, '/phdAdmission'),
+                  _buildMenuItem(
+                      Icons.book, 'APA Style', context, '/phdAdmission'),
+                  _buildMenuItem(Icons.book, 'Annexure I Journals', context,
+                      '/phdAdmission'),
+                  _buildMenuItem(
+                      Icons.book, 'Academic Writing', context, '/phdAdmission'),
                   const Divider(),
                   _buildSectionTitle('Various Subjects'),
                   if (asyncTags.hasValue)

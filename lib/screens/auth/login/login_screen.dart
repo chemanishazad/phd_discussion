@@ -26,7 +26,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authNotifier = ref.read(authProvider.notifier);
+    final Map<String, dynamic>? args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
+    // Extract the title from the arguments, if available
+    final String title =
+        args != null && args.containsKey('title') ? args['title'] : 'Login';
     return SafeArea(
       child: Scaffold(
         backgroundColor: Palette.lightBackgroundColor,
@@ -81,9 +86,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Login',
+                        title,
                         style: TextStyle(
-                          fontSize: 24.sp,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -123,62 +128,84 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                       ),
                       Center(
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () async {
-                                  if (form.valid) {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    final email = form.control('email').value;
-                                    final password =
-                                        form.control('password').value;
-
-                                    try {
-                                      final message = await authNotifier.login(
-                                          email, password);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(message),
-                                        ),
-                                      );
-                                      if (message.toLowerCase() ==
-                                          'login successful.') {
-                                        Navigator.pushReplacementNamed(
-                                            context, '/home');
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('An error occurred: $e'),
-                                        ),
-                                      );
-                                    } finally {
+                        child: SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (form.valid) {
                                       setState(() {
-                                        isLoading = false;
+                                        isLoading = true;
                                       });
+
+                                      final email = form.control('email').value;
+                                      final password =
+                                          form.control('password').value;
+
+                                      try {
+                                        final message = await authNotifier
+                                            .login(email, password);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(message),
+                                          ),
+                                        );
+                                        if (message.toLowerCase() ==
+                                            'login successful.') {
+                                          Navigator.pushReplacementNamed(
+                                              context, '/home');
+                                        }
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content:
+                                                Text('An error occurred: $e'),
+                                          ),
+                                        );
+                                      } finally {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    } else {
+                                      form.markAllAsTouched();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Please fill in all fields'),
+                                        ),
+                                      );
                                     }
-                                  } else {
-                                    form.markAllAsTouched();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Please fill in all fields'),
-                                      ),
-                                    );
-                                  }
-                                },
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white)
-                              : const Text('Login'),
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Palette.themeColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 8.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 3,
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.0,
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                          ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),

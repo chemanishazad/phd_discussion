@@ -9,6 +9,7 @@ import 'package:phd_discussion/screens/home/home_screen.dart';
 import 'package:phd_discussion/screens/navBar/about/about_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
+import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
 import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
 
@@ -26,5 +27,6 @@ class AppRoutes {
     '/phdAdmission': (context) => const PhdAdmission(),
     '/homeCategoryScreen': (context) => const HomeCategoryScreen(),
     '/tagDetails': (context) => const TagDetails(),
+    '/categoryQuestion': (context) => const CategoryQuestion(),
   };
 }

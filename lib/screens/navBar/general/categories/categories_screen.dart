@@ -6,7 +6,7 @@ import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
 // Provider for fetching categories
 final categoriesProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  return getCategories();
+  return getCategories(); // Replace with your actual API call or method
 });
 
 // Model class for a category
@@ -42,6 +42,7 @@ class CategoriesScreen extends ConsumerWidget {
       appBar: const CustomAppBar(title: 'Categories'),
       body: categoriesAsyncValue.when(
         data: (data) {
+          // Parse the categories from the response
           List<Category> categories = (data['categories'] as List)
               .map((categoryJson) => Category.fromJson(categoryJson))
               .toList();
@@ -54,8 +55,7 @@ class CategoriesScreen extends ConsumerWidget {
                   return _buildExpansionTile(
                     title: category.category,
                     children: category.children?.map((child) {
-                          return _buildListTile(
-                              context, child.category, child.children ?? []);
+                          return _buildListTile(context, child);
                         }).toList() ??
                         [],
                   );
@@ -97,20 +97,19 @@ class CategoriesScreen extends ConsumerWidget {
   }
 
   // ListTile for each sub-category
-  Widget _buildListTile(
-      BuildContext context, String title, List<dynamic> categoryQuestions) {
+  Widget _buildListTile(BuildContext context, Category category) {
     return ListTile(
       title: Text(
-        title,
+        category.category,
         style: const TextStyle(fontSize: 14),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.teal),
       onTap: () {
-        // Directly pass categoryQuestions when navigating to the next screen
+        // Pass the selected category to the next screen
         Navigator.pushNamed(
           context,
-          '/homeCategoryScreen',
-          arguments: categoryQuestions,
+          '/categoryQuestion',
+          arguments: category.id,
         );
       },
     );
