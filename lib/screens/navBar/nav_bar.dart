@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CustomMenu extends ConsumerWidget {
@@ -9,13 +11,14 @@ class CustomMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncTags = ref.watch(tagProvider);
+    final authState = ref.watch(authProvider);
 
     return Drawer(
       child: Container(
         decoration: const BoxDecoration(),
         child: Column(
           children: <Widget>[
-            _buildHeader(),
+            _buildHeader(authState, context),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -24,17 +27,35 @@ class CustomMenu extends ConsumerWidget {
                   _buildMenuItem(Icons.question_answer, 'Ask a Question',
                       context, '/askQuestion'),
                   ListTile(
-                    leading: Icon(Icons.help, color: Palette.iconColor),
-                    title: Text('Need Help',
-                        style: const TextStyle(color: Colors.black)),
+                    leading: const Icon(Icons.help, color: Palette.iconColor),
+                    title: const Text('Need Help',
+                        style: TextStyle(color: Colors.black)),
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/login', arguments: {
-                        'title':
-                            'Login to Ask more relevant questions or Answer the Questions on PhDdiscussions.'
-                      });
+                      authState.when(
+                        data: (user) {
+                          if (user != null) {
+                            Navigator.pushNamed(context, '/helpScreen');
+                          } else {
+                            Navigator.pushNamed(context, '/login', arguments: {
+                              'title':
+                                  'Login to ask more relevant questions or answer questions on PhD discussions.'
+                            });
+                          }
+                        },
+                        loading: () {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                        error: (error, stack) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $error')),
+                          );
+                        },
+                      );
                     },
                   ),
+
                   // _buildMenuItem(Icons.help, 'Need Help', context, '/login'),
                   _buildMenuItem(
                       Icons.category, 'Categories', context, '/categories'),
@@ -84,7 +105,7 @@ class CustomMenu extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AsyncValue<UserModel?> authState, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -94,15 +115,55 @@ class CustomMenu extends ConsumerWidget {
           child: Column(
             children: [
               SizedBox(height: 5.h),
-              const Text(
-                'Welcome',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              authState.when(
+                data: (user) {
+                  if (user != null) {
+                    return Text(
+                      'Welcome, ${user.name}!',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  } else {
+                    return TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Palette.themeColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.login, color: Colors.white),
+                          SizedBox(width: 8),
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                loading: () => const CircularProgressIndicator(),
+                error: (e, stack) => const Text(
+                  'Error loading user',
+                  style: TextStyle(color: Colors.red),
                 ),
               ),
-              SizedBox(height: 5.h)
+              SizedBox(height: 5.h),
             ],
           ),
         ),

@@ -6,7 +6,9 @@ class CustomDropDown extends StatefulWidget {
   final IconData icon;
   final String? title;
   final Color? iconColor;
-  final String? initialValue; // Add this line to accept the initial value
+  final String? initialValue;
+  final double dropdownWidth; // Width of the dropdown box
+  final double dropdownHeight; // Height of the dropdown box
 
   const CustomDropDown({
     super.key,
@@ -15,7 +17,9 @@ class CustomDropDown extends StatefulWidget {
     this.icon = Icons.arrow_drop_down,
     this.title,
     this.initialValue,
-    this.iconColor, // Initialize the new property
+    this.iconColor,
+    this.dropdownWidth = 120, // Default dropdown box width
+    this.dropdownHeight = 40, // Default dropdown box height
   });
 
   @override
@@ -28,45 +32,49 @@ class _CustomDropDownState extends State<CustomDropDown> {
   @override
   void initState() {
     super.initState();
-    _selectedItem = widget.initialValue; // Set the initial value
+    _selectedItem = widget.initialValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      width: widget.dropdownWidth,
+      height: widget.dropdownHeight, // Set the height of the dropdown box
+      padding: const EdgeInsets.symmetric(
+          horizontal: 8, vertical: 0), // Reduced vertical padding
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blue),
-        color: const Color.fromARGB(255, 223, 223, 223),
-        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: DropdownButtonHideUnderline(
         child: Row(
           children: [
-            Icon(widget.icon,
-                color: widget.iconColor ?? Colors.black,
-                size: 24), // Custom icon
-            SizedBox(width: 8), // Space between icon and dropdown button
+            Icon(
+              widget.icon,
+              color: widget.iconColor ?? Colors.blue,
+              size: 20,
+            ),
+            const SizedBox(width: 4),
             Expanded(
               child: DropdownButton<String>(
                 isExpanded: true,
                 hint: Text(
-                  widget.title ?? 'please select',
-                  style: TextStyle(fontSize: 16),
+                  widget.title ?? 'Please select',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 value: _selectedItem,
                 icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                iconSize: 24,
-                elevation: 16,
+                iconSize: 20,
+                elevation: 4,
                 style: const TextStyle(color: Colors.black, fontSize: 12),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
@@ -84,7 +92,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                     value: value,
                     child: Text(
                       value,
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   );
                 }).toList(),

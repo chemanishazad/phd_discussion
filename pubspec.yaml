@@ -49,6 +49,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1+2
   flutter_riverpod: ^2.5.1
   flutter_widget_from_html: ^0.15.2
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

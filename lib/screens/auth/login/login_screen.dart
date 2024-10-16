@@ -4,7 +4,7 @@ import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart'; // Import Riverpod auth provider
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -28,8 +28,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authNotifier = ref.read(authProvider.notifier);
     final Map<String, dynamic>? args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-    // Extract the title from the arguments, if available
     final String title =
         args != null && args.containsKey('title') ? args['title'] : 'Login';
     return SafeArea(
@@ -152,12 +150,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             content: Text(message),
                                           ),
                                         );
+                                        print('message$message');
                                         if (message.toLowerCase() ==
                                             'login successful.') {
                                           Navigator.pushReplacementNamed(
                                               context, '/home');
                                         }
                                       } catch (e) {
+                                        print(e);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/nav_bar.dart';
 
@@ -32,6 +33,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const String questionId = '';
     final asyncValue = ref.watch(topQuestionProvider(questionId));
+    final authState = ref.watch(authProvider);
 
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
@@ -43,10 +45,28 @@ class HomeScreen extends ConsumerWidget {
               iconTheme: const IconThemeData(color: Colors.white),
               backgroundColor: Palette.themeColor,
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.login),
-                  onPressed: () async {
-                    Navigator.pushNamed(context, '/login');
+                authState.when(
+                  data: (user) {
+                    return user != null
+                        ? IconButton(
+                            icon: const Icon(Icons.logout),
+                            onPressed: () async {
+                              await ref.read(authProvider.notifier).logout();
+                            },
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.login),
+                            onPressed: () async {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                          );
+                  },
+                  loading: () =>
+                      const CircularProgressIndicator(), // Display a loading indicator
+                  error: (error, stack) {
+                    return Center(
+                        child:
+                            Text('Error: $error')); // Display an error message
                   },
                 ),
               ],

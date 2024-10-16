@@ -143,3 +143,25 @@ Future<Map<String, dynamic>> postQuestionWithout(
     rethrow;
   }
 }
+
+Future<Map<String, dynamic>> submitHelp(
+    String issueType, String comments) async {
+  final response = await ApiMaster().fire(
+    path: '/saveenquiry',
+    method: HttpMethod.$post,
+    auth: true,
+    body: {
+      'issue_type': issueType,
+      'comments': comments,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    print('body: $data');
+    return data; // Return the entire response data
+  } else {
+    print('HTTP error: ${response.statusCode}');
+    throw Exception('Please try again.'); // Throw an exception on error
+  }
+}

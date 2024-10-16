@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/utils/service.dart';
 import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,6 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, UserModel?>(() {
 class AuthNotifier extends AsyncNotifier<UserModel?> {
   @override
   Future<UserModel?> build() async {
-    // Load user from SharedPreferences initially
     return await _loadUserFromPrefs();
   }
 
@@ -20,7 +20,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     if (isLoggedIn) {
       return UserModel(
-        userId: prefs.getInt('userId')!,
+        userId: prefs.getString('userId')!,
         name: prefs.getString('name')!,
         email: prefs.getString('email')!,
         username: prefs.getString('username')!,
@@ -31,17 +31,16 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
 
   Future<void> _saveUserToPrefs(UserModel user, String token) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', true);
-    prefs.setInt('userId', user.userId);
-    prefs.setString('name', user.name);
-    prefs.setString('email', user.email);
-    prefs.setString('username', user.username);
-    prefs.setString('token', token);
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userId', user.userId);
+    await prefs.setString('name', user.name);
+    await prefs.setString('email', user.email);
+    await prefs.setString('username', user.username);
+    await prefs.setString('token', token);
   }
 
   Future<String> login(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
-    // Retrieve the deviceToken from SharedPreferences
     String? deviceToken = prefs.getString('deviceToken');
 
     final response = await ApiMaster().fire(
@@ -58,33 +57,47 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print(data);
-      if (data['code'] == 200) {
-        final user = UserModel.fromJson(data['userInfo']);
+      print('body$data');
+      if (data['status'] == true) {
+        final user = UserModel(
+          userId: data['data']['user_id'],
+          name: data['data']['username'],
+          email: email, // Assuming you want to keep the entered email
+          username: data['data']['username'],
+        );
         final token = data['data']['token'];
         await _saveUserToPrefs(user, token);
         ApiMaster.setToken(token);
-        state = AsyncData(user);
+        state = AsyncData(user); // Notify listeners
+
+        print('User logged in: ${user.name}');
         return data['message'];
       } else {
         state = const AsyncData(null);
-        return data['message'];
+        print('Login failed: ${data['message']}');
+        return data['message'] ?? 'Unknown error occurred.';
       }
     } else {
       state = const AsyncData(null);
+      print('HTTP error: ${response.statusCode}');
       return 'Login failed. Please try again.';
     }
   }
 
   Future<void> logout() async {
     final response = await ApiMaster().fire(
-      path: '/authentication/logout',
-      method: HttpMethod.$get,
+      path: '/logout',
+      auth: false,
+      method: HttpMethod.$post,
     );
-    if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    print(data);
+
+    if (response.statusCode == 200 || response.statusCode == 403) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      state = const AsyncData(null); // Clear user state
+      state = const AsyncData(null);
+      Fluttertoast.showToast(msg: 'Logout Success');
     }
   }
 }
