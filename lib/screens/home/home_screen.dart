@@ -8,6 +8,7 @@ import 'package:phd_discussion/screens/navBar/nav_bar.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
+
   Future<bool> _onWillPop(BuildContext context) async {
     return await showDialog(
           context: context,
@@ -26,7 +27,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
         ) ??
-        false; // Return false if the dialog is dismissed
+        false;
   }
 
   @override
@@ -47,27 +48,21 @@ class HomeScreen extends ConsumerWidget {
               actions: [
                 authState.when(
                   data: (user) {
-                    return user != null
-                        ? IconButton(
-                            icon: const Icon(Icons.logout),
-                            onPressed: () async {
-                              await ref.read(authProvider.notifier).logout();
-                            },
-                          )
-                        : IconButton(
-                            icon: const Icon(Icons.login),
-                            onPressed: () async {
-                              Navigator.pushNamed(context, '/login');
-                            },
-                          );
+                    return IconButton(
+                      icon: user != null
+                          ? const Icon(Icons.logout)
+                          : const Icon(Icons.login),
+                      onPressed: () async {
+                        if (user != null) {
+                          await ref.read(authProvider.notifier).logout();
+                        } else {
+                          Navigator.pushNamed(context, '/login');
+                        }
+                      },
+                    );
                   },
-                  loading: () =>
-                      const CircularProgressIndicator(), // Display a loading indicator
-                  error: (error, stack) {
-                    return Center(
-                        child:
-                            Text('Error: $error')); // Display an error message
-                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, stack) => Center(child: Text('Error: $error')),
                 ),
               ],
               leading: Builder(
@@ -88,66 +83,97 @@ class HomeScreen extends ConsumerWidget {
                     jsonDecode(response.body);
                 final List<dynamic> questions = jsonResponse['data'];
 
-                return ListView.builder(
-                  itemCount: questions.length,
-                  itemBuilder: (context, index) {
-                    final questionData = questions[index];
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...questions.map((questionData) => GestureDetector(
+                            onTap: () {
+                              // print(questionData['category_id']);
+                              Navigator.pushNamed(context, '/questionDetails',
+                                  arguments: {
+                                    'id': questionData['id'],
+                                    'isHide': false,
+                                    // 'user': questionData['likes']
+                                  });
+                            },
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 4,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 12),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      questionData['title'],
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: Text('${questionData['date']}',
+                                              style: const TextStyle(
+                                                  fontSize: 14)),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            final response = await ref
+                                                .read(categoryQuestionProvider({
+                                              'id': questionData['category_id'],
+                                              'page': '1',
+                                            }).future);
+                                            final Map<String, dynamic>
+                                                relatedJson =
+                                                jsonDecode(response.body);
+                                            final categoryQuestions =
+                                                relatedJson['data'] ?? [];
 
-                    return GestureDetector(
-                      onTap: () {
-                        print(questionData['id']);
-                        Navigator.pushNamed(context, '/questionDetails',
-                            arguments: {
-                              'id': questionData['id'],
-                              'isHide': false,
-                            });
-                      },
-                      child: Card(
-                        color: Colors.white,
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                questionData['title'],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                            if (categoryQuestions.isNotEmpty) {
+                                              await Navigator.pushNamed(context,
+                                                  '/homeCategoryScreen',
+                                                  arguments: categoryQuestions);
+                                            } else {
+                                              print("No questions found");
+                                            }
+                                          },
+                                          child: Text(
+                                            questionData['category'],
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Palette.themeColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _InfoCard(
+                                            icon: Icons.visibility,
+                                            label: questionData['views']),
+                                        _InfoCard(
+                                            icon: Icons.how_to_vote,
+                                            label: questionData['votes']),
+                                        _InfoCard(
+                                            icon: Icons.comment,
+                                            label: questionData['answers']),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                questionData['body'].replaceAll(
-                                    RegExp(r'<[^>]*>'), ''), // Strip HTML tags
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _InfoCard(
-                                    icon: Icons.visibility,
-                                    label: questionData['views'],
-                                  ),
-                                  _InfoCard(
-                                    icon: Icons.thumb_up,
-                                    label: questionData['votes'],
-                                  ),
-                                  _InfoCard(
-                                    icon: Icons.comment,
-                                    label: questionData['answers'],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                            ),
+                          )),
+                    ],
+                  ),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),

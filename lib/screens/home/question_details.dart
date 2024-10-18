@@ -2,13 +2,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
 import 'widgets/comment_section.dart';
 import 'widgets/related_question.dart';
+
+final postVoteProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await postVote(params['id']!, params['vote']!);
+});
 
 class QuestionDetails extends ConsumerStatefulWidget {
   const QuestionDetails({super.key});
@@ -26,6 +34,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   bool isAnswer = false;
   bool isExit = false;
   int currentPage = 1;
+  String like = '';
   List<dynamic> relatedQuestions = [];
   List<dynamic> categoryQuestions = [];
 
@@ -35,8 +44,10 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map<String, dynamic>) {
       questionId = args['id'] ?? '';
+      // like = args['user'];
       isExit = args['isHide'] ?? false;
     }
+    print('like$like');
   }
 
   @override
@@ -271,21 +282,86 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   }
 
   Widget _buildInteractionSection(Map<String, dynamic> question) {
+    final authState = ref.watch(authProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-            onPressed: () {}, icon: const Icon(Icons.thumb_up_alt_outlined)),
+          onPressed: () async {
+            final user = authState.maybeWhen(
+              data: (user) => user,
+              orElse: () => null,
+            );
+            print('Posting vote for question_id: ${question['id']} ');
+
+            if (user != null) {
+              final response = await ref.read(postVoteProvider({
+                'id': question['id'],
+                'vote': '1',
+              }).future);
+
+              final Map<String, dynamic> jsonResponse =
+                  jsonDecode(response.body);
+              if (response.statusCode == 200 &&
+                  jsonResponse['success'] != null) {
+                await ref.refresh(topQuestionProvider(questionId));
+                Fluttertoast.showToast(msg: jsonResponse['success']);
+              } else if (jsonResponse['error'] != null) {
+                await ref.refresh(topQuestionProvider(questionId));
+                Fluttertoast.showToast(msg: jsonResponse['error']);
+              } else {
+                Fluttertoast.showToast(
+                    msg: 'Error voting: ${response.reasonPhrase}');
+              }
+            } else {
+              Fluttertoast.showToast(msg: 'You need to be logged in to vote.');
+            }
+          },
+          icon: const Icon(Icons.thumb_up_alt_outlined),
+        ),
         Container(
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(4)),
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(4),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(question['votes'],
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(
+            question['votes'].toString(), // Ensure votes is a string
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         IconButton(
-            onPressed: () {}, icon: const Icon(Icons.thumb_down_alt_outlined)),
+          onPressed: () async {
+            final user = authState.maybeWhen(
+              data: (user) => user,
+              orElse: () => null,
+            );
+
+            if (user != null) {
+              // User is authenticated, proceed with downvoting
+              final response = await ref.read(
+                postVoteProvider({'id': question['id'], 'vote': '-1'}).future,
+              );
+
+              final Map<String, dynamic> jsonResponse =
+                  jsonDecode(response.body);
+              if (response.statusCode == 200 &&
+                  jsonResponse['success'] != null) {
+                await ref.refresh(topQuestionProvider(questionId));
+                Fluttertoast.showToast(msg: jsonResponse['success']);
+              } else if (jsonResponse['error'] != null) {
+                await ref.refresh(topQuestionProvider(questionId));
+                Fluttertoast.showToast(msg: jsonResponse['error']);
+              } else {
+                Fluttertoast.showToast(
+                    msg: 'Error voting: ${response.reasonPhrase}');
+              }
+            } else {
+              Fluttertoast.showToast(msg: 'You need to be logged in to vote.');
+            }
+          },
+          icon: const Icon(Icons.thumb_down_alt_outlined),
+        ),
       ],
     );
   }
