@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:phd_discussion/core/utils/config.dart';
 import 'package:phd_discussion/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum HttpMethod {
   $get,
@@ -30,13 +31,23 @@ class ApiMaster {
   }
 
   // Set the token after login
-  static void setToken(String token) {
+  static Future<void> setToken(String token) async {
     _token = token;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
   }
 
   // Clear the token on logout
-  static void clearToken() {
+  static Future<void> clearToken() async {
     _token = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+  }
+
+  static Future<void> loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token');
+    print('Loaded token: $_token');
   }
 
   Future<dynamic> fire({

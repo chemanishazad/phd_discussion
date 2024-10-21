@@ -24,6 +24,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
         name: prefs.getString('name')!,
         email: prefs.getString('email')!,
         username: prefs.getString('username')!,
+        authToken: prefs.getString('token')!,
       );
     }
     return null;
@@ -62,8 +63,9 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
         final user = UserModel(
           userId: data['data']['user_id'],
           name: data['data']['username'],
-          email: email, // Assuming you want to keep the entered email
+          email: email,
           username: data['data']['username'],
+          authToken: data['data']['token'],
         );
         final token = data['data']['token'];
         await _saveUserToPrefs(user, token);
@@ -90,12 +92,19 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       auth: false,
       method: HttpMethod.$post,
     );
+
     final data = json.decode(response.body);
     print(data);
 
     if (response.statusCode == 200 || response.statusCode == 403) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
+      await prefs.remove('isLoggedIn');
+      await prefs.remove('userId');
+      await prefs.remove('name');
+      await prefs.remove('email');
+      await prefs.remove('username');
+      await prefs.remove('token');
+
       state = const AsyncData(null);
       Fluttertoast.showToast(msg: 'Logout Success');
     }

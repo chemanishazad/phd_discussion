@@ -124,9 +124,11 @@ class CustomMenu extends ConsumerWidget {
               SizedBox(height: 5.h),
               authState.when(
                 data: (user) {
+                  print(user?.authToken);
                   if (user != null) {
                     return TextButton(
                       onPressed: () {
+                        print('user${user.authToken}');
                         Navigator.pushNamed(context, '/profileScreen');
                       },
                       child: Text(
