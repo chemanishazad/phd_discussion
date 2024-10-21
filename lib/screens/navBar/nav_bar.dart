@@ -8,6 +8,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CustomMenu extends ConsumerWidget {
   const CustomMenu({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncTags = ref.watch(tagProvider);
@@ -23,72 +24,78 @@ class CustomMenu extends ConsumerWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
-                  _buildSectionTitle('General'),
-                  _buildMenuItem(Icons.question_answer, 'Ask a Question',
-                      context, '/askQuestion'),
-                  ListTile(
-                    leading: const Icon(Icons.help, color: Palette.iconColor),
-                    title: const Text('Need Help',
-                        style: TextStyle(color: Colors.black)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      authState.when(
-                        data: (user) {
-                          if (user != null) {
-                            Navigator.pushNamed(context, '/helpScreen');
-                          } else {
-                            Navigator.pushNamed(context, '/login', arguments: {
-                              'title':
-                                  'Login to ask more relevant questions or answer questions on PhD discussions.'
-                            });
-                          }
-                        },
-                        loading: () {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        },
-                        error: (error, stack) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $error')),
-                          );
-                        },
-                      );
-                    },
-                  ),
-
-                  // _buildMenuItem(Icons.help, 'Need Help', context, '/login'),
-                  _buildMenuItem(
-                      Icons.category, 'Categories', context, '/categories'),
-                  _buildMenuItem(Icons.info, 'About Us', context, '/about'),
-                  const Divider(),
-                  _buildSectionTitle('Related Tags'),
-                  _buildMenuItem(
-                      Icons.book, 'PhD Admission', context, '/phdAdmission'),
-                  _buildMenuItem(
-                      Icons.book, 'Action Research', context, '/phdAdmission'),
-                  _buildMenuItem(
-                      Icons.book, 'APA Style', context, '/phdAdmission'),
-                  _buildMenuItem(Icons.book, 'Annexure I Journals', context,
-                      '/phdAdmission'),
-                  _buildMenuItem(
-                      Icons.book, 'Academic Writing', context, '/phdAdmission'),
-                  const Divider(),
-                  _buildSectionTitle('Various Subjects'),
-                  if (asyncTags.hasValue)
-                    ...asyncTags.value!.map((tag) {
-                      return ListTile(
+                  _buildExpansionTile(
+                    title: 'General',
+                    children: [
+                      _buildMenuItem(Icons.question_answer, 'Ask a Question',
+                          context, '/askQuestion'),
+                      ListTile(
                         leading:
-                            const Icon(Icons.tag, color: Palette.iconColor),
-                        title: Text(tag.brand,
-                            style: const TextStyle(color: Colors.black)),
+                            const Icon(Icons.help, color: Palette.iconColor),
+                        title: const Text('Need Help',
+                            style: TextStyle(color: Colors.black)),
                         onTap: () {
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, '/tagDetails',
-                              arguments: tag.id);
+                          _navigateToHelp(context, authState);
                         },
-                      );
-                    }),
-                  const Divider(),
+                      ),
+                      _buildMenuItem(
+                          Icons.category, 'Categories', context, '/categories'),
+                      _buildMenuItem(Icons.info, 'About Us', context, '/about'),
+                    ],
+                  ),
+                  _buildExpansionTile(
+                    title: 'Related Tags',
+                    children: [
+                      _buildMenuItem(Icons.school, 'PhD Admission', context,
+                          '/phdAdmission'),
+                      _buildMenuItem(Icons.search, 'Action Research', context,
+                          '/phdAdmission'),
+                      _buildMenuItem(
+                          Icons.article, 'APA Style', context, '/phdAdmission'),
+                      _buildMenuItem(Icons.library_books, 'Annexure I Journals',
+                          context, '/phdAdmission'),
+                      _buildMenuItem(Icons.edit, 'Academic Writing', context,
+                          '/phdAdmission'),
+                    ],
+                  ),
+                  _buildExpansionTile(
+                    title: 'Profile / Activity',
+                    children: [
+                      _buildMenuItem(Icons.account_circle_sharp, 'Profile',
+                          context, '/profileScreen'),
+                      _buildMenuItem(
+                          Icons.article, 'Summary', context, '/summaryScreen'),
+                      _buildMenuItem(Icons.question_answer, 'My Question(s)',
+                          context, '/myQuestionScreen'),
+                      _buildMenuItem(Icons.question_answer_outlined,
+                          'My Answer(s)', context, '/myAnswerScreen'),
+                      _buildMenuItem(Icons.thumb_up, 'My Vote(s)', context,
+                          '/myVoteScreen'),
+                      _buildMenuItem(Icons.favorite, 'My Favourite(s)', context,
+                          '/myFavouriteScreen'),
+                      _buildMenuItem(Icons.settings, 'Settings', context,
+                          '/settingScreen'),
+                    ],
+                  ),
+                  _buildExpansionTile(
+                    title: 'Various Subjects',
+                    children: [
+                      if (asyncTags.hasValue)
+                        ...asyncTags.value!.map((tag) {
+                          return ListTile(
+                            leading:
+                                const Icon(Icons.tag, color: Palette.iconColor),
+                            title: Text(tag.brand,
+                                style: const TextStyle(color: Colors.black)),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/tagDetails',
+                                  arguments: tag.id);
+                            },
+                          );
+                        }),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -118,12 +125,17 @@ class CustomMenu extends ConsumerWidget {
               authState.when(
                 data: (user) {
                   if (user != null) {
-                    return Text(
-                      'Welcome, ${user.name}!',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    return TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/profileScreen');
+                      },
+                      child: Text(
+                        'Welcome, ${user.name}!',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     );
                   } else {
@@ -171,17 +183,15 @@ class CustomMenu extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Text(
+  Widget _buildExpansionTile(
+      {required String title, required List<Widget> children}) {
+    return ExpansionTile(
+      title: Text(
         title,
         style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-          fontSize: 18,
-        ),
+            fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
       ),
+      children: children,
     );
   }
 
@@ -193,6 +203,30 @@ class CustomMenu extends ConsumerWidget {
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, route);
+      },
+    );
+  }
+
+  void _navigateToHelp(BuildContext context, AsyncValue<UserModel?> authState) {
+    Navigator.pop(context);
+    authState.when(
+      data: (user) {
+        if (user != null) {
+          Navigator.pushNamed(context, '/helpScreen');
+        } else {
+          Navigator.pushNamed(context, '/login', arguments: {
+            'title':
+                'Login to ask more relevant questions or answer questions on PhD discussions.'
+          });
+        }
+      },
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, stack) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $error')),
+        );
       },
     );
   }

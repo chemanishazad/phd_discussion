@@ -88,12 +88,10 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       ...questions.map((questionData) => GestureDetector(
                             onTap: () {
-                              // print(questionData['category_id']);
                               Navigator.pushNamed(context, '/questionDetails',
                                   arguments: {
                                     'id': questionData['id'],
                                     'isHide': false,
-                                    // 'user': questionData['likes']
                                   });
                             },
                             child: Card(

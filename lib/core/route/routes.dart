@@ -11,6 +11,13 @@ import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
 import 'package:phd_discussion/screens/navBar/general/needHelp/help_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/my_answer_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/my_favourite_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/my_question_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/my_vote_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/profile_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/setting_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/summary_screen.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
 import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
 
@@ -30,5 +37,12 @@ class AppRoutes {
     '/tagDetails': (context) => const TagDetails(),
     '/categoryQuestion': (context) => const CategoryQuestion(),
     '/helpScreen': (context) => const HelpScreen(),
+    '/profileScreen': (context) => const ProfileScreen(),
+    '/settingScreen': (context) => const SettingScreen(),
+    '/myAnswerScreen': (context) => const MyAnswerScreen(),
+    '/myFavouriteScreen': (context) => const MyFavouriteScreen(),
+    '/myQuestionScreen': (context) => const MyQuestionScreen(),
+    '/myVoteScreen': (context) => const MyVoteScreen(),
+    '/summaryScreen': (context) => const SummaryScreen(),
   };
 }

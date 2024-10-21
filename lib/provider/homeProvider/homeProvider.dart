@@ -136,7 +136,35 @@ Future<Response> postAnswer(String id, String answer) async {
     final response = await ApiMaster().fire(
       path: '/postanswer',
       method: HttpMethod.$post,
-      body: jsonEncode({'question_id': id, 'answer': answer}),
+      body: {'question_id': id, 'answer': answer},
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}
+
+Future<Response> postComment(String id, String answerId, String answer) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/postcomment',
+      method: HttpMethod.$post,
+      body: {'question_id': id, 'answer_id': answerId, 'comment': answer},
       headers: {
         'Content-Type': 'application/json',
       },

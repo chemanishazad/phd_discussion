@@ -5,6 +5,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/core/const/palette.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
@@ -16,6 +17,12 @@ import 'widgets/related_question.dart';
 final postVoteProvider =
     FutureProvider.family<Response, Map<String, String>>((ref, params) async {
   return await postVote(params['id']!, params['vote']!);
+});
+
+final postCommentProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await postComment(
+      params['id']!, params['answerId']!, params['answer']!);
 });
 
 class QuestionDetails extends ConsumerStatefulWidget {
@@ -34,7 +41,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   bool isAnswer = false;
   bool isExit = false;
   int currentPage = 1;
-  String like = '';
+  List<dynamic> like = [];
   List<dynamic> relatedQuestions = [];
   List<dynamic> categoryQuestions = [];
 
@@ -44,15 +51,19 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map<String, dynamic>) {
       questionId = args['id'] ?? '';
-      // like = args['user'];
+
       isExit = args['isHide'] ?? false;
     }
-    print('like$like');
   }
 
   @override
   Widget build(BuildContext context) {
     final asyncValue = ref.watch(topQuestionProvider(questionId));
+    final authState = ref.watch(authProvider);
+    final user = authState.maybeWhen(
+      data: (user) => user,
+      orElse: () => null,
+    );
 
     return Scaffold(
       appBar: const CustomAppBar(title: ''),
@@ -64,6 +75,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
           data: (response) {
             final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
             final List<dynamic> questions = jsonResponse['data'];
+            setState(() {
+              like = questions[0]['likes'];
+            });
 
             if (questions.isEmpty) {
               return const Center(child: Text('No data found'));
@@ -139,10 +153,41 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       child: CustomButton(
                         onTap: () async {
                           String answerText = await bodyController.getText();
-                          await ref.refresh(postAnswerProvider({
-                            'id': question['id'],
-                            'answer': answerText,
-                          }));
+
+                          if (user?.name == null || user!.name.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: 'Please Login then post your answer');
+                          } else {
+                            try {
+                              final response =
+                                  await ref.read(postAnswerProvider({
+                                'id': question['id'],
+                                'answer': answerText,
+                              }).future);
+
+                              // Check if the response status code is 200
+                              if (response.statusCode == 200) {
+                                final Map<String, dynamic> jsonResponse =
+                                    jsonDecode(response.body);
+
+                                // Show success message
+                                Fluttertoast.showToast(
+                                    msg: jsonResponse['message']);
+                                bodyController.clear();
+                                setState(() {
+                                  isAnswer = false;
+                                });
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        'Failed to post answer. Status code: ${response.statusCode}');
+                              }
+                            } catch (e) {
+                              // Handle any exceptions
+                              Fluttertoast.showToast(
+                                  msg: 'Error: ${e.toString()}');
+                            }
+                          }
                         },
                         icon: const Icon(
                           Icons.post_add,
@@ -219,7 +264,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
         ),
         const SizedBox(height: 6),
         isExit
-            ? SizedBox()
+            ? const SizedBox()
             : CustomButton(
                 onTap: () async {
                   final response = await ref.read(categoryQuestionProvider({
@@ -231,13 +276,13 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                   setState(() {
                     categoryQuestions = relatedJson['data'];
                   });
-                  print(categoryQuestions);
+
                   if (categoryQuestions.isNotEmpty) {
                     await Navigator.pushNamed(context, '/homeCategoryScreen',
                         arguments: categoryQuestions);
-                    print("Navigated to Category Screen"); // Debug print
+                    print("Navigated to Category Screen");
                   } else {
-                    print("No questions found"); // Debug print
+                    print("No questions found");
                   }
                 },
                 child: Text(
@@ -283,42 +328,51 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
 
   Widget _buildInteractionSection(Map<String, dynamic> question) {
     final authState = ref.watch(authProvider);
+    final user = authState.maybeWhen(
+      data: (user) => user,
+      orElse: () => null,
+    );
+    final bool isLiked = user != null &&
+        question['likes'] != null &&
+        question['likes'].contains(user.userId);
+
+    print('user ${user?.userId}');
+    print(isLiked);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-          onPressed: () async {
-            final user = authState.maybeWhen(
-              data: (user) => user,
-              orElse: () => null,
-            );
-            print('Posting vote for question_id: ${question['id']} ');
+            onPressed: () async {
+              print('Posting vote for question_id: ${question['id']} ');
 
-            if (user != null) {
-              final response = await ref.read(postVoteProvider({
-                'id': question['id'],
-                'vote': '1',
-              }).future);
+              if (user != null) {
+                final response = await ref.read(postVoteProvider({
+                  'id': question['id'],
+                  'vote': isLiked ? '-1' : '1',
+                }).future);
 
-              final Map<String, dynamic> jsonResponse =
-                  jsonDecode(response.body);
-              if (response.statusCode == 200 &&
-                  jsonResponse['success'] != null) {
-                await ref.refresh(topQuestionProvider(questionId));
-                Fluttertoast.showToast(msg: jsonResponse['success']);
-              } else if (jsonResponse['error'] != null) {
-                await ref.refresh(topQuestionProvider(questionId));
-                Fluttertoast.showToast(msg: jsonResponse['error']);
+                final Map<String, dynamic> jsonResponse =
+                    jsonDecode(response.body);
+                if (response.statusCode == 200 &&
+                    jsonResponse['success'] != null) {
+                  await ref.refresh(topQuestionProvider(questionId));
+                  Fluttertoast.showToast(msg: jsonResponse['success']);
+                } else if (jsonResponse['error'] != null) {
+                  await ref.refresh(topQuestionProvider(questionId));
+                  Fluttertoast.showToast(msg: jsonResponse['error']);
+                } else {
+                  Fluttertoast.showToast(
+                      msg: 'Error voting: ${response.reasonPhrase}');
+                }
               } else {
                 Fluttertoast.showToast(
-                    msg: 'Error voting: ${response.reasonPhrase}');
+                    msg: 'You need to be logged in to vote.');
               }
-            } else {
-              Fluttertoast.showToast(msg: 'You need to be logged in to vote.');
-            }
-          },
-          icon: const Icon(Icons.thumb_up_alt_outlined),
-        ),
+            },
+            icon: Icon(
+              isLiked ? Icons.thumb_up_alt : Icons.thumb_up_alt_outlined,
+              color: isLiked ? Palette.themeColor : null,
+            )),
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
@@ -326,47 +380,20 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
-            question['votes'].toString(), // Ensure votes is a string
+            question['votes'].toString(),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        ),
-        IconButton(
-          onPressed: () async {
-            final user = authState.maybeWhen(
-              data: (user) => user,
-              orElse: () => null,
-            );
-
-            if (user != null) {
-              // User is authenticated, proceed with downvoting
-              final response = await ref.read(
-                postVoteProvider({'id': question['id'], 'vote': '-1'}).future,
-              );
-
-              final Map<String, dynamic> jsonResponse =
-                  jsonDecode(response.body);
-              if (response.statusCode == 200 &&
-                  jsonResponse['success'] != null) {
-                await ref.refresh(topQuestionProvider(questionId));
-                Fluttertoast.showToast(msg: jsonResponse['success']);
-              } else if (jsonResponse['error'] != null) {
-                await ref.refresh(topQuestionProvider(questionId));
-                Fluttertoast.showToast(msg: jsonResponse['error']);
-              } else {
-                Fluttertoast.showToast(
-                    msg: 'Error voting: ${response.reasonPhrase}');
-              }
-            } else {
-              Fluttertoast.showToast(msg: 'You need to be logged in to vote.');
-            }
-          },
-          icon: const Icon(Icons.thumb_down_alt_outlined),
         ),
       ],
     );
   }
 
   Widget _buildAnswersSection(List<dynamic> answers, String questionName) {
+    final authState = ref.watch(authProvider);
+    final user = authState.maybeWhen(
+      data: (user) => user,
+      orElse: () => null,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -406,13 +433,151 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       CommentsSection(comments: comments),
                       const SizedBox(height: 12),
                       CustomButton(
-                        onTap: () {},
+                        onTap: () {
+                          if (user != null) {
+                            TextEditingController commentController =
+                                TextEditingController();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  title: Text(
+                                    'Reply to $questionName',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  content: Container(
+                                    width: double.maxFinite,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 10.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextField(
+                                          controller: commentController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Type your reply here...',
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.grey),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                              borderSide: BorderSide(
+                                                  color: Palette.themeColor),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                    horizontal: 16),
+                                          ),
+                                          maxLines: 5,
+                                          keyboardType: TextInputType.multiline,
+                                          textInputAction:
+                                              TextInputAction.newline,
+                                          onSubmitted: (value) {
+                                            FocusScope.of(context).unfocus();
+                                          },
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                String commentText =
+                                                    commentController.text
+                                                        .trim();
+                                                if (commentText.isNotEmpty) {
+                                                  try {
+                                                    final response =
+                                                        await ref.read(
+                                                            postCommentProvider({
+                                                      'id': questionId,
+                                                      'answerId':
+                                                          answer['comments']
+                                                              [index]['id'],
+                                                      'answer': commentText,
+                                                    }).future);
+
+                                                    if (response.statusCode ==
+                                                        200) {
+                                                      final jsonResponse =
+                                                          jsonDecode(
+                                                              response.body);
+                                                      Fluttertoast.showToast(
+                                                          msg: jsonResponse[
+                                                              'message']);
+                                                      commentController.clear();
+                                                    } else {
+                                                      Fluttertoast.showToast(
+                                                          msg:
+                                                              'Failed to post comment.');
+                                                    }
+                                                  } catch (e) {
+                                                    Fluttertoast.showToast(
+                                                        msg:
+                                                            'Error posting comment: ${e.toString()}');
+                                                    print(
+                                                        'Error during posting comment: $e');
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          'Please enter a reply.');
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Palette.themeColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Send',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'You need to be logged in to Comment.');
+                          }
+                        },
                         icon: const Icon(Icons.reply, color: Colors.white),
                         child: Text(
                           'Reply to $questionName',
                           style: const TextStyle(color: Colors.white),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
