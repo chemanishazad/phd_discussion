@@ -144,6 +144,29 @@ Future<Map<String, dynamic>> postQuestionWithout(
   }
 }
 
+Future<Map<String, dynamic>> postQuestionWith(
+    SaveQuestionWLogin saveQuestion) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/savequestionwithlogin',
+      method: HttpMethod.$post,
+      auth: true,
+      body: saveQuestion,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print("Question saved successfully: $data");
+      return data;
+    } else {
+      throw Exception('Failed to save question: ${response.body}');
+    }
+  } catch (e) {
+    print("Error saving question: $e");
+    rethrow;
+  }
+}
+
 Future<Map<String, dynamic>> submitHelp(
     String issueType, String comments) async {
   final response = await ApiMaster().fire(

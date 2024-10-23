@@ -86,6 +86,42 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     }
   }
 
+  Future<String> signUp(
+    String name,
+    String email,
+    String password,
+    String confirmPassword,
+    String mobile,
+    String designation,
+    List<String> areaOfInterest,
+  ) async {
+    final response = await ApiMaster().fire(
+      path: '/auth/signup',
+      method: HttpMethod.$post,
+      auth: false,
+      body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'confirm_password': confirmPassword,
+        'mobile': mobile,
+        'designation': designation,
+        'area_of_interest': areaOfInterest,
+      },
+      contentType: ContentType.json,
+    );
+
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body);
+      print('data$data');
+      return data['message'];
+    } else {
+      final data = json.decode(response.body);
+      print('data$data');
+      return data['message'] ?? 'Login failed. Please try again.';
+    }
+  }
+
   Future<void> logout() async {
     final response = await ApiMaster().fire(
       path: '/logout',

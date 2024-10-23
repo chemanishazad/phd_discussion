@@ -27,7 +27,6 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Load the access token here to ensure it's available on app start
   await ApiMaster.loadToken();
 
   final deviceToken = await NotificationServices.getDeviceToken();

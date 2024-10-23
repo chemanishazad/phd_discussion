@@ -18,6 +18,14 @@ final postVoteProvider =
     FutureProvider.family<Response, Map<String, String>>((ref, params) async {
   return await postVote(params['id']!, params['vote']!);
 });
+final postAddVoteProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await postAddFav(params['id']!);
+});
+final postRemoveVoteProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await postRemoveFav(params['id']!);
+});
 
 final postCommentProvider =
     FutureProvider.family<Response, Map<String, String>>((ref, params) async {
@@ -335,6 +343,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     final bool isLiked = user != null &&
         question['likes'] != null &&
         question['likes'].contains(user.userId);
+    final bool isFav = user != null &&
+        question['favourites'] != null &&
+        question['favourites'].contains(user.userId);
 
     print('user ${user?.userId}');
     print(isLiked);
@@ -384,6 +395,55 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
+        IconButton(
+            onPressed: () async {
+              print('Posting vote for question_id: ${question['id']} ');
+
+              if (user != null) {
+                if (!isFav) {
+                  final response = await ref.read(postAddVoteProvider({
+                    'id': question['id'],
+                  }).future);
+
+                  final Map<String, dynamic> jsonResponse =
+                      jsonDecode(response.body);
+                  if (response.statusCode == 200 &&
+                      jsonResponse['success'] != null) {
+                    await ref.refresh(topQuestionProvider(questionId));
+                    Fluttertoast.showToast(msg: jsonResponse['success']);
+                  } else if (jsonResponse['error'] != null) {
+                    await ref.refresh(topQuestionProvider(questionId));
+                    Fluttertoast.showToast(msg: jsonResponse['error']);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Error voting: ${response.reasonPhrase}');
+                  }
+                } else {
+                  final response = await ref.read(postRemoveVoteProvider({
+                    'id': question['id'],
+                  }).future);
+
+                  final Map<String, dynamic> jsonResponse =
+                      jsonDecode(response.body);
+                  if (response.statusCode == 200 &&
+                      jsonResponse['success'] != null) {
+                    await ref.refresh(topQuestionProvider(questionId));
+                    Fluttertoast.showToast(msg: jsonResponse['success']);
+                  } else if (jsonResponse['error'] != null) {
+                    await ref.refresh(topQuestionProvider(questionId));
+                    Fluttertoast.showToast(msg: jsonResponse['error']);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Error voting: ${response.reasonPhrase}');
+                  }
+                }
+              } else {
+                Fluttertoast.showToast(
+                    msg: 'You need to be logged in to vote.');
+              }
+            },
+            icon: Icon(isFav ? Icons.star : Icons.star_border,
+                color: isFav ? Colors.amber[600] : null))
       ],
     );
   }

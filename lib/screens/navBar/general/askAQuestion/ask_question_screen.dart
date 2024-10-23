@@ -10,6 +10,7 @@ import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AskQuestionScreen extends ConsumerStatefulWidget {
   const AskQuestionScreen({super.key});
@@ -29,8 +30,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   String? newTagDesc;
 
   final FormGroup form = FormGroup({
-    'email': FormControl<String>(
-        validators: [Validators.required, Validators.email]),
+    'email': FormControl<String>(validators: [Validators.email]),
     'title': FormControl<String>(validators: [Validators.required]),
     'summary': FormControl<String>(validators: [Validators.required]),
     'body': FormControl<String>(
@@ -53,6 +53,25 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     ToolBarStyle.addTable,
     ToolBarStyle.editTable,
   ];
+  String? token;
+  @override
+  void initState() {
+    super.initState();
+    retrieveToken();
+  }
+
+  Future<String?> retrieveToken() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? savedToken = prefs.getString('token');
+
+    setState(() {
+      token = savedToken;
+    });
+    print('token$token');
+
+    return savedToken;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,16 +95,17 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _title('EMAIL'),
-                  CustomReactiveTextField(
-                    formControlName: 'email',
-                    hintText: 'Enter Your Email',
-                    prefixIcon: Icons.email_outlined,
-                    validationMessages: {
-                      'required': (control) => 'The email is required',
-                      'email': (control) => 'Please enter a valid email',
-                    },
-                  ),
+                  if (token!.isEmpty) _title('EMAIL'),
+                  if (token!.isEmpty)
+                    CustomReactiveTextField(
+                      formControlName: 'email',
+                      hintText: 'Enter Your Email',
+                      prefixIcon: Icons.email_outlined,
+                      validationMessages: {
+                        'required': (control) => 'The email is required',
+                        'email': (control) => 'Please enter a valid email',
+                      },
+                    ),
                   SizedBox(height: 2.h),
                   _title('TITLE'),
                   _subTitle(
@@ -228,52 +248,104 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                         },
                         child: const Text('Add new Tag')),
                   ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: CustomButton(
-                      onTap: () async {
-                        String? bodyContent = await bodyController.getText();
-                        SaveQuestionWLogin question = SaveQuestionWLogin(
-                          email: form.control('email').value,
-                          title: form.control('title').value,
-                          subTitle: form.control('summary').value,
-                          body: bodyContent,
-                          category: form.control('category').value,
-                          tags: form.control('tags').value,
-                          createNewTag: (newTagTitle?.isNotEmpty ?? false),
-                          newTagName: newTagTitle ?? '',
-                          newTagDescription: newTagDesc ?? '',
-                          createNewCategory:
-                              (newCateTitle?.isNotEmpty ?? false),
-                          newCategoryName: newCateTitle ?? '',
-                          newCategoryDescription: newCateDesc ?? '',
-                        );
-
-                        _printQuestionData(question);
-                        try {
-                          final responseData =
-                              await postQuestionWithout(question);
-                          final String message = responseData['message'];
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(message)),
+                  if (token!.isEmpty)
+                    Align(
+                      alignment: Alignment.center,
+                      child: CustomButton(
+                        onTap: () async {
+                          String? bodyContent = await bodyController.getText();
+                          form.markAllAsTouched();
+                          SaveQuestionWLogin question = SaveQuestionWLogin(
+                            email: form.control('email').value,
+                            title: form.control('title').value,
+                            subTitle: form.control('summary').value,
+                            body: bodyContent,
+                            category: form.control('category').value,
+                            tags: form.control('tags').value,
+                            createNewTag: (newTagTitle?.isNotEmpty ?? false),
+                            newTagName: newTagTitle ?? '',
+                            newTagDescription: newTagDesc ?? '',
+                            createNewCategory:
+                                (newCateTitle?.isNotEmpty ?? false),
+                            newCategoryName: newCateTitle ?? '',
+                            newCategoryDescription: newCateDesc ?? '',
                           );
 
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          _printQuestionData(question);
+                          try {
+                            final responseData =
+                                await postQuestionWithout(question);
+                            final String message = responseData['message'];
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(message)),
+                            );
 
-                          print("Question saved successfully");
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text(
-                                  "Error saving question. Please try again.")));
-                          print("Error saving question: $e");
-                        }
-                      },
-                      child: const Text(
-                        'Save Question',
-                        style: TextStyle(color: Colors.white),
+                            Navigator.of(context).pushReplacementNamed('/home');
+
+                            print("Question saved successfully");
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "Error saving question. Please try again.")));
+                            print("Error saving question: $e");
+                          }
+                        },
+                        child: const Text(
+                          'Save Question',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
+                  if (token!.isNotEmpty)
+                    Align(
+                      alignment: Alignment.center,
+                      child: CustomButton(
+                        onTap: () async {
+                          String? bodyContent = await bodyController.getText();
+                          form.markAllAsTouched();
+                          SaveQuestionWLogin questionWithLogin =
+                              SaveQuestionWLogin(
+                            title: form.control('title').value,
+                            subTitle: form.control('summary').value,
+                            body: bodyContent,
+                            category: form.control('category').value,
+                            tags: form.control('tags').value,
+                            createNewTag: (newTagTitle?.isNotEmpty ?? false),
+                            newTagName: newTagTitle ?? '',
+                            newTagDescription: newTagDesc ?? '',
+                            createNewCategory:
+                                (newCateTitle?.isNotEmpty ?? false),
+                            newCategoryName: newCateTitle ?? '',
+                            newCategoryDescription: newCateDesc ?? '',
+                          );
+
+                          _printQuestionData(questionWithLogin);
+                          try {
+                            final responseData =
+                                await postQuestionWith(questionWithLogin);
+                            final String message = responseData['message'];
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(message)),
+                            );
+
+                            Navigator.of(context).pushReplacementNamed('/home');
+
+                            print("Question saved successfully");
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "Error saving question. Please try again.")));
+                            print("Error saving question: $e");
+                          }
+                        },
+                        child: const Text(
+                          'Save Question',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

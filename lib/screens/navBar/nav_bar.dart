@@ -58,25 +58,27 @@ class CustomMenu extends ConsumerWidget {
                           '/phdAdmission'),
                     ],
                   ),
-                  _buildExpansionTile(
-                    title: 'Profile / Activity',
-                    children: [
-                      _buildMenuItem(Icons.account_circle_sharp, 'Profile',
-                          context, '/profileScreen'),
-                      _buildMenuItem(
-                          Icons.article, 'Summary', context, '/summaryScreen'),
-                      _buildMenuItem(Icons.question_answer, 'My Question(s)',
-                          context, '/myQuestionScreen'),
-                      _buildMenuItem(Icons.question_answer_outlined,
-                          'My Answer(s)', context, '/myAnswerScreen'),
-                      _buildMenuItem(Icons.thumb_up, 'My Vote(s)', context,
-                          '/myVoteScreen'),
-                      _buildMenuItem(Icons.favorite, 'My Favourite(s)', context,
-                          '/myFavouriteScreen'),
-                      _buildMenuItem(Icons.settings, 'Settings', context,
-                          '/settingScreen'),
-                    ],
-                  ),
+                  if (authState.value != null) ...[
+                    _buildExpansionTile(
+                      title: 'Profile / Activity',
+                      children: [
+                        _buildMenuItem(Icons.account_circle_sharp, 'Profile',
+                            context, '/profileScreen'),
+                        _buildMenuItem(Icons.article, 'Summary', context,
+                            '/summaryScreen'),
+                        _buildMenuItem(Icons.question_answer, 'My Question(s)',
+                            context, '/myQuestionScreen'),
+                        _buildMenuItem(Icons.question_answer_outlined,
+                            'My Answer(s)', context, '/myAnswerScreen'),
+                        _buildMenuItem(Icons.thumb_up, 'My Vote(s)', context,
+                            '/myVoteScreen'),
+                        _buildMenuItem(Icons.favorite, 'My Favourite(s)',
+                            context, '/myFavouriteScreen'),
+                        _buildMenuItem(Icons.settings, 'Settings', context,
+                            '/settingScreen'),
+                      ],
+                    ),
+                  ],
                   _buildExpansionTile(
                     title: 'Various Subjects',
                     children: [
@@ -102,7 +104,7 @@ class CustomMenu extends ConsumerWidget {
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Powered by Your App',
+                'Powered by ELK ❤',
                 style: TextStyle(color: Colors.black54),
               ),
             ),

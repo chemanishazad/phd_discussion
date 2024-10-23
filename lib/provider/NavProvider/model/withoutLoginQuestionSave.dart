@@ -1,5 +1,5 @@
 class SaveQuestionWLogin {
-  final String email;
+  final String? email;
   final String title;
   final String? subTitle;
   final String? body;
@@ -13,7 +13,7 @@ class SaveQuestionWLogin {
   final String? newCategoryDescription;
 
   SaveQuestionWLogin({
-    required this.email,
+    this.email,
     required this.title,
     this.subTitle,
     this.body,

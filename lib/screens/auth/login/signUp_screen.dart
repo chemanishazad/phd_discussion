@@ -1,20 +1,35 @@
+import 'dart:convert'; // Add this for json.decode
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/components/reactive_dropdown.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
-import 'package:provider/provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class SignUpScreen extends StatefulWidget {
+// Your tagProvider to fetch the tags
+final tagProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final response = await getTag();
+  if (response['status'] == true) {
+    return List<Map<String, dynamic>>.from(response['tags']);
+  } else {
+    throw Exception('Failed to fetch tags');
+  }
+});
+
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SigUupScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SignUpScreenState();
 }
 
-class _SigUupScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
+  final Map<String, String> _selectedTags =
+      {}; // To store selected tag ids and brands
   final FormGroup form = FormGroup({
     'name': FormControl<String>(validators: [Validators.required]),
     'email': FormControl<String>(
@@ -29,9 +44,10 @@ class _SigUupScreenState extends State<SignUpScreen> {
 
   bool isLoading = false;
   bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
-    // final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authNotifier = ref.read(authProvider.notifier);
 
     return SafeArea(
       child: Scaffold(
@@ -41,157 +57,9 @@ class _SigUupScreenState extends State<SignUpScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipPath(
-                      child: Container(
-                        height: 20.h,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Color.fromARGB(255, 181, 232, 255),
-                              Color.fromARGB(255, 30, 178, 247),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(140),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 12.0,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 6.h,
-                      child: Image.asset(
-                        'assets/icons/logo2.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
+                _buildHeader(),
                 SizedBox(height: 7.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveTextField(
-                        formControlName: 'name',
-                        hintText: 'Name *',
-                        prefixIcon: Icons.person_2_outlined,
-                        validationMessages: {
-                          'required': (control) => 'The name is required',
-                          'name': (control) => 'Please enter a valid name',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveTextField(
-                        formControlName: 'email',
-                        hintText: 'Email *',
-                        prefixIcon: Icons.email_outlined,
-                        validationMessages: {
-                          'required': (control) => 'The email is required',
-                          'email': (control) => 'Please enter a valid email',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveTextField(
-                        formControlName: 'password',
-                        hintText: 'Password *',
-                        prefixIcon: Icons.lock_outline_rounded,
-                        obscureText: _obscurePassword,
-                        onSuffixIconPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        validationMessages: {
-                          'required': (control) => 'The password is required',
-                          'minLength': (control) =>
-                              'Password must be at least 8 characters',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveTextField(
-                        formControlName: 'confirmPassword',
-                        hintText: 'Confirm Password *',
-                        prefixIcon: Icons.lock_outline_rounded,
-                        obscureText: _obscurePassword,
-                        onSuffixIconPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        validationMessages: {
-                          'required': (control) => 'The password is required',
-                          'minLength': (control) =>
-                              'Password must be at least 8 characters',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveTextField(
-                        formControlName: 'mobile',
-                        hintText: 'Mobile',
-                        prefixIcon: Icons.mobile_friendly,
-                        validationMessages: {
-                          'required': (control) => 'The mobile is required',
-                          'mobile': (control) => 'Please enter a valid mobile',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      CustomReactiveDropdown<String>(
-                        formControlName: 'role',
-                        hintText: 'Select Designation',
-                        prefixIcon: Icons.design_services_outlined,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'I am pursing PhD',
-                            child: Text('I am pursing PhD'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'I have completed PhD',
-                            child: Text('I have completed PhD'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'I am PhD Consultant',
-                            child: Text('I am PhD Consultant'),
-                          ),
-                        ],
-                        validationMessages: {
-                          'required': (control) => 'Please select a role',
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            form.markAllAsTouched();
-                          },
-                          child: const Text('Sign Up'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildForm(authNotifier),
                 SizedBox(height: 1.h),
                 TextButton(
                   onPressed: () {
@@ -205,5 +73,291 @@ class _SigUupScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildHeader() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ClipPath(
+          child: Container(
+            height: 20.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Colors.white,
+                  Color.fromARGB(255, 255, 128, 128),
+                  Color.fromARGB(255, 247, 30, 30),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.only(
+                bottomRight: Radius.circular(140),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 12.0,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 6.h,
+          child: Image.asset(
+            'assets/icons/logo2.png',
+            fit: BoxFit.cover,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForm(authNotifier) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 5.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveTextField(
+            formControlName: 'name',
+            hintText: 'Name *',
+            prefixIcon: Icons.person_2_outlined,
+            validationMessages: {
+              'required': (control) => 'The name is required',
+            },
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveTextField(
+            formControlName: 'email',
+            hintText: 'Email *',
+            prefixIcon: Icons.email_outlined,
+            validationMessages: {
+              'required': (control) => 'The email is required',
+              'email': (control) => 'Please enter a valid email',
+            },
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveTextField(
+            formControlName: 'password',
+            hintText: 'Password *',
+            prefixIcon: Icons.lock_outline_rounded,
+            obscureText: _obscurePassword,
+            onSuffixIconPressed: () {
+              setState(() {
+                _obscurePassword = !_obscurePassword;
+              });
+            },
+            validationMessages: {
+              'required': (control) => 'The password is required',
+              'minLength': (control) =>
+                  'Password must be at least 8 characters',
+            },
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveTextField(
+            formControlName: 'confirmPassword',
+            hintText: 'Confirm Password *',
+            prefixIcon: Icons.lock_outline_rounded,
+            obscureText: _obscurePassword,
+            onSuffixIconPressed: () {
+              setState(() {
+                _obscurePassword = !_obscurePassword;
+              });
+            },
+            validationMessages: {
+              'required': (control) => 'The confirm password is required',
+              'minLength': (control) =>
+                  'Confirm password must be at least 8 characters',
+            },
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveTextField(
+            formControlName: 'mobile',
+            hintText: 'Mobile',
+            prefixIcon: Icons.mobile_friendly,
+            validationMessages: {
+              'mobile': (control) => 'Please enter a valid mobile number',
+            },
+          ),
+          SizedBox(height: 2.h),
+          CustomReactiveDropdown<String>(
+            formControlName: 'role',
+            hintText: 'Select Designation',
+            prefixIcon: Icons.design_services_outlined,
+            items: const [
+              DropdownMenuItem(
+                value: '1',
+                child: Text('I am pursuing PhD'),
+              ),
+              DropdownMenuItem(
+                value: '2',
+                child: Text('I have completed PhD'),
+              ),
+              DropdownMenuItem(
+                value: '3',
+                child: Text('I am PhD Consultant'),
+              ),
+            ],
+            validationMessages: {
+              'required': (control) => 'Please select a role',
+            },
+          ),
+          SizedBox(height: 2.h),
+          _buildTagDropdown(),
+          SizedBox(height: 2.h),
+          Center(
+            child: CustomButton(
+              onTap: () async {
+                form.markAllAsTouched();
+                final selectedTagIds = _selectedTags.keys.toList();
+                final formValue = form.value;
+                print("Form Value: $formValue");
+                print("Selected Tag IDs: $selectedTagIds");
+
+                if (form.valid) {
+                  try {
+                    setState(() => isLoading = true);
+
+                    // Call signUp with form data and selected tag IDs
+                    final message = await authNotifier.signUp(
+                      form.control('name').value,
+                      form.control('email').value,
+                      form.control('password').value,
+                      form.control('confirmPassword').value,
+                      form.control('mobile').value ?? '',
+                      form.control('role').value,
+                      selectedTagIds,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+
+                    if (message.toLowerCase() == 'signup successful.') {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('An error occurred: $e')),
+                    );
+                  } finally {
+                    setState(() => isLoading = false);
+                  }
+                }
+              },
+              child: const Text(
+                'Sign Up',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTagDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => _showTagSelectionDialog(),
+          child: InputDecorator(
+            decoration: const InputDecoration(
+              labelText: 'Select Tags',
+              prefixIcon: Icon(Icons.label),
+              border: OutlineInputBorder(),
+            ),
+            child: Wrap(
+              spacing: 8.0,
+              children: _selectedTags.isEmpty
+                  ? [const Text('Select Tags')]
+                  : _selectedTags.entries.map((entry) {
+                      return Chip(
+                        label: Text(entry.value),
+                        onDeleted: () {
+                          setState(() {
+                            _selectedTags.remove(entry.key);
+                          });
+                        },
+                      );
+                    }).toList(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  void _showTagSelectionDialog() async {
+    final tagsAsyncValue = await ref.read(tagProvider.future);
+
+    if (tagsAsyncValue.isEmpty) {
+      return;
+    }
+
+    final Map<String, bool> tagSelectionState = {};
+    for (var tag in tagsAsyncValue) {
+      tagSelectionState[tag['id']] = _selectedTags.containsKey(tag['id']);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Select Tags'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: tagsAsyncValue.map((tag) {
+                    return CheckboxListTile(
+                      title: Text(
+                          tag['brand'].isEmpty ? 'Select Tags' : tag['brand']),
+                      value: tagSelectionState[tag['id']],
+                      onChanged: (isChecked) {
+                        setState(() {
+                          tagSelectionState[tag['id']] = isChecked ?? false;
+                          if (isChecked == true) {
+                            _selectedTags[tag['id']] =
+                                tag['brand']; // Store the id and brand
+                          } else {
+                            _selectedTags.remove(tag['id']);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Done'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((_) {
+      setState(() {});
+    });
   }
 }
