@@ -121,7 +121,7 @@ class ApiMaster {
           print('Response Status Code: ${response.statusCode}');
         }
 
-        if (response.statusCode == 401) {
+        if (response.statusCode == 401 || response.statusCode == 404) {
           // Trigger logout and notify app
           _handleUnauthorized();
           throw Exception("Unauthorized access. Please log in again.");

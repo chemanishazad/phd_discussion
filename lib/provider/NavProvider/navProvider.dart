@@ -4,12 +4,12 @@ import 'package:phd_discussion/core/utils/service.dart';
 
 import 'dropdownClass.dart';
 import 'model/withoutLoginQuestionSave.dart';
+final tagProvider = FutureProvider<List<Tag>>((ref) async {
+  return getTag();
+});
 
 final tagDropdownProvider = FutureProvider<List<Tag>>((ref) async {
   return getTagDropdown();
-});
-final tagProvider = FutureProvider<List<Tag>>((ref) async {
-  return getTag();
 });
 
 final categoriesDropdownProvider = FutureProvider<List<Category>>((ref) async {

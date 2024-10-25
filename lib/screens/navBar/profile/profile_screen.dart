@@ -1,18 +1,42 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/core/components/dropdown2.dart';
+import 'package:phd_discussion/provider/NavProvider/dropdownClass.dart';
+import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
 });
-final tagProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final response = await getTag();
-  if (response['status'] == true) {
-    return List<Map<String, dynamic>>.from(response['tags']);
-  } else {
-    throw Exception('Failed to fetch tags');
-  }
+
+final tagDropdownProvider = FutureProvider<List<Tag>>((ref) async {
+  return getTagDropdown();
+});
+
+final categoriesDropdownProvider = FutureProvider<List<Category>>((ref) async {
+  return getCategoriesDropdown();
+});
+
+final updateProfileProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await updateProfile(
+    params['name']!,
+    params['mobile']!,
+    params['about']!,
+    params['researchDetail']!,
+  );
+});
+final updateTagProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  List<int> tagBytes = utf8.encode(params['tag']!);
+  return await updateTag(tagBytes);
 });
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -24,14 +48,24 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isEditing = false;
+  bool isTagSave = false;
+  bool isCateSave = false;
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController mobileController;
   late TextEditingController researchDetailsController;
   late TextEditingController descriptionController;
-
-  List<Map<String, dynamic>> _selectedTags = []; // Store selected tags
-
+  String? selectedTags;
+  String? newTagTitle;
+  String? newTagDesc;
+  String? selectedCate;
+  String? newCateTitle;
+  String? newCateDesc;
+// Store selected tags
+  final FormGroup form = FormGroup({
+    'category': FormControl<List<String>>(validators: [Validators.required]),
+    'tags': FormControl<List<String>>(validators: [Validators.required]),
+  });
   @override
   void initState() {
     super.initState();
@@ -42,10 +76,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     descriptionController = TextEditingController();
   }
 
+  void _updateProfile() async {
+    print(nameController.text);
+    print(emailController.text);
+    print(mobileController.text);
+    print(descriptionController.text);
+    print(researchDetailsController.text);
+    final response = await ref.read(updateProfileProvider({
+      'name': nameController.text,
+      'mobile': mobileController.text,
+      'about': descriptionController.text,
+      'researchDetail': researchDetailsController.text,
+    }).future);
+    final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      ref.refresh(profileProvider);
+      Fluttertoast.showToast(msg: jsonResponse['message']);
+
+      Navigator.pop(context);
+    } else {
+      Fluttertoast.showToast(msg: 'Error voting: ${response.reasonPhrase}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
-    final tagAsyncValue = ref.watch(tagProvider);
+    ref.watch(tagProvider);
+    final asyncTags = ref.watch(tagDropdownProvider);
+    final asyncCateg = ref.watch(categoriesDropdownProvider);
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Profile'),
@@ -58,8 +117,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               emailController.text = userData['email'];
               mobileController.text = userData['mobile'];
               descriptionController.text = userData['description'];
-              _selectedTags = List<Map<String, dynamic>>.from(
-                  userData['tags']); // Load initial selected tags
+              researchDetailsController.text = userData['research_detail'];
+
+              // Safely extract tag IDs
+              final List<dynamic> tags = userData['tags'];
+              final List<dynamic> categories = userData['categories'];
+
+              final List<String> defaultTagIds =
+                  tags.map<String>((tag) => tag['id'].toString()).toList();
+              final List<String> defaultCategoryIds = categories
+                  .map<String>((category) => category['id'].toString())
+                  .toList();
+
+              // Assign values to the form controls
+              form.control('tags').value = defaultTagIds;
+              form.control('category').value = defaultCategoryIds;
+
+              // Print to verify
+              print("Default Tag IDs: $defaultTagIds");
+              print("Default Category IDs: $defaultCategoryIds");
             }
 
             return Padding(
@@ -77,11 +153,142 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 20),
                       _buildPersonalInformationSection(),
                       const SizedBox(height: 20),
-                      _buildInterestsSection(),
+                      const Text(
+                        'Interest ',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey),
+                      ),
+                      asyncTags.when(
+                        data: (tags) {
+                          final selectedTagsList = tags
+                              .where((tag) =>
+                                  form.control('tags').value.contains(tag.id))
+                              .map((tag) => tag.brand)
+                              .toList();
+
+                          return CustomDropDown2(
+                            items: tags.map((tag) => tag.brand).toList(),
+                            icon: Icons.tag_rounded,
+                            title: 'Tag',
+                            maxSelections: 5,
+                            initialValues: selectedTagsList,
+                            onSelectionChanged: (selectedBrands) {
+                              final selectedTagIds = tags
+                                  .where((tag) =>
+                                      selectedBrands.contains(tag.brand))
+                                  .map((tag) => tag.id)
+                                  .toList();
+
+                              if (selectedTagIds.length <= 5) {
+                                setState(() {
+                                  selectedTags = selectedBrands.join(", ");
+                                  form.control('tags').value = selectedTagIds;
+                                  isTagSave = true;
+                                  print("Selected Tag IDs: $selectedTagIds");
+                                });
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "You can select up to 5 tags only")),
+                                );
+                              }
+                            },
+                          );
+                        },
+                        loading: () => const CircularProgressIndicator(),
+                        error: (error, stack) => Text('Error: $error'),
+                      ),
+                      const SizedBox(height: 6),
+                      if (isTagSave)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: CustomButton(
+                              onTap: () async {
+                                final response =
+                                    await ref.read(updateTagProvider({
+                                  'tags': form.control('tags').value,
+                                }).future);
+                                final Map<String, dynamic> jsonResponse =
+                                    jsonDecode(response.body);
+                                print({'$jsonResponse.body'});
+                                if (response.statusCode == 200) {
+                                  ref.refresh(profileProvider);
+
+                                  // Fluttertoast.showToast(
+                                  //     msg: jsonResponse['message']);
+
+                                  Navigator.pop(context);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          'Error voting: ${response.reasonPhrase}');
+                                }
+                              },
+                              child: const Text(
+                                'Save Tags',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ),
+                      const Text(
+                        'Categories',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey),
+                      ),
+                      asyncCateg.when(
+                        data: (categories) {
+                          final selectedCategoriesList = categories
+                              .where((category) => form
+                                  .control('category')
+                                  .value
+                                  .contains(category.id))
+                              .map((category) => category.category)
+                              .toList();
+
+                          return CustomDropDown2(
+                            items: categories
+                                .map((category) => category.category)
+                                .toList(),
+                            icon: Icons.badge,
+                            title: 'Category',
+                            initialValues: selectedCategoriesList,
+                            onSelectionChanged: (selectedCategories) {
+                              final selectedCategoryIds = categories
+                                  .where((category) => selectedCategories
+                                      .contains(category.category))
+                                  .map((category) => category.id)
+                                  .toList();
+
+                              setState(() {
+                                form.control('category').value =
+                                    selectedCategoryIds;
+                                isCateSave = true;
+                                print(
+                                    "Selected Category IDs: $selectedCategoryIds");
+                              });
+                            },
+                          );
+                        },
+                        loading: () => const CircularProgressIndicator(),
+                        error: (error, stack) => Text('Error: $error'),
+                      ),
+                      const SizedBox(height: 6),
+                      if (isCateSave)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: CustomButton(
+                              onTap: () {},
+                              child: const Text(
+                                'Save Categories',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ),
                       const SizedBox(height: 20),
-                      _buildCategoriesSection(userData['categories']),
-                      const SizedBox(height: 20),
-                      _buildActionButtons(),
+                      // _buildActionButtons(),
                     ],
                   ),
                 ),
@@ -133,8 +340,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget _buildPersonalInformationSection() {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -144,8 +351,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Personal Information',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueGrey)),
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -153,21 +362,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     });
                   },
                   icon: Icon(_isEditing ? Icons.close : Icons.edit),
+                  color: Colors.blue,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             _buildProfileField('Name', nameController),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _buildProfileField('Email', emailController),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _buildProfileField('Mobile', mobileController),
-            !_isEditing
-                ? const SizedBox()
-                : _buildProfileField(
-                    'Research Detail', researchDetailsController),
-            const SizedBox(height: 10),
-            _buildProfileField('About Me', descriptionController, maxLines: 3),
+            if (_isEditing) ...[
+              const SizedBox(height: 8),
+              _buildProfileField('Research Detail', researchDetailsController),
+              const SizedBox(height: 8),
+              _buildProfileField('About Me', descriptionController,
+                  maxLines: 3),
+              const SizedBox(height: 8),
+              _isEditing
+                  ? Align(
+                      alignment: Alignment.centerRight,
+                      child: CustomButton(
+                        onTap: _updateProfile,
+                        child: const Text(
+                          'Save User Data',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    )
+                  : const SizedBox()
+            ],
           ],
         ),
       ),
@@ -180,7 +404,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.blueGrey)),
         const SizedBox(height: 8),
         _isEditing
             ? TextFormField(
@@ -188,145 +415,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 maxLines: maxLines,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(10)),
                   filled: true,
                   fillColor: Colors.grey[200],
                   hintText: 'Enter your $label',
                   hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.edit, color: Colors.blueGrey),
                 ),
               )
             : Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   color: Colors.grey[100],
                 ),
                 child: Text(controller.text,
                     style:
                         const TextStyle(color: Colors.black54, fontSize: 16)),
               ),
-      ],
-    );
-  }
-
-  Widget _buildInterestsSection() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Interests:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8.0,
-              children: _selectedTags
-                  .map((tag) => Chip(
-                        label: Text(tag['brand']),
-                        backgroundColor: Colors.blue[100],
-                      ))
-                  .toList(),
-            ),
-            if (_isEditing)
-              ElevatedButton(
-                onPressed: () => _showTagSelectionDialog(),
-                child: const Text('Select Tags'),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showTagSelectionDialog() async {
-    final tags = await ref.read(tagProvider.future); // Get all tags
-    List<Map<String, dynamic>> availableTags =
-        List<Map<String, dynamic>>.from(tags);
-    List<Map<String, dynamic>> selectedTagsCopy = List.from(_selectedTags);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Select Interests'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView(
-              children: availableTags.map((tag) {
-                return CheckboxListTile(
-                  title: Text(tag['brand']),
-                  value: selectedTagsCopy.contains(tag),
-                  onChanged: (isSelected) {
-                    setState(() {
-                      if (isSelected == true) {
-                        selectedTagsCopy.add(tag);
-                      } else {
-                        selectedTagsCopy.remove(tag);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _selectedTags = selectedTagsCopy; // Update selected tags
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildCategoriesSection(List<dynamic> categories) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Categories:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8.0,
-              children: categories
-                  .map((category) => Chip(
-                        label: Text(category['category']),
-                        backgroundColor: Colors.green[100],
-                      ))
-                  .toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (_isEditing)
-          ElevatedButton(
-            onPressed: () {
-              // Handle save logic
-            },
-            child: const Text('Save'),
-          ),
       ],
     );
   }
