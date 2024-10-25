@@ -34,9 +34,12 @@ final updateProfileProvider =
   );
 });
 final updateTagProvider =
-    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
-  List<int> tagBytes = utf8.encode(params['tag']!);
-  return await updateTag(tagBytes);
+    FutureProvider.family<Response, List<int>>((ref, tagIds) async {
+  return await updateTag(tagIds);
+});
+final updateCateProvider =
+    FutureProvider.family<Response, List<int>>((ref, cateIds) async {
+  return await updateCategories(cateIds);
 });
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -61,6 +64,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String? selectedCate;
   String? newCateTitle;
   String? newCateDesc;
+  List<int> selectTag = [];
+  List<int> selectCate = [];
 // Store selected tags
   final FormGroup form = FormGroup({
     'category': FormControl<List<String>>(validators: [Validators.required]),
@@ -186,7 +191,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   selectedTags = selectedBrands.join(", ");
                                   form.control('tags').value = selectedTagIds;
                                   isTagSave = true;
-                                  print("Selected Tag IDs: $selectedTagIds");
+                                  selectTag = selectedTagIds
+                                      .map((id) => int.parse(id))
+                                      .toList();
+
+                                  print("Selected Tag IDs: $selectTag");
                                 });
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -207,20 +216,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           alignment: Alignment.centerRight,
                           child: CustomButton(
                               onTap: () async {
-                                final response =
-                                    await ref.read(updateTagProvider({
-                                  'tags': form.control('tags').value,
-                                }).future);
+                                final response = await ref
+                                    .read(updateTagProvider(selectTag).future);
+
                                 final Map<String, dynamic> jsonResponse =
                                     jsonDecode(response.body);
                                 print({'$jsonResponse.body'});
                                 if (response.statusCode == 200) {
+                                  setState(() {
+                                    isTagSave = false;
+                                  });
                                   ref.refresh(profileProvider);
 
-                                  // Fluttertoast.showToast(
-                                  //     msg: jsonResponse['message']);
-
-                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: jsonResponse['message']);
                                 } else {
                                   Fluttertoast.showToast(
                                       msg:
@@ -267,6 +276,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 form.control('category').value =
                                     selectedCategoryIds;
                                 isCateSave = true;
+                                selectCate = selectedCategoryIds
+                                    .map((id) => int.parse(id))
+                                    .toList();
                                 print(
                                     "Selected Category IDs: $selectedCategoryIds");
                               });
@@ -281,7 +293,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: CustomButton(
-                              onTap: () {},
+                              onTap: () async {
+                                final response = await ref.read(
+                                    updateCateProvider(selectCate).future);
+
+                                final Map<String, dynamic> jsonResponse =
+                                    jsonDecode(response.body);
+                                print({'$jsonResponse.body'});
+                                if (response.statusCode == 200) {
+                                  setState(() {
+                                    isCateSave = false;
+                                  });
+                                  ref.refresh(profileProvider);
+
+                                  Fluttertoast.showToast(
+                                      msg: jsonResponse['message']);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          'Error voting: ${response.reasonPhrase}');
+                                }
+                              },
                               child: const Text(
                                 'Save Categories',
                                 style: TextStyle(color: Colors.white),

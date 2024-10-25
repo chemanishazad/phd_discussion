@@ -64,8 +64,8 @@ class CustomMenu extends ConsumerWidget {
                       children: [
                         _buildMenuItem(Icons.account_circle_sharp, 'Profile',
                             context, '/profileScreen'),
-                        _buildMenuItem(Icons.article, 'Summary', context,
-                            '/summaryScreen'),
+                        // _buildMenuItem(Icons.article, 'Summary', context,
+                        //     '/summaryScreen'),
                         _buildMenuItem(Icons.question_answer, 'My Question(s)',
                             context, '/myQuestionScreen'),
                         _buildMenuItem(Icons.question_answer_outlined,

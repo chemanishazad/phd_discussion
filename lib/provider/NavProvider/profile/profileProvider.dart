@@ -13,7 +13,7 @@ Future<Map<String, dynamic>> getProfile() async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      print(data);
+      print('ProfileData$data');
       return data;
     } else {
       throw Exception('Failed to fetch profile: ${response.statusCode}');
@@ -52,6 +52,66 @@ Future<Response> updateTag(List<int> tags) async {
       method: HttpMethod.$post,
       body: {
         'tags': tags,
+      },
+      contentType: ContentType.json,
+    );
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}
+
+Future<Response> updateAnswer(
+  String id,
+  String answer,
+) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/updateanswer',
+      method: HttpMethod.$post,
+      body: {
+        'id': id,
+        'answer': answer,
+      },
+      contentType: ContentType.json,
+    );
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}
+
+Future<Response> updateCategories(List<int> categories) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/addinterestcategories',
+      method: HttpMethod.$post,
+      body: {
+        'categories': categories,
       },
       contentType: ContentType.json,
     );
