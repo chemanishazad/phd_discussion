@@ -2,11 +2,18 @@ import 'dart:convert'; // Import for JSON decoding
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
+});
+
+final deleteQuestionProvider =
+    FutureProvider.family<Response, Map<String, String>>((ref, params) async {
+  return await deleteQuestion(params['id']!);
 });
 
 class MyQuestionScreen extends ConsumerStatefulWidget {
@@ -107,12 +114,32 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                               IconButton(
                                 icon:
                                     const Icon(Icons.edit, color: Colors.blue),
-                                onPressed: () {},
+                                onPressed: () {
+                                  print(question);
+                                },
                               ),
                               IconButton(
                                 icon:
                                     const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  final response = await ref.read(
+                                      deleteQuestionProvider(
+                                          {'id': question['id']}).future);
+                                  final Map<String, dynamic> jsonResponse =
+                                      jsonDecode(response.body);
+                                  print({'$jsonResponse.body'});
+                                  if (response.statusCode == 200) {
+                                    ref.refresh(profileProvider);
+                                    // Navigator.pop(context);
+
+                                    Fluttertoast.showToast(
+                                        msg: jsonResponse['message']);
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            'Error voting: ${response.reasonPhrase}');
+                                  }
+                                },
                               ),
                             ],
                           ),

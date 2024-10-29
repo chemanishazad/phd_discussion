@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
+import 'package:quill_html_editor/quill_html_editor.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
@@ -25,6 +30,77 @@ class MyAnswerScreen extends ConsumerStatefulWidget {
 }
 
 class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
+  Future<void> _editAnswer(
+      BuildContext context, String answerId, String currentAnswer) async {
+    final QuillEditorController bodyController = QuillEditorController();
+
+    // Set the current answer as the initial text in the editor
+    bodyController.setText(currentAnswer);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.90,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                color: Colors.white,
+                child: ToolBar(
+                  controller: bodyController,
+                ),
+              ),
+              QuillHtmlEditor(
+                hintText: 'Type your answer here...',
+                controller: bodyController,
+                text: currentAnswer,
+                isEnabled: true,
+                minHeight: 300,
+                hintTextAlign: TextAlign.start,
+                padding: const EdgeInsets.only(left: 10, top: 5),
+                hintTextPadding: EdgeInsets.zero,
+                loadingBuilder: (context) {
+                  return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 0.4));
+                },
+              ),
+              const SizedBox(height: 16),
+              CustomButton(
+                onTap: () async {
+                  final updatedAnswer = await bodyController.getText();
+                  print(updatedAnswer);
+                  final response = await ref.read(updateProfileProvider(
+                      {'id': answerId, 'answer': updatedAnswer}).future);
+                  final Map<String, dynamic> jsonResponse =
+                      jsonDecode(response.body);
+                  print({'$jsonResponse.body'});
+                  if (response.statusCode == 200) {
+                    ref.refresh(profileProvider);
+                    Navigator.pop(context);
+
+                    Fluttertoast.showToast(msg: jsonResponse['message']);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Error voting: ${response.reasonPhrase}');
+                  }
+                },
+                child: const Text(
+                  'Update Answer',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
@@ -66,7 +142,8 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                             ),
                             answer['status'] == '0'
                                 ? IconButton(
-                                    onPressed: () {},
+                                    onPressed: () => _editAnswer(context,
+                                        answer['id'], answer['answer']),
                                     icon: Icon(Icons.edit,
                                         color: Theme.of(context).primaryColor),
                                     tooltip: 'Edit Answer',
@@ -84,12 +161,8 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'By ${answer['added_by_user']['name']}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
+                            Text('By ${answer['added_by_user']['name']}',
+                                style: const TextStyle(fontSize: 14)),
                             Container(
                               color: answer['status'] == '0'
                                   ? Colors.amber
@@ -100,9 +173,7 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                                   answer['status'] == '0'
                                       ? 'Pending'
                                       : 'Approved',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                  ),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                               ),
                             ),
