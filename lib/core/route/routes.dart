@@ -16,7 +16,8 @@ import 'package:phd_discussion/screens/navBar/profile/my_favourite_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_vote_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/profile_screen.dart';
-import 'package:phd_discussion/screens/navBar/profile/setting_screen.dart';
+import 'package:phd_discussion/screens/navBar/profile/question_edit_screen.dart';
+import 'package:phd_discussion/screens/navBar/settings/setting_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/summary_screen.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
 import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
@@ -44,5 +45,6 @@ class AppRoutes {
     '/myQuestionScreen': (context) => const MyQuestionScreen(),
     '/myVoteScreen': (context) => const MyVoteScreen(),
     '/summaryScreen': (context) => const SummaryScreen(),
+    '/editQuestionScreen': (context) => const EditQuestionScreen(),
   };
 }

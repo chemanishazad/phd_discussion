@@ -48,6 +48,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   bool isExpanded = false;
   bool isAnswer = false;
   bool isExit = false;
+  bool isRelated = false;
   int currentPage = 1;
   List<dynamic> like = [];
   List<dynamic> relatedQuestions = [];
@@ -217,6 +218,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                           final Map<String, dynamic> relatedJson =
                               jsonDecode(response.body);
                           setState(() {
+                            isRelated = true;
                             relatedQuestions = relatedJson['data'];
                           });
                         },
@@ -227,8 +229,12 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                         )),
                   ),
                   const SizedBox(height: 12),
-                  if (relatedQuestions.isNotEmpty)
-                    RelatedQuestionsSection(relatedQuestions: relatedQuestions),
+                  if (isRelated)
+                    relatedQuestions.isNotEmpty
+                        ? RelatedQuestionsSection(
+                            relatedQuestions: relatedQuestions)
+                        : const Center(
+                            child: Text('No related questions found'))
                 ],
               ),
             );
@@ -531,7 +537,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(12.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                   color: Palette.themeColor),
                                             ),
                                             contentPadding:

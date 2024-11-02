@@ -228,3 +228,63 @@ Future<Response> updateProfile(
     throw Exception("Failed to post answer: ${e.toString()}");
   }
 }
+
+Future<Response> changePassword(
+  String password,
+) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/changepassword',
+      method: HttpMethod.$post,
+      body: {
+        'password': password,
+      },
+      contentType: ContentType.json,
+    );
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}
+
+Future<Response> updateEmailNotification(
+  String value,
+) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/updateemailnotification',
+      method: HttpMethod.$post,
+      body: {
+        'value': value,
+      },
+      contentType: ContentType.json,
+    );
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/utils/service.dart';
+import 'package:phd_discussion/provider/NavProvider/model/editQuestionApiModel.dart';
 
 import 'dropdownClass.dart';
 import 'model/withoutLoginQuestionSave.dart';
+
 final tagProvider = FutureProvider<List<Tag>>((ref) async {
   return getTag();
 });
@@ -129,6 +131,28 @@ Future<Map<String, dynamic>> postQuestionWithout(
       method: HttpMethod.$post,
       auth: false,
       body: saveQuestion,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print("Question saved successfully: $data");
+      return data;
+    } else {
+      throw Exception('Failed to save question: ${response.body}');
+    }
+  } catch (e) {
+    print("Error saving question: $e");
+    rethrow;
+  }
+}
+
+Future<Map<String, dynamic>> editQuestion(EditQuestionModel question) async {
+  try {
+    final response = await ApiMaster().fire(
+      path: '/editquestion',
+      method: HttpMethod.$post,
+      auth: true,
+      body: question,
     );
 
     if (response.statusCode == 200) {

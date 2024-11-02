@@ -45,11 +45,14 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                 itemBuilder: (context, index) {
                   final question = userData[index];
 
-                  List<dynamic> tags = [];
+                  List<String> tags = [];
                   if (question['tags'] is String) {
-                    tags = jsonDecode(question['tags']);
+                    tags = List<String>.from(jsonDecode(question['tags'])
+                        .map((tag) => tag['name'] as String));
                   } else if (question['tags'] is List) {
-                    tags = question['tags'];
+                    tags = question['tags']
+                        .map<String>((tag) => tag['name'] as String)
+                        .toList();
                   }
 
                   return Card(
@@ -112,12 +115,18 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                icon:
-                                    const Icon(Icons.edit, color: Colors.blue),
-                                onPressed: () {
-                                  print(question);
-                                },
-                              ),
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.blue),
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                            context, '/editQuestionScreen',
+                                            arguments: question)
+                                        .then(
+                                      (value) {
+                                        ref.refresh(profileProvider);
+                                      },
+                                    );
+                                  }),
                               IconButton(
                                 icon:
                                     const Icon(Icons.delete, color: Colors.red),

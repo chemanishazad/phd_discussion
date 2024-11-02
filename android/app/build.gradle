@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.phd_discussion"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = 21
+    ndkVersion = 23
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
