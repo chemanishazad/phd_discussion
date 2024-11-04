@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/screens/auth/On%20Board/on_boarding.dart';
+import 'package:phd_discussion/screens/auth/login/forgot_password.dart';
 import 'package:phd_discussion/screens/auth/login/login_screen.dart';
 import 'package:phd_discussion/screens/auth/login/signUp_screen.dart';
 import 'package:phd_discussion/screens/auth/splash/splash_screen.dart';
@@ -46,5 +47,6 @@ class AppRoutes {
     '/myVoteScreen': (context) => const MyVoteScreen(),
     '/summaryScreen': (context) => const SummaryScreen(),
     '/editQuestionScreen': (context) => const EditQuestionScreen(),
+    '/forgotPassword': (context) => const ForgotPassword(),
   };
 }

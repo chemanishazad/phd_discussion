@@ -57,8 +57,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _buildHeader(),
                 SizedBox(height: 7.h),
+                _buildHeader(),
+                SizedBox(height: 4.h),
                 _buildForm(authNotifier),
                 SizedBox(height: 1.h),
                 TextButton(
@@ -76,44 +77,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   Widget _buildHeader() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        ClipPath(
-          child: Container(
-            height: 20.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Colors.white,
-                  Color.fromARGB(255, 255, 128, 128),
-                  Color.fromARGB(255, 247, 30, 30),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(140),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 12.0,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: 6.h,
-          child: Image.asset(
-            'assets/icons/logo2.png',
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
+    return Image.asset(
+      'assets/icons/logo2.png',
+      fit: BoxFit.cover,
     );
   }
 
@@ -126,7 +92,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           Text(
             'Sign Up',
             style: TextStyle(
-              fontSize: 24.sp,
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold,
             ),
           ),

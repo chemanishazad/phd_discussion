@@ -103,9 +103,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                   _buildQuestionHeader(question),
                   const SizedBox(height: 12),
                   HtmlWidget(question['body']),
-                  const SizedBox(height: 12),
                   _buildInteractionSection(question),
-                  const SizedBox(height: 12),
                   _buildAnswersSection(answers, question['name']),
                   if (!isAnswer)
                     Align(
@@ -274,7 +272,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       children: [
         Text(
           question['title'],
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 6),
         isExit
@@ -312,9 +310,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             Text(
               question['tags'],
               style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             RichText(
               text: TextSpan(
@@ -511,7 +509,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                     borderRadius: BorderRadius.circular(16.0),
                                   ),
                                   title: Text(
-                                    'Reply to $questionName',
+                                    'Reply to ${answer['user_id']}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -640,7 +638,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                         },
                         icon: const Icon(Icons.reply, color: Colors.white),
                         child: Text(
-                          'Reply to $questionName',
+                          'Reply to ${answer['user_id']}',
                           style: const TextStyle(color: Colors.white),
                         ),
                       )

@@ -7,10 +7,10 @@ import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'dart:convert';
 
 class HomeCategoryScreen extends ConsumerStatefulWidget {
-  const HomeCategoryScreen({Key? key}) : super(key: key);
+  const HomeCategoryScreen({super.key});
 
   @override
-  _HomeCategoryScreenState createState() => _HomeCategoryScreenState();
+  ConsumerState<HomeCategoryScreen> createState() => _HomeCategoryScreenState();
 }
 
 class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
@@ -42,7 +42,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
 
     try {
       final response = await ref.read(categoryQuestionProvider({
-        'id': '4', // Ensure the ID is passed dynamically
+        'id': '4',
         'page': currentPage.toString(),
       }).future);
 
@@ -56,14 +56,12 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
           isLoading = false;
         });
       } else {
-        // Handle the case where the status is false
         setState(() {
           isLoading = false;
         });
         print(relatedJson['message']);
       }
     } catch (e) {
-      // Handle errors, like network issues or JSON parsing errors
       setState(() {
         isLoading = false;
       });
@@ -88,7 +86,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
               itemCount: categoryQuestions.length + (isLoading ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == categoryQuestions.length) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 final question = categoryQuestions[index];
                 return GestureDetector(
@@ -101,7 +99,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                   },
                   child: Card(
                     margin: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
+                        vertical: 4.0, horizontal: 8.0),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                     elevation: 4,
@@ -113,7 +111,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                           Text(
                             question['title'],
                             style: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Palette.themeColor),
                           ),
@@ -121,7 +119,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                           HtmlWidget(
                             question['body'],
                             textStyle: const TextStyle(
-                                fontSize: 15, color: Colors.black87),
+                                fontSize: 14, color: Colors.black87),
                           ),
                           const SizedBox(height: 12),
                           Row(

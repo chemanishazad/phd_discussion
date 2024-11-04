@@ -38,44 +38,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipPath(
-                      child: Container(
-                        height: 35.h,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Color.fromARGB(255, 255, 128, 128),
-                              Color.fromARGB(255, 247, 30, 30),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(140),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 12.0,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20.h,
-                      child: Image.asset(
-                        'assets/icons/logo2.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
+                SizedBox(height: 20.h),
+                Image.asset(
+                  'assets/icons/logo2.png',
+                  fit: BoxFit.cover,
                 ),
                 SizedBox(height: 7.h),
                 Padding(
@@ -121,7 +87,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/forgotPassword');
+                          },
                           child: const Text('Forgot Password'),
                         ),
                       ),

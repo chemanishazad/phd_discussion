@@ -239,6 +239,34 @@ Future<Response> postAddFav(String id) async {
   }
 }
 
+Future<Response> forgotPassword(String email) async {
+  try {
+    final response = await ApiMaster().fire(
+        path: '/forgotpassword',
+        method: HttpMethod.$post,
+        body: {
+          'email': email,
+        },
+        auth: false,
+        contentType: ContentType.json);
+
+    if (kDebugMode) {
+      print('Post Answer Response Status Code: ${response.statusCode}');
+      print('Post Answer Response Body: ${response.body}');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Failed to post answer: ${response.statusCode} - ${response.body}');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error during postAnswer: $e');
+    throw Exception("Failed to post answer: ${e.toString()}");
+  }
+}
+
 Future<Response> postRemoveFav(String id) async {
   try {
     final response = await ApiMaster().fire(

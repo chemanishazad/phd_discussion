@@ -140,11 +140,31 @@ class HomeScreen extends ConsumerWidget {
                                               print("No questions found");
                                             }
                                           },
-                                          child: Text(
-                                            questionData['category'],
-                                            style: const TextStyle(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Palette.themeColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(4.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.2),
+                                                  blurRadius: 4.0,
+                                                  offset: Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              questionData['category'],
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: Palette.themeColor),
+                                                color: Palette.themeColor,
+                                                fontSize: 14.0,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],
