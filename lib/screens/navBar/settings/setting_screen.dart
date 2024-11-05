@@ -7,7 +7,6 @@ import 'package:http/http.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
-import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -34,7 +33,7 @@ class SettingScreen extends ConsumerStatefulWidget {
 
 class _SettingScreenState extends ConsumerState<SettingScreen> {
   bool isEmailNotification = false;
-  bool isPassword = false;
+  bool isPassword = true;
   bool _obscurePassword = true;
   bool _obscurePassword2 = true;
   final FormGroup form = FormGroup({
@@ -54,7 +53,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
     final profileAsyncValue = ref.watch(profileProvider);
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Setting'),
+      appBar: const CustomAppBar(title: 'Settings'),
       body: profileAsyncValue.when(
         data: (profileData) {
           if (profileData['email_notification'] != null) {
@@ -72,9 +71,8 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Email Notifications: '),
+                        const Text('Email Notifications '),
                         Switch(
                           value: isEmailNotification,
                           onChanged: (bool value) async {
@@ -193,18 +191,18 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                     ),
                   ],
                   SizedBox(height: 2.h),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12.0),
-                    child: CustomButton(
-                        onTap: () async {
-                          await ref.read(authProvider.notifier).logout();
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.white),
-                        )),
-                  )
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 12.0),
+                  //   child: CustomButton(
+                  //       onTap: () async {
+                  //         await ref.read(authProvider.notifier).logout();
+                  //         Navigator.pop(context);
+                  //       },
+                  //       child: const Text(
+                  //         'Logout',
+                  //         style: TextStyle(color: Colors.white),
+                  //       )),
+                  // )
                 ],
               ),
             ),

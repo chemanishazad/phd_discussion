@@ -272,7 +272,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       children: [
         Text(
           question['title'],
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 6),
         isExit
@@ -307,11 +307,26 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              question['tags'],
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            Container(
+              padding: const EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Palette.themeColor),
+                borderRadius: BorderRadius.circular(4.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                question['tags'],
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Palette.themeColor),
               ),
             ),
             RichText(
@@ -554,7 +569,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                         const SizedBox(height: 10),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             TextButton(
                                               onPressed: () {

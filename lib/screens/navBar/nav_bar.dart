@@ -127,7 +127,8 @@ class CustomMenu extends ConsumerWidget {
           color: Palette.themeColor,
           child: Column(
             children: [
-              SizedBox(height: 5.h),
+              SizedBox(height: 2.h),
+              Image.asset('assets/icons/logo2.png'),
               authState.when(
                 data: (user) {
                   print(user?.authToken);

@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:phd_discussion/service.dart';
 
-
 class NotificationServices {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
@@ -96,15 +95,13 @@ class NotificationServices {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (navigatorKey?.currentState?.context != null) {
         final context = navigatorKey!.currentState!.context;
-       
 
-        // Only navigate if we are not already navigating
         if (!_isNavigating && ModalRoute.of(context)?.settings.name != route) {
-          _isNavigating = true; // Set the flag to true before navigating
+          _isNavigating = true;
+          // Pass the decoded arguments to the route
           Navigator.of(context)
-              .pushNamed(route, arguments: '')
+              .pushNamed(route, arguments: arguments)
               .then((_) {
-            // Reset the navigation state after navigating
             _isNavigating = false;
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/bottomNavigation', (Route<dynamic> route) => false);
@@ -114,14 +111,22 @@ class NotificationServices {
     });
   }
 
+  static void onNotificationTap(NotificationResponse notificationResponse) {
+    final payload = notificationResponse.payload;
+    if (payload != null) {
+      _processNotificationPayload(payload);
+    } else {
+      print("No payload received");
+    }
+  }
+
   static void _processNotificationPayload(String payload) {
-    if (_isNavigating) return; // Prevent multiple navigations
+    if (_isNavigating) return;
 
     try {
-      _isNavigating = true; // Set to true before navigating
+      _isNavigating = true;
       final data = jsonDecode(payload) as Map<String, dynamic>;
       final route = data['route'] ?? '/bottomNavigation';
-
       final argumentsJson = data['arguments'] is String
           ? data['arguments']
           : jsonEncode(data['arguments'] ?? {});
@@ -132,37 +137,27 @@ class NotificationServices {
           if (navigatorKey?.currentState?.context != null) {
             final context = navigatorKey!.currentState!.context;
 
-            // Only navigate if we are not already navigating
             if (ModalRoute.of(context)?.settings.name != route) {
               Navigator.of(context)
-                  .pushNamed(route, arguments: '')
+                  .pushNamed(route, arguments: arguments)
                   .then((_) {
-                _isNavigating = false; // Reset after navigating
+                _isNavigating = false;
               });
             } else {
-              _isNavigating = false; // Reset if already on the desired route
+              _isNavigating = false;
             }
           } else {
             print("Navigator context is not available");
-            _isNavigating = false; // Reset on failure
+            _isNavigating = false;
           }
         });
       } else {
         print("No valid arguments found in notification payload.");
-        _isNavigating = false; // Reset if no arguments
+        _isNavigating = false;
       }
     } catch (e) {
       print("Error parsing payload: $e");
-      _isNavigating = false; // Reset on error
-    }
-  }
-
-  static void onNotificationTap(NotificationResponse notificationResponse) {
-    final payload = notificationResponse.payload;
-    if (payload != null) {
-      _processNotificationPayload(payload);
-    } else {
-      print("No payload received");
+      _isNavigating = false;
     }
   }
 

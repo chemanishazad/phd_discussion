@@ -51,7 +51,9 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 15.h),
+                    SizedBox(height: 12.h),
+                    Image.asset('assets/icons/logo2.png'),
+                    SizedBox(height: 2.h),
                     Text(
                       'Forgot Password',
                       style: TextStyle(
@@ -112,9 +114,8 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                                 );
                               }
                             },
-                            child: Text('Send Reset Link',
-                                style: TextStyle(
-                                    fontSize: 18.sp, color: Colors.white)),
+                            child: const Text('Send Reset Link',
+                                style: TextStyle(color: Colors.white)),
                           ),
                     SizedBox(height: 2.h),
                     TextButton(
