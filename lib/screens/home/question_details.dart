@@ -353,6 +353,22 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     );
   }
 
+  void showToastWithAction(BuildContext context) {
+    final snackBar = SnackBar(
+      content: Text('You need to be logged in to vote.'),
+      action: SnackBarAction(
+        label: 'Login',
+        onPressed: () {
+          Navigator.pushNamed(context, '/login',
+              arguments: {'title': 'withoutLogin'});
+        },
+      ),
+    );
+
+    // Show the SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   Widget _buildInteractionSection(Map<String, dynamic> question) {
     final authState = ref.watch(authProvider);
     final user = authState.maybeWhen(
@@ -395,8 +411,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       msg: 'Error voting: ${response.reasonPhrase}');
                 }
               } else {
-                Fluttertoast.showToast(
-                    msg: 'You need to be logged in to vote.');
+                showToastWithAction(context);
+                // Fluttertoast.showToast(
+                //     msg: 'You need to be logged in to vote.');
               }
             },
             icon: Icon(
@@ -457,8 +474,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                   }
                 }
               } else {
-                Fluttertoast.showToast(
-                    msg: 'You need to be logged in to vote.');
+                showToastWithAction(context);
               }
             },
             icon: Icon(isFav ? Icons.star : Icons.star_border,

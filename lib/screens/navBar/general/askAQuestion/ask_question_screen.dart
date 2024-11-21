@@ -53,7 +53,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     ToolBarStyle.addTable,
     ToolBarStyle.editTable,
   ];
-  String? token;
+  String token = '';
   @override
   void initState() {
     super.initState();
@@ -66,7 +66,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     String? savedToken = prefs.getString('token');
 
     setState(() {
-      token = savedToken;
+      token = savedToken!;
     });
     print('token$token');
 

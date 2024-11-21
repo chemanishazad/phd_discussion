@@ -127,8 +127,8 @@ class CustomMenu extends ConsumerWidget {
           color: Palette.themeColor,
           child: Column(
             children: [
-              SizedBox(height: 2.h),
-              Image.asset('assets/icons/logo2.png'),
+              SizedBox(height: 5.h),
+              // Image.asset('assets/icons/logo2.png'),
               authState.when(
                 data: (user) {
                   print(user?.authToken);
@@ -164,7 +164,7 @@ class CustomMenu extends ConsumerWidget {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.login, color: Colors.white),
+                          Icon(Icons.person, color: Colors.white),
                           SizedBox(width: 8),
                           Text(
                             'Login',

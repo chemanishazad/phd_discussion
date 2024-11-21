@@ -29,7 +29,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final Map<String, dynamic>? args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String title =
-        args != null && args.containsKey('title') ? args['title'] : 'Login';
+        args != null && args.containsKey('title') ? args['title'] : '';
+    print('title$title');
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Palette.lightBackgroundColor,
@@ -50,7 +52,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title,
+                        title ==
+                                'Login to ask more relevant questions or answer questions on PhD discussions.'
+                            ? 'Login to ask more relevant questions or answer questions on PhD discussions.'
+                            : 'Login',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
@@ -121,8 +126,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         print('message$message');
                                         if (message.toLowerCase() ==
                                             'login successful.') {
-                                          Navigator.pushReplacementNamed(
-                                              context, '/home');
+                                          title == 'withoutLogin'
+                                              ? Navigator.pushReplacementNamed(
+                                                  context, '/home')
+                                              : Navigator.pop(context);
                                         }
                                       } catch (e) {
                                         print(e);
