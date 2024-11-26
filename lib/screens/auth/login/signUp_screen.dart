@@ -213,7 +213,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     );
 
                     if (message.toLowerCase() == 'signup successful.') {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/login');
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(

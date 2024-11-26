@@ -131,25 +131,60 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                                 icon:
                                     const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () async {
-                                  final response = await ref.read(
-                                      deleteQuestionProvider(
-                                          {'id': question['id']}).future);
-                                  final Map<String, dynamic> jsonResponse =
-                                      jsonDecode(response.body);
-                                  print({'$jsonResponse.body'});
-                                  if (response.statusCode == 200) {
-                                    ref.refresh(profileProvider);
-                                    // Navigator.pop(context);
+                                  // Show confirmation dialog
+                                  bool? confirmDelete = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Confirm Deletion'),
+                                        content: const Text(
+                                            'Are you sure you want to delete this question?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(
+                                                  false); // User clicks "No"
+                                            },
+                                            child: const Text('No'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(
+                                                  true); // User clicks "Yes"
+                                            },
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
 
-                                    Fluttertoast.showToast(
-                                        msg: jsonResponse['message']);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'Error voting: ${response.reasonPhrase}');
+                                  // If user confirmed, proceed with the API call
+                                  if (confirmDelete == true) {
+                                    try {
+                                      final response = await ref.read(
+                                          deleteQuestionProvider(
+                                              {'id': question['id']}).future);
+                                      final Map<String, dynamic> jsonResponse =
+                                          jsonDecode(response.body);
+                                      print(jsonResponse);
+
+                                      if (response.statusCode == 200) {
+                                        ref.refresh(
+                                            profileProvider); // Refresh the profile provider
+                                        Fluttertoast.showToast(
+                                            msg: jsonResponse['message']);
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Error deleting: ${response.reasonPhrase}');
+                                      }
+                                    } catch (e) {
+                                      Fluttertoast.showToast(msg: 'Error: $e');
+                                    }
                                   }
                                 },
-                              ),
+                              )
                             ],
                           ),
                         ],

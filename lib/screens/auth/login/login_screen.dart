@@ -127,9 +127,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         if (message.toLowerCase() ==
                                             'login successful.') {
                                           title == 'withoutLogin'
-                                              ? Navigator.pushReplacementNamed(
-                                                  context, '/home')
-                                              : Navigator.pop(context);
+                                              ? Navigator.pop(context)
+                                              : Navigator.pushReplacementNamed(
+                                                  context, '/home');
                                         }
                                       } catch (e) {
                                         print(e);

@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class RelatedQuestionsSection extends StatelessWidget {
   final List<dynamic> relatedQuestions;
+  final ScrollController scrollController;
 
-  const RelatedQuestionsSection({super.key, required this.relatedQuestions});
+  const RelatedQuestionsSection({
+    super.key,
+    required this.relatedQuestions,
+    required this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +23,7 @@ class RelatedQuestionsSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ListView.builder(
+            controller: scrollController,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: relatedQuestions.length,
@@ -57,7 +63,6 @@ class RelatedQuestionsSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _buildStatChip(
                               Icons.remove_red_eye, question['views']),
@@ -69,10 +74,8 @@ class RelatedQuestionsSection extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.blue,
-                  ),
+                  trailing:
+                      const Icon(Icons.arrow_forward_ios, color: Colors.blue),
                   onTap: () {
                     Navigator.pushNamed(context, '/questionDetails',
                         arguments: question['id']);

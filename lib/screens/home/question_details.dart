@@ -43,6 +43,7 @@ class QuestionDetails extends ConsumerStatefulWidget {
 
 class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   final QuillEditorController bodyController = QuillEditorController();
+  ScrollController _scrollController = ScrollController();
 
   String questionId = '';
   bool isExpanded = false;
@@ -53,6 +54,20 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   List<dynamic> like = [];
   List<dynamic> relatedQuestions = [];
   List<dynamic> categoryQuestions = [];
+  final customToolBarList = [
+    ToolBarStyle.bold,
+    ToolBarStyle.italic,
+    ToolBarStyle.underline,
+    ToolBarStyle.size,
+    ToolBarStyle.align,
+    ToolBarStyle.color,
+    ToolBarStyle.background,
+    ToolBarStyle.listBullet,
+    ToolBarStyle.listOrdered,
+    ToolBarStyle.clean,
+    ToolBarStyle.addTable,
+    ToolBarStyle.editTable,
+  ];
 
   @override
   void didChangeDependencies() {
@@ -110,9 +125,15 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       alignment: Alignment.centerRight,
                       child: CustomButton(
                         onTap: () {
-                          setState(() {
-                            isAnswer = !isAnswer;
-                          });
+                          print(user?.name);
+
+                          if (user?.name == null) {
+                            showToastWithAction(context);
+                          } else {
+                            setState(() {
+                              isAnswer = !isAnswer;
+                            });
+                          }
                         },
                         icon: const Icon(
                           Icons.post_add,
@@ -133,6 +154,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                             color: Colors.white,
                             child: ToolBar(
                               controller: bodyController,
+                              toolBarConfig: customToolBarList,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -162,9 +184,13 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                           String answerText = await bodyController.getText();
 
                           if (user?.name == null || user!.name.isEmpty) {
-                            Fluttertoast.showToast(
-                                msg: 'Please Login then post your answer');
+                            showToastWithAction(context);
                           } else {
+                            if (answerText.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: 'Please Type Your Answer');
+                              return;
+                            }
                             try {
                               final response =
                                   await ref.read(postAnswerProvider({
@@ -172,12 +198,10 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                 'answer': answerText,
                               }).future);
 
-                              // Check if the response status code is 200
                               if (response.statusCode == 200) {
                                 final Map<String, dynamic> jsonResponse =
                                     jsonDecode(response.body);
 
-                                // Show success message
                                 Fluttertoast.showToast(
                                     msg: jsonResponse['message']);
                                 bodyController.clear();
@@ -206,33 +230,87 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: CustomButton(
-                        onTap: () async {
-                          final response = await ref.read(
-                              relatedQuestionProvider(question['id']).future);
-                          final Map<String, dynamic> relatedJson =
-                              jsonDecode(response.body);
-                          setState(() {
-                            isRelated = true;
-                            relatedQuestions = relatedJson['data'];
-                          });
-                        },
-                        icon: const Icon(Icons.read_more, color: Colors.white),
-                        child: const Text(
-                          'View Related Questions',
-                          style: TextStyle(color: Colors.white),
-                        )),
-                  ),
+                  SizedBox(height: 8),
+                  if (!isRelated)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: CustomButton(
+                          onTap: () async {
+                            final response = await ref.read(
+                                relatedQuestionProvider(question['id']).future);
+                            final Map<String, dynamic> relatedJson =
+                                jsonDecode(response.body);
+                            print('API Response: ${response.body}');
+
+                            setState(() {
+                              isRelated = true;
+                              relatedQuestions = relatedJson['data'];
+                            });
+
+                            await Future.delayed(const Duration(
+                                milliseconds:
+                                    200)); // Wait a bit for layout to be ready
+
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_scrollController.hasClients) {
+                                // Get the max scroll extent (total scrollable content height)
+                                final maxScroll =
+                                    _scrollController.position.maxScrollExtent;
+
+                                // Get the screen height to scroll 20% up from the bottom
+                                final screenHeight =
+                                    MediaQuery.of(context).size.height;
+
+                                // Log values for debugging
+                                print('Max Scroll: $maxScroll');
+                                print('Screen Height: $screenHeight');
+
+                                if (maxScroll > 0) {
+                                  // Calculate the target offset based on 20% of screen height
+                                  final targetOffset =
+                                      maxScroll - (screenHeight * 0.2);
+
+                                  print(
+                                      'Target Scroll Position: $targetOffset');
+
+                                  // Make sure targetOffset is valid (positive)
+                                  if (targetOffset > 0) {
+                                    _scrollController.animateTo(
+                                      targetOffset,
+                                      duration: const Duration(seconds: 1),
+                                      curve: Curves.easeOut,
+                                    );
+                                  } else {
+                                    print(
+                                        "Calculated target offset is invalid (negative or zero), skipping scroll.");
+                                  }
+                                } else {
+                                  print(
+                                      "Max scroll is zero or invalid, skipping scroll.");
+                                }
+                              } else {
+                                print(
+                                    "ScrollController has no clients, skipping scroll.");
+                              }
+                            });
+                          },
+                          icon:
+                              const Icon(Icons.read_more, color: Colors.white),
+                          child: const Text(
+                            'View Related Questions',
+                            style: TextStyle(color: Colors.white),
+                          )),
+                    ),
                   const SizedBox(height: 12),
                   if (isRelated)
                     relatedQuestions.isNotEmpty
                         ? RelatedQuestionsSection(
-                            relatedQuestions: relatedQuestions)
+                            relatedQuestions: relatedQuestions,
+                            scrollController: _scrollController,
+                          )
                         : const Center(
-                            child: Text('No related questions found'))
+                            child: Text('No related questions found'),
+                          ),
                 ],
               ),
             );
@@ -364,8 +442,6 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
         },
       ),
     );
-
-    // Show the SnackBar
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
@@ -663,8 +739,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                               },
                             );
                           } else {
-                            Fluttertoast.showToast(
-                                msg: 'You need to be logged in to Comment.');
+                            showToastWithAction(context);
                           }
                         },
                         icon: const Icon(Icons.reply, color: Colors.white),

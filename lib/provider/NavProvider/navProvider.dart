@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/utils/service.dart';
 import 'package:phd_discussion/provider/NavProvider/model/editQuestionApiModel.dart';
+import 'package:phd_discussion/provider/NavProvider/model/withLoginQuestionSave.dart';
 
 import 'dropdownClass.dart';
 import 'model/withoutLoginQuestionSave.dart';
@@ -169,7 +170,7 @@ Future<Map<String, dynamic>> editQuestion(EditQuestionModel question) async {
 }
 
 Future<Map<String, dynamic>> postQuestionWith(
-    SaveQuestionWLogin saveQuestion) async {
+    SaveQuestionWithLogin saveQuestion) async {
   try {
     final response = await ApiMaster().fire(
       path: '/savequestionwithlogin',

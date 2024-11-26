@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/components/dropdown2.dart';
+import 'package:phd_discussion/provider/NavProvider/model/withLoginQuestionSave.dart';
 import 'package:phd_discussion/provider/NavProvider/model/withoutLoginQuestionSave.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/widgets/popup.dart';
@@ -28,13 +30,12 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   String? newCateDesc;
   String? newTagTitle;
   String? newTagDesc;
+  bool isSubmit = false;
 
   final FormGroup form = FormGroup({
     'email': FormControl<String>(validators: [Validators.email]),
     'title': FormControl<String>(validators: [Validators.required]),
     'summary': FormControl<String>(validators: [Validators.required]),
-    'body': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(8)]),
     'category': FormControl<List<String>>(validators: [Validators.required]),
     'tags': FormControl<List<String>>(validators: [Validators.required]),
   });
@@ -64,11 +65,14 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     final prefs = await SharedPreferences.getInstance();
 
     String? savedToken = prefs.getString('token');
+    String? savedEmail = prefs.getString('email');
 
     setState(() {
       token = savedToken!;
+      form.control('email').value = savedEmail;
     });
     print('token$token');
+    print('savedEmail${form.control('email').value}');
 
     return savedToken;
   }
@@ -100,7 +104,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                     CustomReactiveTextField(
                       formControlName: 'email',
                       hintText: 'Enter Your Email',
-                      prefixIcon: Icons.email_outlined,
+                      // prefixIcon: Icons.email_outlined,
                       validationMessages: {
                         'required': (control) => 'The email is required',
                         'email': (control) => 'Please enter a valid email',
@@ -113,7 +117,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                   CustomReactiveTextField(
                     formControlName: 'title',
                     hintText: 'Type the title here!',
-                    prefixIcon: Icons.title,
+                    // prefixIcon: Icons.title,
                     validationMessages: {
                       'required': (control) => 'The title is required',
                     },
@@ -125,7 +129,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                   CustomReactiveTextField(
                     formControlName: 'summary',
                     hintText: 'Type the summary here!',
-                    prefixIcon: Icons.comment,
+                    // prefixIcon: Icons.comment,
                     validationMessages: {
                       'required': (control) => 'The summary is required',
                     },
@@ -248,20 +252,22 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                         },
                         child: const Text('Add new Tag')),
                   ),
-                  if (token!.isEmpty)
+                  if (token.isEmpty)
                     Align(
                       alignment: Alignment.center,
                       child: CustomButton(
                         onTap: () async {
                           String? bodyContent = await bodyController.getText();
                           form.markAllAsTouched();
+                          print(form.value);
+                          print(form.valid);
                           SaveQuestionWLogin question = SaveQuestionWLogin(
                             email: form.control('email').value,
-                            title: form.control('title').value,
-                            subTitle: form.control('summary').value,
+                            title: form.control('title').value ?? '',
+                            subTitle: form.control('summary').value ?? '',
                             body: bodyContent,
-                            category: form.control('category').value,
-                            tags: form.control('tags').value,
+                            category: form.control('category').value ?? '',
+                            tags: form.control('tags').value ?? '',
                             createNewTag: (newTagTitle?.isNotEmpty ?? false),
                             newTagName: newTagTitle ?? '',
                             newTagDescription: newTagDesc ?? '',
@@ -271,7 +277,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                             newCategoryDescription: newCateDesc ?? '',
                           );
 
-                          _printQuestionData(question);
                           try {
                             final responseData =
                                 await postQuestionWithout(question);
@@ -297,53 +302,74 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                         ),
                       ),
                     ),
-                  if (token!.isNotEmpty)
+                  if (token.isNotEmpty)
                     Align(
                       alignment: Alignment.center,
                       child: CustomButton(
                         onTap: () async {
                           String? bodyContent = await bodyController.getText();
+                          print(bodyContent);
                           form.markAllAsTouched();
-                          SaveQuestionWLogin questionWithLogin =
-                              SaveQuestionWLogin(
-                            title: form.control('title').value,
-                            subTitle: form.control('summary').value,
-                            body: bodyContent,
-                            category: form.control('category').value,
-                            tags: form.control('tags').value,
-                            createNewTag: (newTagTitle?.isNotEmpty ?? false),
-                            newTagName: newTagTitle ?? '',
-                            newTagDescription: newTagDesc ?? '',
-                            createNewCategory:
-                                (newCateTitle?.isNotEmpty ?? false),
-                            newCategoryName: newCateTitle ?? '',
-                            newCategoryDescription: newCateDesc ?? '',
-                          );
-
-                          _printQuestionData(questionWithLogin);
-                          try {
-                            final responseData =
-                                await postQuestionWith(questionWithLogin);
-                            final String message = responseData['message'];
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(message)),
+                          if (form.valid && bodyContent.isNotEmpty) {
+                            setState(() {
+                              isSubmit = true;
+                            });
+                            SaveQuestionWithLogin questionWithLogin =
+                                SaveQuestionWithLogin(
+                              title: form.control('title').value,
+                              subTitle: form.control('summary').value,
+                              body: bodyContent,
+                              category: form.control('category').value,
+                              tags: form.control('tags').value,
+                              createNewTag: (newTagTitle?.isNotEmpty ?? false),
+                              newTagName: newTagTitle ?? '',
+                              newTagDescription: newTagDesc ?? '',
+                              createNewCategory:
+                                  (newCateTitle?.isNotEmpty ?? false),
+                              newCategoryName: newCateTitle ?? '',
+                              newCategoryDescription: newCateDesc ?? '',
                             );
 
-                            Navigator.of(context).pushReplacementNamed('/home');
+                            try {
+                              final responseData =
+                                  await postQuestionWith(questionWithLogin);
+                              final String message = responseData['message'];
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(message)),
+                              );
+                              setState(() {
+                                isSubmit = false;
+                              });
 
-                            print("Question saved successfully");
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        "Error saving question. Please try again.")));
-                            print("Error saving question: $e");
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/home');
+
+                              print("Question saved successfully");
+                            } catch (e) {
+                              setState(() {
+                                isSubmit = false;
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Error saving question. Please try again.")));
+                              print("Error saving question: $e");
+                            }
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Please check all field');
+                            setState(() {
+                              isSubmit = false;
+                            });
                           }
                         },
-                        child: const Text(
-                          'Save Question',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: isSubmit
+                            ? CircularProgressIndicator()
+                            : Text(
+                                'Save Question',
+                                style: TextStyle(color: Colors.white),
+                              ),
                       ),
                     ),
                 ],
@@ -355,20 +381,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     );
   }
 
-  void _printQuestionData(SaveQuestionWLogin question) {
-    print('Email: ${question.email}');
-    print('Title: ${question.title}');
-    print('Summary: ${question.subTitle}');
-    print('Body: ${question.body}');
-    print('Category IDs: ${question.category}');
-    print('Tag IDs: ${question.tags}');
-    print('Create New Tag: ${question.createNewTag}');
-    print('New Tag Name: ${question.newTagName}');
-    print('New Tag Description: ${question.newTagDescription}');
-    print('Create New Category: ${question.createNewCategory}');
-    print('New Category Name: ${question.newCategoryName}');
-    print('New Category Description: ${question.newCategoryDescription}');
-  }
 
   void _showAddCategoryDialog(BuildContext context) {
     showDialog(

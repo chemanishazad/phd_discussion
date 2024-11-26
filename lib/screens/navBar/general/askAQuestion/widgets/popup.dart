@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 
 class CustomCategoryDialog extends StatefulWidget {
   final String? title;
@@ -40,89 +41,149 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Add New ${widget.heading}', textAlign: TextAlign.center),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      content: SizedBox(
-        width: 400,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildTextField(
-                titleController,
-                '${widget.heading} Title',
-                Icons.label,
-                (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a category title';
-                  }
-                  return null;
-                },
-              ),
-              _buildTextField(
-                descriptionController,
-                '${widget.heading} Description',
-                Icons.description,
-                (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a category description';
-                  }
-                  return null;
-                },
-                maxLines: 3,
-              ),
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            titleController.clear();
-            descriptionController.clear();
-            Navigator.pop(context);
-          },
-          child: const Text('Clear'),
-        ),
-        TextButton(
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              final title = titleController.text.trim();
-              final description = descriptionController.text.trim();
-              widget.onSave(title, description);
-              Navigator.pop(context);
-            }
-          },
-          child: const Text('Save'),
-        ),
-      ],
+    return Dialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 30),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      backgroundColor: Colors.transparent,
+      child: _buildDialogContent(context),
     );
   }
 
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    IconData icon,
-    String? Function(String?) validator, {
+  Widget _buildDialogContent(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              'Add New ${widget.heading}',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.blueAccent,
+                letterSpacing: 1.1,
+              ),
+            ),
+          ),
+          SizedBox(height: 15),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildTextField(
+                  controller: titleController,
+                  label: '${widget.heading} Title',
+                  icon: Icons.label,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a category title';
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  controller: descriptionController,
+                  label: '${widget.heading} Description',
+                  icon: Icons.description,
+                  maxLines: 1,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a category description';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {
+                  titleController.clear();
+                  descriptionController.clear();
+                  Navigator.pop(context);
+                },
+                child: const Text('Clear',
+                    style: TextStyle(fontSize: 14, color: Colors.red)),
+              ),
+              CustomButton(
+                onTap: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    final title = titleController.text.trim();
+                    final description = descriptionController.text.trim();
+                    widget.onSave(title, description);
+                    Navigator.pop(context);
+                  }
+                },
+                color: Colors.blueAccent,
+                child: const Text('Save',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String? Function(String?) validator,
     int? maxLines,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          prefixIcon: Icon(icon),
-          errorStyle: const TextStyle(color: Colors.red),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue),
-          ),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.withOpacity(0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
-        maxLines: maxLines,
-        validator: validator,
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(
+              color: Colors.blueAccent,
+              fontWeight: FontWeight.w500,
+            ),
+            border: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            prefixIcon: Icon(icon, color: Colors.blueAccent),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          ),
+          maxLines: maxLines ?? 1,
+          validator: validator,
+        ),
       ),
     );
   }
