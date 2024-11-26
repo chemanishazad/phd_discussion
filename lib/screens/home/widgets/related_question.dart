@@ -77,6 +77,7 @@ class RelatedQuestionsSection extends StatelessWidget {
                   trailing:
                       const Icon(Icons.arrow_forward_ios, color: Colors.blue),
                   onTap: () {
+                    print(question['id']);
                     Navigator.pushNamed(context, '/questionDetails',
                         arguments: question['id']);
                   },

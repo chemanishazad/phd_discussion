@@ -30,6 +30,37 @@ class HomeScreen extends ConsumerWidget {
         false;
   }
 
+  Future<void> _showLogoutDialog(
+      BuildContext context, Function logoutFunction) async {
+    bool? shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('Do you really want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout == true) {
+      logoutFunction();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const String questionId = '';
@@ -54,7 +85,9 @@ class HomeScreen extends ConsumerWidget {
                           : const Icon(Icons.login),
                       onPressed: () async {
                         if (user != null) {
-                          await ref.read(authProvider.notifier).logout();
+                          _showLogoutDialog(context, () async {
+                            await ref.read(authProvider.notifier).logout();
+                          });
                         } else {
                           Navigator.pushNamed(context, '/login');
                         }
@@ -77,138 +110,150 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             drawer: const CustomMenu(),
-            body: asyncValue.when(
-              data: (response) {
-                final Map<String, dynamic> jsonResponse =
-                    jsonDecode(response.body);
-                final List<dynamic> questions = jsonResponse['data'];
+            body: RefreshIndicator(
+              onRefresh: () async {
+                ref.refresh(topQuestionProvider(questionId));
+              },
+              child: asyncValue.when(
+                data: (response) {
+                  final Map<String, dynamic> jsonResponse =
+                      jsonDecode(response.body);
+                  final List<dynamic> questions = jsonResponse['data'];
 
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ...questions.map((questionData) => GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/questionDetails',
-                                  arguments: {
-                                    'id': questionData['id'],
-                                    'isHide': false,
-                                  });
-                            },
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 4,
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 12),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      questionData['title'],
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Text('${questionData['date']}',
-                                              style: const TextStyle(
-                                                  fontSize: 14)),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            final response = await ref
-                                                .read(categoryQuestionProvider({
-                                              'id': questionData['category_id'],
-                                              'page': '1',
-                                            }).future);
-                                            final Map<String, dynamic>
-                                                relatedJson =
-                                                jsonDecode(response.body);
-                                            final categoryQuestions =
-                                                relatedJson['data'] ?? [];
-
-                                            if (categoryQuestions.isNotEmpty) {
-                                              await Navigator.pushNamed(context,
-                                                  '/homeCategoryScreen',
-                                                  arguments: categoryQuestions);
-                                            } else {
-                                              print("No questions found");
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4.0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                  color: Palette.themeColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(4.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
-                                                  blurRadius: 4.0,
-                                                  offset: Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ...questions.map((questionData) => GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/questionDetails',
+                                    arguments: {
+                                      'id': questionData['id'],
+                                      'isHide': false,
+                                    });
+                              },
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 4,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 12),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        questionData['title'],
+                                        style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
                                             child: Text(
-                                              questionData['category'],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Palette.themeColor,
-                                                fontSize: 14.0,
+                                                '${questionData['date']}',
+                                                style: const TextStyle(
+                                                    fontSize: 14)),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              final response = await ref.read(
+                                                  categoryQuestionProvider({
+                                                'id':
+                                                    questionData['category_id'],
+                                                'page': '1',
+                                              }).future);
+                                              final Map<String, dynamic>
+                                                  relatedJson =
+                                                  jsonDecode(response.body);
+                                              final categoryQuestions =
+                                                  relatedJson['data'] ?? [];
+
+                                              if (categoryQuestions
+                                                  .isNotEmpty) {
+                                                await Navigator.pushNamed(
+                                                    context,
+                                                    '/homeCategoryScreen',
+                                                    arguments:
+                                                        categoryQuestions);
+                                              } else {
+                                                print("No questions found");
+                                              }
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border: Border.all(
+                                                    color: Palette.themeColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(4.0),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 4.0,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Text(
+                                                questionData['category'],
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Palette.themeColor,
+                                                  fontSize: 14.0,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        _InfoCard(
-                                            icon: Icons.visibility,
-                                            label: questionData['views']),
-                                        _InfoCard(
-                                            icon: Icons.how_to_vote,
-                                            label: questionData['votes']),
-                                        _InfoCard(
-                                            icon: Icons.comment,
-                                            label: questionData['answers']),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          _InfoCard(
+                                              icon: Icons.visibility,
+                                              label: questionData['views']),
+                                          _InfoCard(
+                                              icon: Icons.how_to_vote,
+                                              label: questionData['votes']),
+                                          _InfoCard(
+                                              icon: Icons.comment,
+                                              label: questionData['answers']),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          )),
+                            )),
+                      ],
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Error: ${error.toString()}',
+                          style: const TextStyle(color: Colors.red)),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          ref.refresh(topQuestionProvider(questionId));
+                        },
+                        child: const Text('Retry'),
+                      ),
                     ],
                   ),
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Error: ${error.toString()}',
-                        style: const TextStyle(color: Colors.red)),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref.refresh(topQuestionProvider(questionId));
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
                 ),
               ),
             ),

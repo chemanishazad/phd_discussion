@@ -100,7 +100,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
             final List<dynamic> questions = jsonResponse['data'];
             setState(() {
-              like = questions[0]['likes'];
+              like = questions[0]['likes'] ?? [];
             });
 
             if (questions.isEmpty) {
@@ -108,7 +108,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             }
 
             final question = questions[0];
-            final answers = question['answers'] as List<dynamic>;
+            final List<dynamic> answers = question['answers'];
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -245,53 +245,6 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                             setState(() {
                               isRelated = true;
                               relatedQuestions = relatedJson['data'];
-                            });
-
-                            await Future.delayed(const Duration(
-                                milliseconds:
-                                    200)); // Wait a bit for layout to be ready
-
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (_scrollController.hasClients) {
-                                // Get the max scroll extent (total scrollable content height)
-                                final maxScroll =
-                                    _scrollController.position.maxScrollExtent;
-
-                                // Get the screen height to scroll 20% up from the bottom
-                                final screenHeight =
-                                    MediaQuery.of(context).size.height;
-
-                                // Log values for debugging
-                                print('Max Scroll: $maxScroll');
-                                print('Screen Height: $screenHeight');
-
-                                if (maxScroll > 0) {
-                                  // Calculate the target offset based on 20% of screen height
-                                  final targetOffset =
-                                      maxScroll - (screenHeight * 0.2);
-
-                                  print(
-                                      'Target Scroll Position: $targetOffset');
-
-                                  // Make sure targetOffset is valid (positive)
-                                  if (targetOffset > 0) {
-                                    _scrollController.animateTo(
-                                      targetOffset,
-                                      duration: const Duration(seconds: 1),
-                                      curve: Curves.easeOut,
-                                    );
-                                  } else {
-                                    print(
-                                        "Calculated target offset is invalid (negative or zero), skipping scroll.");
-                                  }
-                                } else {
-                                  print(
-                                      "Max scroll is zero or invalid, skipping scroll.");
-                                }
-                              } else {
-                                print(
-                                    "ScrollController has no clients, skipping scroll.");
-                              }
                             });
                           },
                           icon:
