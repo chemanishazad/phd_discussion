@@ -79,7 +79,10 @@ class RelatedQuestionsSection extends StatelessWidget {
                   onTap: () {
                     print(question['id']);
                     Navigator.pushNamed(context, '/questionDetails',
-                        arguments: question['id']);
+                        arguments: {
+                          'id': question['id'],
+                          'isHide': true,
+                        });
                   },
                 ),
               );
