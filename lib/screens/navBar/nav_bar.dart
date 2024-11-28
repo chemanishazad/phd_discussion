@@ -43,29 +43,12 @@ class CustomMenu extends ConsumerWidget {
                       _buildMenuItem(Icons.info, 'About Us', context, '/about'),
                     ],
                   ),
-                  // _buildExpansionTile(
-                  //   title: 'Related Tags',
-                  //   children: [
-                  //     _buildMenuItem(Icons.school, 'PhD Admission', context,
-                  //         '/phdAdmission'),
-                  //     _buildMenuItem(Icons.search, 'Action Research', context,
-                  //         '/phdAdmission'),
-                  //     _buildMenuItem(
-                  //         Icons.article, 'APA Style', context, '/phdAdmission'),
-                  //     _buildMenuItem(Icons.library_books, 'Annexure I Journals',
-                  //         context, '/phdAdmission'),
-                  //     _buildMenuItem(Icons.edit, 'Academic Writing', context,
-                  //         '/phdAdmission'),
-                  //   ],
-                  // ),
                   if (authState.value != null) ...[
                     _buildExpansionTile(
                       title: 'Profile / Activity',
                       children: [
                         _buildMenuItem(Icons.account_circle_sharp, 'Profile',
                             context, '/profileScreen'),
-                        // _buildMenuItem(Icons.article, 'Summary', context,
-                        //     '/summaryScreen'),
                         _buildMenuItem(Icons.question_answer, 'My Question(s)',
                             context, '/myQuestionScreen'),
                         _buildMenuItem(Icons.question_answer_outlined,

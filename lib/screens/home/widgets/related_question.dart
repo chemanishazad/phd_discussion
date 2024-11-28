@@ -30,6 +30,7 @@ class RelatedQuestionsSection extends StatelessWidget {
             itemBuilder: (context, index) {
               final question = relatedQuestions[index];
               return Card(
+                color: Colors.white,
                 elevation: 6,
                 margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(
@@ -41,7 +42,7 @@ class RelatedQuestionsSection extends StatelessWidget {
                     question['title'],
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   subtitle: Column(
@@ -51,14 +52,12 @@ class RelatedQuestionsSection extends StatelessWidget {
                         'By: ${question['user_id']}',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.grey,
                         ),
                       ),
                       Text(
                         'Posted on: ${question['date']}',
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                          fontSize: 13,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -96,9 +95,9 @@ class RelatedQuestionsSection extends StatelessWidget {
   Widget _buildStatChip(IconData icon, String count) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey),
+        Icon(icon, size: 16),
         const SizedBox(width: 4),
-        Text(count, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+        Text(count, style: const TextStyle(fontSize: 14)),
       ],
     );
   }

@@ -90,6 +90,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: ''),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -128,7 +129,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                           print(user?.name);
 
                           if (user?.name == null) {
-                            showToastWithAction(context);
+                            showToastWithAction(context, 'Answer');
                           } else {
                             setState(() {
                               isAnswer = !isAnswer;
@@ -184,7 +185,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                           String answerText = await bodyController.getText();
 
                           if (user?.name == null || user!.name.isEmpty) {
-                            showToastWithAction(context);
+                            showToastWithAction(context, 'Answer');
                           } else {
                             if (answerText.isEmpty) {
                               Fluttertoast.showToast(
@@ -384,9 +385,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     );
   }
 
-  void showToastWithAction(BuildContext context) {
+  void showToastWithAction(BuildContext context, String title) {
     final snackBar = SnackBar(
-      content: Text('You need to be logged in to vote.'),
+      content: Text('You need to be logged in to $title.'),
       action: SnackBarAction(
         label: 'Login',
         onPressed: () {
@@ -440,7 +441,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       msg: 'Error voting: ${response.reasonPhrase}');
                 }
               } else {
-                showToastWithAction(context);
+                showToastWithAction(context, 'Vote');
                 // Fluttertoast.showToast(
                 //     msg: 'You need to be logged in to vote.');
               }
@@ -503,7 +504,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                   }
                 }
               } else {
-                showToastWithAction(context);
+                showToastWithAction(context, 'Favourite');
               }
             },
             icon: Icon(isFav ? Icons.star : Icons.star_border,
@@ -534,6 +535,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
               final comments = answer['comments'] as List<dynamic>;
               return Card(
                 elevation: 4,
+                color: Colors.white,
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -692,7 +694,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                               },
                             );
                           } else {
-                            showToastWithAction(context);
+                            showToastWithAction(context, 'Reply');
                           }
                         },
                         icon: const Icon(Icons.reply, color: Colors.white),
