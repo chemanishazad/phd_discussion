@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class Palette {
   //! Primary and accent colors
   // static const Color themeColor = Color.fromARGB(255, 1, 40, 63);
-  static const Color themeColor = Color(0xffd31a05);
+  // static const Color themeColor = Color(0xffd31a05);
   static const Color onboardingBgColor = Color(0xFFBB86FC);
-  // static const Color themeColor = Color(0xff343e48);
+  static const Color themeColor = Color.fromARGB(255, 0, 50, 100);
   static const Color buttonColor = Color(0xff343e48);
 
   //! Text colors

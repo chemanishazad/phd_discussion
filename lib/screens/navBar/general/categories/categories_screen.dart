@@ -4,12 +4,10 @@ import 'package:phd_discussion/core/const/palette.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
-// Provider for fetching categories
 final categoriesProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  return getCategories(); // Replace with your actual API call or method
+  return getCategories();
 });
 
-// Model class for a category
 class Category {
   final String id;
   final String category;
@@ -85,9 +83,9 @@ class CategoriesScreen extends ConsumerWidget {
         title: Text(
           title,
           style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Palette.themeColor),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         children: children,
         backgroundColor: Colors.teal.shade50,

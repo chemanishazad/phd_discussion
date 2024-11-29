@@ -3,6 +3,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/route/routes.dart';
+import 'package:phd_discussion/core/theme/font/font_sizer.dart';
+import 'package:phd_discussion/core/theme/theme.dart';
+import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/core/utils/service.dart';
 import 'package:phd_discussion/firebase_options.dart';
 import 'package:phd_discussion/notification_service.dart';
@@ -47,11 +50,21 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    final brightness = MediaQuery.of(context).platformBrightness;
+        final fontSize = ref.watch(fontSizeProvider);
+
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
           title: 'RIM',
-          theme: ThemeData(),
+          themeMode: themeMode == ThemeMode.system
+              ? brightness == Brightness.dark
+                  ? ThemeMode.dark
+                  : ThemeMode.light
+              : themeMode,
+          theme: lightTheme(fontSize),
+          darkTheme: darkTheme(fontSize),
           initialRoute: '/',
           routes: AppRoutes.routes,
           navigatorKey: navigatorKey,

@@ -65,7 +65,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const String questionId = '';
     final asyncValue = ref.watch(topQuestionProvider(questionId));
-    final authState = ref.watch(authProvider);
 
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
@@ -76,28 +75,6 @@ class HomeScreen extends ConsumerWidget {
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
               backgroundColor: Palette.themeColor,
-              actions: [
-                authState.when(
-                  data: (user) {
-                    return IconButton(
-                      icon: user != null
-                          ? const Icon(Icons.logout)
-                          : const Icon(Icons.login),
-                      onPressed: () async {
-                        if (user != null) {
-                          _showLogoutDialog(context, () async {
-                            await ref.read(authProvider.notifier).logout();
-                          });
-                        } else {
-                          Navigator.pushNamed(context, '/login');
-                        }
-                      },
-                    );
-                  },
-                  loading: () => const CircularProgressIndicator(),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
-                ),
-              ],
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(

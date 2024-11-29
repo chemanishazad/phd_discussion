@@ -1,145 +1,219 @@
 import 'package:flutter/material.dart';
 import '../const/palette.dart';
 import '../const/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-final ThemeData lightTheme = ThemeData(
-  primaryColor: Palette.themeColor,
-  colorScheme: const ColorScheme.light(
-    primary: Palette.themeColor,
-    secondary: Palette.themeColor,
-    surface: Palette.lightBackgroundColor,
-  ),
-  scaffoldBackgroundColor: Palette.whiteColor,
-  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Colors.white,
-  ),
-  textTheme: TextTheme(
-    displayLarge: displayLarge(color: Palette.blackColor),
-    displayMedium: displayMedium(color: Palette.blackColor),
-    displaySmall: displaySmall(color: Palette.blackColor),
-    headlineLarge: headlineLarge(color: Palette.blackColor),
-    headlineMedium: headlineMedium(color: Palette.blackColor),
-    headlineSmall: headlineSmall(color: Palette.blackColor),
-    titleLarge: titleLarge(color: Palette.blackColor),
-    titleMedium: titleMedium(color: Palette.blackColor),
-    titleSmall: titleSmall(color: Palette.blackColor),
-    labelLarge: primaryButton(color: Palette.blackColorLight),
-    labelMedium: caption(color: Palette.blackColorLight),
-    labelSmall: overline(color: Palette.blackColorLight),
-  ),
-  iconTheme: primaryIconThemeData(Palette.iconColor),
-  inputDecorationTheme: InputDecorationTheme(
-    border: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+// Light Theme with Google Fonts
+ThemeData lightTheme(double fontSize) {
+  return ThemeData(
+    primaryColor: Palette.themeColor,
+    colorScheme: const ColorScheme.light(
+      primary: Palette.themeColor,
+      secondary: Palette.themeColor,
+      surface: Palette.lightBackgroundColor,
     ),
-    enabledBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Palette.lightGreyColor),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    scaffoldBackgroundColor: Palette.whiteColor,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
     ),
-    focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Palette.themeColor),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    textTheme: TextTheme(
+      displayLarge: GoogleFonts.lato(
+        textStyle: headingLarge(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      displayMedium: GoogleFonts.lato(
+        textStyle: headingMedium(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      displaySmall: GoogleFonts.lato(
+        textStyle: headingSmall(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      headlineLarge: GoogleFonts.lato(
+        textStyle: titleLarge(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      headlineMedium: GoogleFonts.lato(
+        textStyle: titleMedium(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      headlineSmall: GoogleFonts.lato(
+        textStyle: titleSmall(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      titleLarge: GoogleFonts.lato(
+        textStyle: bodyLarge(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      titleMedium: GoogleFonts.lato(
+        textStyle: bodyMedium(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      titleSmall: GoogleFonts.lato(
+        textStyle: bodySmall(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      labelLarge: GoogleFonts.lato(
+        textStyle:
+            buttonTextStyle(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      labelMedium: GoogleFonts.lato(
+        textStyle: captionStyle(color: Palette.blackColor, fontSize: fontSize),
+      ),
+      labelSmall: GoogleFonts.lato(
+        textStyle: overlineStyle(color: Palette.blackColor, fontSize: fontSize),
+      ),
     ),
-    errorBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.red),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    iconTheme: iconTheme(color: Palette.themeColor),
+    inputDecorationTheme: InputDecorationTheme(
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Palette.lightGreyColor),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Palette.themeColor),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      filled: true,
+      fillColor: Palette.lightGreyColor,
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
     ),
-    focusedErrorBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.red),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: elevatedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        backgroundColor: Palette.themeColor,
+      ),
     ),
-    filled: true,
-    fillColor: Palette.lightGreyColor,
-    contentPadding:
-        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-    hintStyle: subtitle2(color: Palette.blackColorLight),
-    labelStyle: titleMedium(color: Palette.blackColor),
-    errorStyle: titleSmall(color: Colors.red),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: primaryElevatedButtonStyle(Palette.whiteColor, Palette.themeColor),
-  ),
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: primaryOutlinedButtonStyle(Palette.themeColor, Palette.themeColor),
-  ),
-  textButtonTheme: TextButtonThemeData(
-    style: primaryTextButtonStyle(Palette.themeColor),
-  ),
-  extensions: <ThemeExtension<dynamic>>[
-    BoxDecorationTheme(
-      primaryBoxDecoration: primaryBoxDecoration(Palette.whiteColor),
-      secondaryBoxDecoration: secondaryBoxDecoration(Palette.greyColor),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: outlinedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.themeColor,
+        borderColor: Palette.themeColor,
+      ),
     ),
-  ],
-);
+    textButtonTheme: TextButtonThemeData(
+      style: textButtonStyle(
+        foregroundColor: Palette.themeColor,
+        fontSize: fontSize,
+      ),
+    ),
+    extensions: <ThemeExtension<dynamic>>[
+      BoxDecorationTheme(
+        primaryDecoration: primaryBoxDecoration(color: Palette.whiteColor),
+        secondaryDecoration: secondaryBoxDecoration(color: Palette.greyColor),
+      ),
+    ],
+  );
+}
 
-final ThemeData darkTheme = ThemeData(
-  primaryColor: Palette.themeColor,
-  colorScheme: const ColorScheme.dark(
-    primary: Palette.themeColor,
-    secondary: Palette.themeColor,
-    surface: Palette.darkBackgroundColor,
-  ),
-  scaffoldBackgroundColor: Palette.darkBackgroundColor,
-  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Colors.black,
-  ),
-  textTheme: TextTheme(
-    displayLarge: displayLarge(color: Palette.whiteColor),
-    displayMedium: displayMedium(color: Palette.whiteColor),
-    displaySmall: displaySmall(color: Palette.whiteColor),
-    headlineLarge: headlineLarge(color: Palette.whiteColor),
-    headlineMedium: headlineMedium(color: Palette.whiteColor),
-    headlineSmall: headlineSmall(color: Palette.whiteColor),
-    titleLarge: titleLarge(color: Palette.whiteColor),
-    titleMedium: titleMedium(color: Palette.whiteColor),
-    titleSmall: titleSmall(color: Palette.whiteColor),
-    labelLarge: primaryButton(color: Palette.whiteColor),
-    labelMedium: caption(color: Palette.greyColor),
-    labelSmall: overline(color: Palette.greyColor),
-  ),
-  iconTheme: primaryIconThemeData(Palette.iconColor),
-  inputDecorationTheme: InputDecorationTheme(
-    border: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+// Dark Theme with Google Fonts
+ThemeData darkTheme(double fontSize) {
+  return ThemeData(
+    primaryColor: Palette.themeColor,
+    colorScheme: const ColorScheme.dark(
+      primary: Palette.themeColor,
+      secondary: Palette.themeColor,
+      surface: Palette.darkBackgroundColor,
     ),
-    enabledBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Palette.greyColor),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    scaffoldBackgroundColor: Palette.darkBackgroundColor,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.black,
     ),
-    focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Palette.themeColor),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    textTheme: TextTheme(
+      displayLarge: GoogleFonts.lato(
+        textStyle: headingLarge(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      displayMedium: GoogleFonts.lato(
+        textStyle: headingMedium(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      displaySmall: GoogleFonts.lato(
+        textStyle: headingSmall(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      headlineLarge: GoogleFonts.lato(
+        textStyle: titleLarge(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      headlineMedium: GoogleFonts.lato(
+        textStyle: titleMedium(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      headlineSmall: GoogleFonts.lato(
+        textStyle: titleSmall(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      titleLarge: GoogleFonts.lato(
+        textStyle: bodyLarge(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      titleMedium: GoogleFonts.lato(
+        textStyle: bodyMedium(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      titleSmall: GoogleFonts.lato(
+        textStyle: bodySmall(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      labelLarge: GoogleFonts.lato(
+        textStyle:
+            buttonTextStyle(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      labelMedium: GoogleFonts.lato(
+        textStyle: captionStyle(color: Palette.whiteColor, fontSize: fontSize),
+      ),
+      labelSmall: GoogleFonts.lato(
+        textStyle: overlineStyle(color: Palette.whiteColor, fontSize: fontSize),
+      ),
     ),
-    errorBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.red),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    iconTheme: iconTheme(color: Palette.lightBackgroundColor),
+    inputDecorationTheme: InputDecorationTheme(
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Palette.greyColor),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Palette.themeColor),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+      filled: true,
+      fillColor: Palette.greyColor,
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
     ),
-    focusedErrorBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.red),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: elevatedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        backgroundColor: Palette.themeColor,
+      ),
     ),
-    filled: true,
-    fillColor: Palette.greyColor,
-    contentPadding:
-        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-    hintStyle: subtitle2(color: Palette.greyColor),
-    labelStyle: titleMedium(color: Palette.whiteColor),
-    errorStyle: titleSmall(color: Colors.red),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: primaryElevatedButtonStyle(Palette.whiteColor, Palette.themeColor),
-  ),
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: primaryOutlinedButtonStyle(Palette.whiteColor, Palette.themeColor),
-  ),
-  textButtonTheme: TextButtonThemeData(
-    style: primaryTextButtonStyle(Palette.whiteColor),
-  ),
-  extensions: <ThemeExtension<dynamic>>[
-    BoxDecorationTheme(
-      primaryBoxDecoration: primaryBoxDecoration(Palette.darkBackgroundColor),
-      secondaryBoxDecoration: secondaryBoxDecoration(Palette.greyColor),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: outlinedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        borderColor: Palette.themeColor,
+      ),
     ),
-  ],
-);
+    textButtonTheme: TextButtonThemeData(
+      style: textButtonStyle(
+        foregroundColor: Palette.whiteColor,
+        fontSize: fontSize,
+      ),
+    ),
+    extensions: <ThemeExtension<dynamic>>[
+      BoxDecorationTheme(
+        primaryDecoration:
+            primaryBoxDecoration(color: Palette.darkBackgroundColor),
+        secondaryDecoration: secondaryBoxDecoration(color: Palette.greyColor),
+      ),
+    ],
+  );
+}

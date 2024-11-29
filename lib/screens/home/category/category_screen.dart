@@ -98,6 +98,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                         });
                   },
                   child: Card(
+                    color: Colors.white,
                     margin: const EdgeInsets.symmetric(
                         vertical: 4.0, horizontal: 8.0),
                     shape: RoundedRectangleBorder(
@@ -111,9 +112,9 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                           Text(
                             question['title'],
                             style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Palette.themeColor),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           HtmlWidget(
