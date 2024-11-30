@@ -17,10 +17,8 @@ class RelatedQuestionsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Related Questions (${relatedQuestions.length})',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          Text('Related Questions (${relatedQuestions.length})',
+              style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 12),
           ListView.builder(
             controller: scrollController,

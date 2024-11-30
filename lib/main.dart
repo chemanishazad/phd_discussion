@@ -51,18 +51,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
-    final brightness = MediaQuery.of(context).platformBrightness;
-        final fontSize = ref.watch(fontSizeProvider);
+    final fontSize = ref.watch(fontSizeProvider);
 
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
           title: 'RIM',
-          themeMode: themeMode == ThemeMode.system
-              ? brightness == Brightness.dark
-                  ? ThemeMode.dark
-                  : ThemeMode.light
-              : themeMode,
+          themeMode: themeMode,
           theme: lightTheme(fontSize),
           darkTheme: darkTheme(fontSize),
           initialRoute: '/',

@@ -55,23 +55,16 @@ class _CommentsSectionState extends State<CommentsSection> {
                         children: [
                           Text(
                             comment['user_id'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                            style: Theme.of(context).textTheme.displayMedium,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '"${comment['comment']}"',
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             comment['date'],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
                           ),
                         ],
                       ),

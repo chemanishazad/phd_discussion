@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
@@ -90,7 +91,6 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: ''),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -114,13 +114,14 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildQuestionHeader(question),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
                   HtmlWidget(question['body']),
                   _buildInteractionSection(question),
                   _buildAnswersSection(answers, question['name']),
+                  const SizedBox(height: 6),
                   if (!isAnswer)
                     Align(
                       alignment: Alignment.centerRight,
@@ -146,13 +147,12 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   if (isAnswer)
                     _buildCard(
                       child: Column(
                         children: [
                           Container(
-                            color: Colors.white,
                             child: ToolBar(
                               controller: bodyController,
                               toolBarConfig: customToolBarList,
@@ -231,7 +231,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                         ),
                       ),
                     ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 4),
                   if (!isRelated)
                     Align(
                       alignment: Alignment.centerRight,
@@ -304,13 +304,12 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       children: [
         Text(
           question['title'],
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
-        const SizedBox(height: 6),
         isExit
             ? const SizedBox()
-            : CustomButton(
-                onTap: () async {
+            : ElevatedButton(
+                onPressed: () async {
                   final response = await ref.read(categoryQuestionProvider({
                     'id': question['category_id'],
                     'page': currentPage.toString()
@@ -331,34 +330,21 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                 },
                 child: Text(
                   question['category'],
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: Palette.whiteColor),
                 ),
               ),
-        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Palette.themeColor),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    blurRadius: 4.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
+              decoration: boxDecoration(context: context),
+              padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 question['tags'],
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Palette.themeColor),
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
             RichText(
@@ -368,9 +354,10 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                     .bodyMedium
                     ?.copyWith(color: Colors.black),
                 children: [
-                  const TextSpan(
-                      text: 'By ',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                    text: 'By ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   TextSpan(
                     text: question['name'],
                     style: const TextStyle(
@@ -381,6 +368,9 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             ),
           ],
         ),
+        SizedBox(
+          height: 4,
+        )
       ],
     );
   }
@@ -451,15 +441,12 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
               color: isLiked ? Palette.themeColor : null,
             )),
         Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(4),
+          decoration: cardDecoration(
+            context: context,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            question['votes'].toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          child: Text(question['votes'].toString(),
+              style: Theme.of(context).textTheme.bodyMedium),
         ),
         IconButton(
             onPressed: () async {
@@ -523,7 +510,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('All Answers: ${answers.length}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+            style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 12),
         if (answers.isNotEmpty)
           ListView.builder(
@@ -533,177 +520,178 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
             itemBuilder: (context, index) {
               final answer = answers[index];
               final comments = answer['comments'] as List<dynamic>;
-              return Card(
-                elevation: 4,
-                color: Colors.white,
-                margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Answer by: ${answer['user_id']}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      HtmlWidget(answer['answer'] ?? 'No answer provided',
-                          textStyle: const TextStyle(fontSize: 14)),
-                      const SizedBox(height: 8),
-                      Text('Posted on: ${answer['date']}',
-                          style: Theme.of(context).textTheme.bodySmall),
-                      const SizedBox(height: 12),
-                      CommentsSection(comments: comments),
-                      const SizedBox(height: 12),
-                      CustomButton(
-                        onTap: () {
-                          if (user != null) {
-                            TextEditingController commentController =
-                                TextEditingController();
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  title: Text(
-                                    'Reply to ${answer['user_id']}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Container(
+                  decoration: cardDecoration(
+                    context: context,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Answer by: ${answer['user_id']}',
+                            style: Theme.of(context).textTheme.headlineMedium),
+                        const SizedBox(height: 8),
+                        HtmlWidget(answer['answer'] ?? 'No answer provided',
+                            textStyle: Theme.of(context).textTheme.bodyMedium),
+                        const SizedBox(height: 8),
+                        Text('Posted on: ${answer['date']}',
+                            style: Theme.of(context).textTheme.bodySmall),
+                        const SizedBox(height: 12),
+                        CommentsSection(comments: comments),
+                        const SizedBox(height: 12),
+                        CustomButton(
+                          onTap: () {
+                            if (user != null) {
+                              TextEditingController commentController =
+                                  TextEditingController();
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16.0),
                                     ),
-                                  ),
-                                  content: Container(
-                                    width: double.maxFinite,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 10.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextField(
-                                          controller: commentController,
-                                          decoration: InputDecoration(
-                                            hintText: 'Type your reply here...',
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                              borderSide: const BorderSide(
-                                                  color: Colors.grey),
+                                    title: Text(
+                                      'Reply to ${answer['user_id']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    content: Container(
+                                      width: double.maxFinite,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0, vertical: 10.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            controller: commentController,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Type your reply here...',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.grey),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                                borderSide: const BorderSide(
+                                                    color: Palette.themeColor),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12,
+                                                      horizontal: 16),
                                             ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                              borderSide: const BorderSide(
-                                                  color: Palette.themeColor),
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 16),
+                                            maxLines: 5,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            textInputAction:
+                                                TextInputAction.newline,
+                                            onSubmitted: (value) {
+                                              FocusScope.of(context).unfocus();
+                                            },
                                           ),
-                                          maxLines: 5,
-                                          keyboardType: TextInputType.multiline,
-                                          textInputAction:
-                                              TextInputAction.newline,
-                                          onSubmitted: (value) {
-                                            FocusScope.of(context).unfocus();
-                                          },
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('Cancel'),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                String commentText =
-                                                    commentController.text
-                                                        .trim();
-                                                if (commentText.isNotEmpty) {
-                                                  try {
-                                                    final response =
-                                                        await ref.read(
-                                                            postCommentProvider({
-                                                      'id': questionId,
-                                                      'answerId':
-                                                          answer['comments']
-                                                              [index]['id'],
-                                                      'answer': commentText,
-                                                    }).future);
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  String commentText =
+                                                      commentController.text
+                                                          .trim();
+                                                  if (commentText.isNotEmpty) {
+                                                    try {
+                                                      final response =
+                                                          await ref.read(
+                                                              postCommentProvider({
+                                                        'id': questionId,
+                                                        'answerId':
+                                                            answer['comments']
+                                                                [index]['id'],
+                                                        'answer': commentText,
+                                                      }).future);
 
-                                                    if (response.statusCode ==
-                                                        200) {
-                                                      final jsonResponse =
-                                                          jsonDecode(
-                                                              response.body);
-                                                      Fluttertoast.showToast(
-                                                          msg: jsonResponse[
-                                                              'message']);
-                                                      commentController.clear();
-                                                    } else {
+                                                      if (response.statusCode ==
+                                                          200) {
+                                                        final jsonResponse =
+                                                            jsonDecode(
+                                                                response.body);
+                                                        Fluttertoast.showToast(
+                                                            msg: jsonResponse[
+                                                                'message']);
+                                                        commentController
+                                                            .clear();
+                                                      } else {
+                                                        Fluttertoast.showToast(
+                                                            msg:
+                                                                'Failed to post comment.');
+                                                      }
+                                                    } catch (e) {
                                                       Fluttertoast.showToast(
                                                           msg:
-                                                              'Failed to post comment.');
+                                                              'Error posting comment: ${e.toString()}');
+                                                      print(
+                                                          'Error during posting comment: $e');
                                                     }
-                                                  } catch (e) {
+                                                    Navigator.of(context).pop();
+                                                  } else {
                                                     Fluttertoast.showToast(
                                                         msg:
-                                                            'Error posting comment: ${e.toString()}');
-                                                    print(
-                                                        'Error during posting comment: $e');
+                                                            'Please enter a reply.');
                                                   }
-                                                  Navigator.of(context).pop();
-                                                } else {
-                                                  Fluttertoast.showToast(
-                                                      msg:
-                                                          'Please enter a reply.');
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Palette.themeColor,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.0),
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Palette.themeColor,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12.0),
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  'Send',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
-                                              child: const Text(
-                                                'Send',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            showToastWithAction(context, 'Reply');
-                          }
-                        },
-                        icon: const Icon(Icons.reply, color: Colors.white),
-                        child: Text(
-                          'Reply to ${answer['user_id']}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              showToastWithAction(context, 'Reply');
+                            }
+                          },
+                          icon: const Icon(Icons.reply, color: Colors.white),
+                          child: Text(
+                            'Reply to ${answer['user_id']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );

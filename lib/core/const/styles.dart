@@ -4,7 +4,7 @@ import 'palette.dart';
 TextStyle headingLarge(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
       color: color,
     );
@@ -12,7 +12,7 @@ TextStyle headingLarge(
 TextStyle headingMedium(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
       color: color,
     );
@@ -20,16 +20,15 @@ TextStyle headingMedium(
 TextStyle headingSmall(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
       color: color,
     );
 
-// Title/Subtitle Styles
 TextStyle titleLarge(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
       color: color,
     );
@@ -37,7 +36,7 @@ TextStyle titleLarge(
 TextStyle titleMedium(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w600,
       color: color,
     );
@@ -45,15 +44,7 @@ TextStyle titleMedium(
 TextStyle titleSmall(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
-      fontWeight: FontWeight.w500,
-      color: color,
-    );
-
-TextStyle subtitle(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w500,
       color: color,
     );
@@ -62,7 +53,7 @@ TextStyle subtitle(
 TextStyle bodyLarge(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w500,
       color: color,
     );
@@ -70,7 +61,7 @@ TextStyle bodyLarge(
 TextStyle bodyMedium(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w400,
       color: color,
     );
@@ -78,24 +69,27 @@ TextStyle bodyMedium(
 TextStyle bodySmall(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w400,
       color: color,
     );
 
 // Button and Input Styles
-TextStyle buttonTextStyle(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
-      fontWeight: FontWeight.w600,
-      color: color,
-    );
+TextStyle buttonTextStyle({
+  required Color color,
+  required double fontSize,
+}) {
+  return TextStyle(
+    color: color,
+    fontSize: fontSize,
+    fontWeight: FontWeight.w500,
+  );
+}
 
 TextStyle inputTextStyle(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w500,
       color: color,
     );
@@ -104,7 +98,7 @@ TextStyle inputTextStyle(
 TextStyle captionStyle(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w400,
       color: color,
     );
@@ -112,14 +106,14 @@ TextStyle captionStyle(
 TextStyle labelLarge(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       color: color,
     );
 
 TextStyle labelSmall(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       color: color,
     );
 
@@ -127,7 +121,7 @@ TextStyle labelSmall(
 TextStyle overlineStyle(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
-      fontSize: fontSize, // Use dynamic fontSize
+      fontSize: fontSize,
       fontWeight: FontWeight.w300,
       color: color,
     );
@@ -152,8 +146,10 @@ BoxDecoration secondaryBoxDecoration({required Color color}) => BoxDecoration(
     );
 
 // Input Decorations
-InputDecoration primaryInputDecoration({required Color fillColor}) =>
+InputDecoration primaryInputDecoration(
+        {required Color fillColor, String? hintText}) =>
     InputDecoration(
+      hintText: hintText,
       border: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
@@ -164,68 +160,64 @@ InputDecoration primaryInputDecoration({required Color fillColor}) =>
     );
 
 InputDecoration searchInputDecoration({required Color fillColor}) =>
-    InputDecoration(
-      hintText: 'Search...',
+    primaryInputDecoration(fillColor: fillColor, hintText: 'Search...')
+        .copyWith(
       prefixIcon: const Icon(Icons.search, color: Palette.iconColor),
-      border: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-      ),
-      filled: true,
-      fillColor: fillColor,
-      contentPadding:
-          const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
     );
 
 // Button Styles
 ButtonStyle elevatedButtonStyle({
   required Color foregroundColor,
   required Color backgroundColor,
-  required double? fontSize,
+  required double fontSize,
 }) =>
     ElevatedButton.styleFrom(
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: fontSize * 0.3,
+        vertical: fontSize * 0.3,
       ),
-      textStyle: buttonTextStyle(
-        color: foregroundColor,
-        fontSize: fontSize ?? 14,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
+      minimumSize: Size(fontSize * 5, fontSize * 2),
     );
 
 ButtonStyle outlinedButtonStyle({
   required Color foregroundColor,
   required Color borderColor,
-  required double? fontSize,
+  required double fontSize,
 }) =>
     OutlinedButton.styleFrom(
       foregroundColor: foregroundColor,
       side: BorderSide(color: borderColor),
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: fontSize * 0.3,
+        vertical: fontSize * 0.3,
       ),
-      textStyle: buttonTextStyle(
-        color: foregroundColor,
-        fontSize: fontSize ?? 14,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
+      minimumSize: Size(fontSize * 5, fontSize * 2),
     );
 
-ButtonStyle textButtonStyle(
-        {required Color foregroundColor, required dynamic fontSize}) =>
+ButtonStyle textButtonStyle({
+  required Color foregroundColor,
+  required double fontSize,
+}) =>
     TextButton.styleFrom(
       foregroundColor: foregroundColor,
-      textStyle:
-          buttonTextStyle(color: foregroundColor, fontSize: fontSize ?? 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: fontSize * 0.3,
+        vertical: fontSize * 0.3,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
+      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
+      minimumSize: Size(fontSize * 5, fontSize * 2),
     );
 
 // Icon Themes
 IconThemeData iconTheme({required Color color, double size = 24.0}) =>
-    IconThemeData(
-      color: color,
-      size: size,
-    );
+    IconThemeData(color: color, size: size);
 
 // Box Decoration Theme (Custom Theme Extension)
 class BoxDecorationTheme extends ThemeExtension<BoxDecorationTheme> {
@@ -258,4 +250,62 @@ class BoxDecorationTheme extends ThemeExtension<BoxDecorationTheme> {
           secondaryDecoration, other.secondaryDecoration, t)!,
     );
   }
+}
+
+BoxDecoration cardDecoration({
+  required BuildContext context,
+  double borderRadius = 8.0,
+  double elevation = 8.0,
+  bool isHovering = false,
+}) {
+  final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+  return BoxDecoration(
+    color: isDarkMode ? Palette.darkGreyColor : Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+    border: Border.all(
+      color:
+          isDarkMode ? Palette.themeColor : Palette.blackColor.withOpacity(0.2),
+      width: 1.5,
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: isDarkMode
+            ? Colors.black.withOpacity(0.3)
+            : Colors.black.withOpacity(0.15),
+        blurRadius: elevation,
+        offset: Offset(0, elevation),
+        spreadRadius: 1.5,
+      ),
+    ],
+  );
+}
+
+BoxDecoration boxDecoration({
+  required BuildContext context,
+  double borderRadius = 2.0,
+  double elevation = 8.0,
+  bool isHovering = false,
+}) {
+  final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+  return BoxDecoration(
+    color: isDarkMode ? Palette.darkGreyColor : Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+    border: Border.all(
+      color:
+          isDarkMode ? Palette.themeColor : Palette.blackColor.withOpacity(0.2),
+      width: 1.5,
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: isDarkMode
+            ? Colors.black.withOpacity(0.3)
+            : Colors.black.withOpacity(0.15),
+        blurRadius: elevation,
+        offset: Offset(0, elevation),
+        spreadRadius: 1.5,
+      ),
+    ],
+  );
 }

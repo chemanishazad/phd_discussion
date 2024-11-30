@@ -19,7 +19,6 @@ class CustomMenu extends ConsumerWidget {
 
     return Drawer(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Theme Toggle Button
 
@@ -28,6 +27,13 @@ class CustomMenu extends ConsumerWidget {
 
           // Divider
           const Divider(thickness: 1),
+
+          // Text('data', style: Theme.of(context).textTheme.bodySmall),
+          // Text('data', style: Theme.of(context).textTheme.bodyMedium),
+          // Text('data', style: Theme.of(context).textTheme.bodyLarge),
+          // Text('data', style: Theme.of(context).textTheme.headlineSmall),
+          // Text('data', style: Theme.of(context).textTheme.headlineMedium),
+          // Text('Datas', style: Theme.of(context).textTheme.headlineLarge),
 
           // Menu List
           Flexible(
@@ -39,13 +45,12 @@ class CustomMenu extends ConsumerWidget {
                   title: "General",
                   items: [
                     _buildMenuItem(Icons.question_answer, "Ask a Question",
-                        context, '/askQuestion', ref),
+                        context, '/askQuestion'),
                     _buildMenuItem(Icons.help_outline, "Need Help", context,
-                        '/helpScreen', ref),
-                    _buildMenuItem(Icons.category, "Categories", context,
-                        '/categories', ref),
+                        '/helpScreen'),
                     _buildMenuItem(
-                        Icons.info, "About Us", context, '/about', ref),
+                        Icons.category, "Categories", context, '/categories'),
+                    _buildMenuItem(Icons.info, "About Us", context, '/about'),
                   ],
                 ),
                 if (authState.value != null)
@@ -54,29 +59,29 @@ class CustomMenu extends ConsumerWidget {
                     title: "Profile / Activity",
                     items: [
                       _buildMenuItem(Icons.account_circle, "Profile", context,
-                          '/profileScreen', ref),
+                          '/profileScreen'),
                       _buildMenuItem(Icons.question_answer, "My Questions",
-                          context, '/myQuestionScreen', ref),
+                          context, '/myQuestionScreen'),
                       _buildMenuItem(Icons.question_answer_outlined,
-                          "My Answers", context, '/myAnswerScreen', ref),
+                          "My Answers", context, '/myAnswerScreen'),
                       _buildMenuItem(Icons.favorite, "My Favourites", context,
-                          '/myFavouriteScreen', ref),
+                          '/myFavouriteScreen'),
                       _buildMenuItem(Icons.thumb_up_alt, "My Votes", context,
-                          '/myVoteScreen', ref),
+                          '/myVoteScreen'),
                       _buildMenuItem(Icons.settings, "Settings", context,
-                          '/settingScreen', ref),
+                          '/settingScreen'),
                     ],
                   ),
                 SwitchListTile(
                   title: Text("Dark Mode",
-                      style: Theme.of(context).textTheme.titleMedium),
+                      style: Theme.of(context).textTheme.headlineSmall),
                   value: themeMode == ThemeMode.dark,
                   onChanged: (value) async {
                     await ref.read(themeProvider.notifier).toggleTheme();
                   },
                 ),
                 Text("Adjust Font Size",
-                    style: Theme.of(context).textTheme.titleLarge),
+                    style: Theme.of(context).textTheme.bodyLarge),
                 FontSizeSlider(),
                 if (authState.value != null)
                   _buildLogout(Icons.logout, "Logout", context, ref),
@@ -141,16 +146,15 @@ class CustomMenu extends ConsumerWidget {
                       ),
                 );
               } else {
-                return ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/login'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Palette.themeColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                return Column(
+                  children: [
+                    Text("Welcome, Guest",
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pushNamed(context, '/login'),
+                      child: const Text("Login"),
                     ),
-                  ),
-                  child: const Text("Login"),
+                  ],
                 );
               }
             },
@@ -171,7 +175,7 @@ class CustomMenu extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Text(title, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
           ...items,
         ],
@@ -179,22 +183,18 @@ class CustomMenu extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, BuildContext context,
-      String route, WidgetRef ref) {
-    // Watch the current font size from the provider
-    final fontSize = ref.watch(fontSizeProvider);
-
+  Widget _buildMenuItem(
+    IconData icon,
+    String title,
+    BuildContext context,
+    String route,
+  ) {
     return ListTile(
       leading: Icon(
         icon,
         color: Theme.of(context).iconTheme.color,
       ),
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontSize: fontSize, // Apply dynamic font size
-            ),
-      ),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       onTap: () {
         Navigator.pop(context);
         Navigator.pushNamed(context, route);

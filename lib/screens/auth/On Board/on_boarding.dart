@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'data.dart';
 
@@ -27,7 +26,6 @@ class _OnBoardingState extends State<OnBoarding> {
         itemCount: onboardingData.length,
         itemBuilder: (context, index) {
           return Container(
-            color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -43,11 +41,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 ),
                 Text(
                   onboardingData[index]['title']!,
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -55,22 +49,18 @@ class _OnBoardingState extends State<OnBoarding> {
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: Text(
                     onboardingData[index]['description']!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
                 ),
                 if (index == onboardingData.length - 1)
                   Padding(
                     padding: const EdgeInsets.only(top: 40.0),
-                    child: CustomButton(
-                      onTap: () {
+                    child: ElevatedButton(
+                      onPressed: () {
                         Navigator.of(context).pushReplacementNamed('/home');
                       },
-                      child: const Text('Get Started',
-                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                      child: const Text('  Get Started  '),
                     ),
                   ),
               ],
@@ -88,8 +78,10 @@ class _OnBoardingState extends State<OnBoarding> {
                     onPressed: () {
                       _pageController.jumpToPage(onboardingData.length - 1);
                     },
-                    child: const Text('Skip',
-                        style: TextStyle(color: Palette.themeColor)),
+                    child: Text(
+                      'Skip',
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
                   ),
                   Row(
                     children: List.generate(onboardingData.length, (index) {
@@ -114,8 +106,8 @@ class _OnBoardingState extends State<OnBoarding> {
                         curve: Curves.easeIn,
                       );
                     },
-                    child: const Text('Next',
-                        style: TextStyle(color: Palette.themeColor)),
+                    child: Text('Next',
+                        style: Theme.of(context).textTheme.headlineLarge),
                   ),
                 ],
               ),

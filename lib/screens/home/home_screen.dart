@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/nav_bar.dart';
@@ -100,6 +101,7 @@ class HomeScreen extends ConsumerWidget {
                   return SingleChildScrollView(
                     child: Column(
                       children: [
+                        SizedBox(height: 4),
                         ...questions.map((questionData) => GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, '/questionDetails',
@@ -108,109 +110,145 @@ class HomeScreen extends ConsumerWidget {
                                       'isHide': false,
                                     });
                               },
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 4,
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 12),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        questionData['title'],
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                child: Container(
+                                  decoration: cardDecoration(
+                                    context: context,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                        8.0), // Keep minimal padding around the content
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize
+                                          .min, // Prevent extra vertical space in Column
+                                      children: [
+                                        Text(
+                                          questionData['title'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
+                                          textHeightBehavior:
+                                              const TextHeightBehavior(
+                                            applyHeightToFirstAscent: false,
+                                            applyHeightToLastDescent: false,
+                                          ), // Reduce inherent line height
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
                                                 '${questionData['date']}',
-                                                style: const TextStyle(
-                                                    fontSize: 14)),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              final response = await ref.read(
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                                textHeightBehavior:
+                                                    const TextHeightBehavior(
+                                                  applyHeightToFirstAscent:
+                                                      false,
+                                                  applyHeightToLastDescent:
+                                                      false,
+                                                ), // Reduce inherent line height
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                final response = await ref.read(
                                                   categoryQuestionProvider({
-                                                'id':
-                                                    questionData['category_id'],
-                                                'page': '1',
-                                              }).future);
-                                              final Map<String, dynamic>
-                                                  relatedJson =
-                                                  jsonDecode(response.body);
-                                              final categoryQuestions =
-                                                  relatedJson['data'] ?? [];
+                                                    'id': questionData[
+                                                        'category_id'],
+                                                    'page': '1',
+                                                  }).future,
+                                                );
+                                                final Map<String, dynamic>
+                                                    relatedJson =
+                                                    jsonDecode(response.body);
+                                                final categoryQuestions =
+                                                    relatedJson['data'] ?? [];
 
-                                              if (categoryQuestions
-                                                  .isNotEmpty) {
-                                                await Navigator.pushNamed(
+                                                if (categoryQuestions
+                                                    .isNotEmpty) {
+                                                  await Navigator.pushNamed(
                                                     context,
                                                     '/homeCategoryScreen',
                                                     arguments:
-                                                        categoryQuestions);
-                                              } else {
-                                                print("No questions found");
-                                              }
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                border: Border.all(
-                                                    color: Palette.themeColor),
-                                                borderRadius:
-                                                    BorderRadius.circular(4.0),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.2),
-                                                    blurRadius: 4.0,
-                                                    offset: Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Text(
-                                                questionData['category'],
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Palette.themeColor,
-                                                  fontSize: 14.0,
+                                                        categoryQuestions,
+                                                  );
+                                                } else {
+                                                  print("No questions found");
+                                                }
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 2.0,
+                                                  horizontal: 6.0,
+                                                ), // Compact padding
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  border: Border.all(
+                                                      color:
+                                                          Palette.themeColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          4.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      blurRadius: 2.0,
+                                                      offset: Offset(0, 1),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Text(
+                                                  questionData['category'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineSmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            Palette.themeColor,
+                                                      ),
+                                                  textHeightBehavior:
+                                                      const TextHeightBehavior(
+                                                    applyHeightToFirstAscent:
+                                                        false,
+                                                    applyHeightToLastDescent:
+                                                        false,
+                                                  ), // Reduce inherent line height
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          _InfoCard(
-                                              icon: Icons.visibility,
-                                              label: questionData['views']),
-                                          _InfoCard(
-                                              icon: Icons.how_to_vote,
-                                              label: questionData['votes']),
-                                          _InfoCard(
-                                              icon: Icons.comment,
-                                              label: questionData['answers']),
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            _InfoCard(
+                                                icon: Icons.visibility,
+                                                label: questionData['views']),
+                                            _InfoCard(
+                                                icon: Icons.how_to_vote,
+                                                label: questionData['votes']),
+                                            _InfoCard(
+                                                icon: Icons.comment,
+                                                label: questionData['answers']),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             )),
+                        SizedBox(height: 4),
                       ],
                     ),
                   );
@@ -252,9 +290,9 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: Palette.themeColor),
-        const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 14)),
+        Icon(icon),
+        SizedBox(width: 4),
+        Text(label, style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
   }

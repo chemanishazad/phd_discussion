@@ -20,5 +20,7 @@ class Palette {
   //! Icon and accent colors
   static const Color iconColor = Color(0xff343e48);
   static const Color greyColor = Colors.grey;
+  static const Color darkGreyColor = Color.fromARGB(255, 87, 87, 87);
+  static const Color alertColor = Colors.red;
   static const Color lightGreyColor = Color.fromARGB(255, 231, 231, 231);
 }
