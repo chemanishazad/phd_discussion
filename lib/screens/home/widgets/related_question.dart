@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 
 class RelatedQuestionsSection extends StatelessWidget {
   final List<dynamic> relatedQuestions;
@@ -27,46 +28,32 @@ class RelatedQuestionsSection extends StatelessWidget {
             itemCount: relatedQuestions.length,
             itemBuilder: (context, index) {
               final question = relatedQuestions[index];
-              return Card(
-                color: Colors.white,
-                elevation: 6,
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              return Container(
+                decoration: cardDecoration(
+                  context: context,
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  title: Text(
-                    question['title'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  title: Text(question['title'],
+                      style: Theme.of(context).textTheme.headlineMedium),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'By: ${question['user_id']}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        'Posted on: ${question['date']}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                        ),
-                      ),
+                      Text('By: ${question['user_id']}',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text('Posted on: ${question['date']}',
+                          style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 4),
                       Row(
                         children: [
                           _buildStatChip(
-                              Icons.remove_red_eye, question['views']),
+                              Icons.remove_red_eye, question['views'], context),
                           const SizedBox(width: 8),
-                          _buildStatChip(Icons.thumb_up, question['votes']),
+                          _buildStatChip(
+                              Icons.thumb_up, question['votes'], context),
                           const SizedBox(width: 8),
-                          _buildStatChip(Icons.comment, question['answers']),
+                          _buildStatChip(
+                              Icons.comment, question['answers'], context),
                         ],
                       ),
                     ],
@@ -90,12 +77,12 @@ class RelatedQuestionsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildStatChip(IconData icon, String count) {
+  Widget _buildStatChip(IconData icon, String count, BuildContext context) {
     return Row(
       children: [
         Icon(icon, size: 16),
-        const SizedBox(width: 4),
-        Text(count, style: const TextStyle(fontSize: 14)),
+        SizedBox(width: 4),
+        Text(count, style: Theme.of(context).textTheme.labelSmall),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
@@ -51,6 +52,7 @@ class CategoriesScreen extends ConsumerWidget {
               child: Column(
                 children: categories.map((category) {
                   return _buildExpansionTile(
+                    context: context,
                     title: category.category,
                     children: category.children?.map((child) {
                           return _buildListTile(context, child);
@@ -72,23 +74,13 @@ class CategoriesScreen extends ConsumerWidget {
   Widget _buildExpansionTile({
     required String title,
     required List<Widget> children,
+    required BuildContext context,
   }) {
-    return Card(
-      elevation: 8,
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Container(
+      decoration: cardDecoration(context: context),
       child: ExpansionTile(
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text(title, style: Theme.of(context).textTheme.headlineMedium),
         children: children,
-        backgroundColor: Colors.teal.shade50,
         iconColor: Palette.themeColor,
       ),
     );
@@ -97,10 +89,8 @@ class CategoriesScreen extends ConsumerWidget {
   // ListTile for each sub-category
   Widget _buildListTile(BuildContext context, Category category) {
     return ListTile(
-      title: Text(
-        category.category,
-        style: const TextStyle(fontSize: 14),
-      ),
+      title: Text(category.category,
+          style: Theme.of(context).textTheme.bodyMedium),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.teal),
       onTap: () {
         // Pass the selected category to the next screen

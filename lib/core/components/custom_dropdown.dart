@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 
 class CustomDropDown extends StatefulWidget {
   final List<String> items;
@@ -37,30 +38,20 @@ class _CustomDropDownState extends State<CustomDropDown> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Fetch current theme
+
     return Container(
       width: widget.dropdownWidth,
       height: widget.dropdownHeight, // Set the height of the dropdown box
       padding: const EdgeInsets.symmetric(
           horizontal: 8, vertical: 0), // Reduced vertical padding
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue),
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: cardDecoration(context: context),
       child: DropdownButtonHideUnderline(
         child: Row(
           children: [
             Icon(
               widget.icon,
-              color: widget.iconColor ?? Colors.blue,
+              color: widget.iconColor ?? theme.colorScheme.primary,
               size: 20,
             ),
             const SizedBox(width: 4),
@@ -69,13 +60,20 @@ class _CustomDropDownState extends State<CustomDropDown> {
                 isExpanded: true,
                 hint: Text(
                   widget.title ?? 'Please select',
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ), // Themed hint text style
                 ),
                 value: _selectedItem,
-                icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.grey,
+                ),
                 iconSize: 20,
                 elevation: 4,
-                style: const TextStyle(color: Colors.black, fontSize: 12),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface, // Dropdown text color
+                ),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
                     setState(() {
@@ -92,7 +90,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                     value: value,
                     child: Text(
                       value,
-                      style: const TextStyle(fontSize: 14),
+                      style: theme.textTheme.bodySmall, // Themed menu item text
                     ),
                   );
                 }).toList(),

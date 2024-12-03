@@ -35,9 +35,11 @@ ThemeData lightTheme(double fontSize) {
       bodyLarge: GoogleFonts.poppins(
           textStyle: bodyLarge(color: Palette.blackColor, fontSize: fontSize)),
       bodyMedium: GoogleFonts.poppins(
-          textStyle: bodyMedium(color: Palette.blackColor, fontSize: fontSize)),
+          textStyle:
+              bodyMedium(color: Palette.blackColor, fontSize: fontSize - 1)),
       bodySmall: GoogleFonts.poppins(
-          textStyle: bodySmall(color: Palette.blackColor, fontSize: fontSize)),
+          textStyle:
+              bodySmall(color: Palette.blackColor, fontSize: fontSize - 2)),
       labelLarge: GoogleFonts.poppins(
           textStyle:
               buttonTextStyle(color: Palette.blackColor, fontSize: fontSize)),

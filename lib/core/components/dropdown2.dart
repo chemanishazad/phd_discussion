@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 
 class CustomDropDown2 extends StatefulWidget {
   final List<String> items;
@@ -38,29 +39,17 @@ class _CustomDropDown2State extends State<CustomDropDown2> {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue),
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 2,
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
+        decoration: cardDecoration(context: context),
         child: Row(
           children: [
-            Icon(widget.icon, color: Colors.black, size: 24),
+            Icon(widget.icon),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 _selectedItems.isNotEmpty
                     ? _selectedItems.join(', ') // Show selected names
                     : (widget.title ?? 'Please select'),
-                style: const TextStyle(fontSize: 14, color: Colors.black),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
             const Icon(Icons.keyboard_arrow_down, color: Colors.grey),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'dart:convert';
@@ -109,84 +110,80 @@ class _CategoryQuestionState extends ConsumerState<CategoryQuestion> {
                               'isHide': true,
                             });
                       },
-                      child: Card(
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                question['title'],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 4),
+                        child: Container(
+                          decoration: cardDecoration(context: context),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(question['title'],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge),
+                                const SizedBox(height: 10),
+                                HtmlWidget(
+                                  question['body'],
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodyMedium,
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              HtmlWidget(
-                                question['body'],
-                                textStyle: const TextStyle(
-                                    fontSize: 15, color: Colors.black87),
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  const Icon(Icons.calendar_today,
-                                      size: 14, color: Colors.grey),
-                                  const SizedBox(width: 4),
-                                  Text(question['date'],
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.black54)),
-                                  const SizedBox(width: 16),
-                                  const Icon(Icons.remove_red_eye,
-                                      size: 14, color: Colors.grey),
-                                  const SizedBox(width: 4),
-                                  Text(question['views'].toString(),
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.black54)),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 16,
-                                          backgroundColor: Palette.themeColor,
-                                          child: Text(question['user_id'][0],
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14)),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                              "Posted by: ${question['user_id']}",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.black54)),
-                                        ),
-                                      ],
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.calendar_today, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(question['date'],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall),
+                                    const SizedBox(width: 16),
+                                    const Icon(Icons.remove_red_eye, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(question['views'].toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 16,
+                                            backgroundColor: Palette.themeColor,
+                                            child: Text(question['user_id'][0],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headlineMedium),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                                "Posted by: ${question['user_id']}",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: const Icon(Icons.arrow_forward_ios,
-                                        size: 20, color: Palette.themeColor),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: const Icon(Icons.arrow_forward_ios,
+                                          size: 20, color: Palette.themeColor),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

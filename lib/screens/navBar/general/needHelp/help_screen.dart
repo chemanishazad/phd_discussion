@@ -51,8 +51,10 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
               TextField(
                 controller: _commentsController,
                 maxLines: 5,
+                style: Theme.of(context).textTheme.headlineMedium,
                 decoration: InputDecoration(
                   hintText: 'Describe your issue here...',
+                  hintStyle: Theme.of(context).textTheme.bodyMedium,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: const BorderSide(color: Colors.grey),
@@ -92,11 +94,11 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
                   },
                   child: helpSubmissionState.isLoading
                       ? const CircularProgressIndicator()
-                      : const Text(
-                          'Submit',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w500),
-                        ),
+                      : Text('Submit',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(color: Colors.white)),
                 ),
               ),
               // if (helpSubmissionState.message != null)
@@ -120,15 +122,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
 
   Widget _title(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
-      ),
-    );
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Text(title, style: Theme.of(context).textTheme.headlineMedium));
   }
 }

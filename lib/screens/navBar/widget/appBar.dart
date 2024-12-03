@@ -10,10 +10,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       iconTheme: const IconThemeData(color: Colors.white),
       backgroundColor: Palette.themeColor,
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      ),
+      title: Text(title,
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(color: Colors.white)),
     );
   }
 

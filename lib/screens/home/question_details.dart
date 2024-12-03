@@ -573,6 +573,12 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                             decoration: InputDecoration(
                                               hintText:
                                                   'Type your reply here...',
+                                              hintStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium
+                                                  ?.copyWith(
+                                                      color:
+                                                          Palette.blackColor),
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(12.0),
@@ -593,6 +599,11 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                                             maxLines: 5,
                                             keyboardType:
                                                 TextInputType.multiline,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    color: Palette.blackColor),
                                             textInputAction:
                                                 TextInputAction.newline,
                                             onSubmitted: (value) {

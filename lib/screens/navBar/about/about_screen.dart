@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -10,22 +11,23 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       appBar: const CustomAppBar(title: 'About Us'),
       body: Container(
-        decoration: const BoxDecoration(),
+        decoration: cardDecoration(context: context),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionTitle('PhD Discussions', Icons.school),
+                _buildSectionTitle('PhD Discussions', Icons.school, context),
                 _buildSectionContent(
                   'PhD discussions serve as a platform to assist PhD scholars facing challenges while pursuing their research work. '
                   'Inadequate supervisor support, lack of resources, extensive coursework, and fast-approaching deadlines are just the tip of the iceberg.',
+                  context,
                 ),
                 const SizedBox(height: 20),
-                _buildSectionTitle('Discussion Topics', Icons.topic),
+                _buildSectionTitle('Discussion Topics', Icons.topic, context),
                 const SizedBox(height: 10),
-                _buildGridItems(),
+                _buildGridItems(context), // Pass context here
               ],
             ),
           ),
@@ -34,43 +36,33 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon) {
+  Widget _buildSectionTitle(String title, IconData icon, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: Palette.themeColor),
+          Icon(icon),
           const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Palette.themeColor,
-            ),
-          ),
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
   }
 
-  Widget _buildSectionContent(String content) {
+  Widget _buildSectionContent(String content, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Text(
-        content,
-        style: const TextStyle(fontSize: 16, color: Colors.black87),
-      ),
+      child: Text(content, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
-  Widget _buildGridItems() {
+  Widget _buildGridItems(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: 1,
       crossAxisSpacing: 8,
       mainAxisSpacing: 8,
-      childAspectRatio: 2.5, // Adjusted for better aspect ratio
+      childAspectRatio: 2.5,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildCustomCard(
@@ -78,43 +70,37 @@ class AboutScreen extends StatelessWidget {
           'Research Challenges',
           'Explore common challenges faced by PhD scholars and ways to overcome them.',
           Icons.help_outline,
+          context, // Pass context here
         ),
         _buildCustomCard(
           '2',
           'Funding Opportunities',
           'Find various funding sources available for research projects.',
           Icons.monetization_on,
+          context, // Pass context here
         ),
         _buildCustomCard(
           '3',
           'Time Management',
           'Tips and tricks to manage your time effectively during research.',
           Icons.access_time,
+          context, // Pass context here
         ),
         _buildCustomCard(
           '4',
           'Networking',
           'Learn the importance of networking and how to build professional connections.',
           Icons.people,
+          context, // Pass context here
         ),
       ],
     );
   }
 
-  Widget _buildCustomCard(
-      String number, String title, String description, IconData icon) {
+  Widget _buildCustomCard(String number, String title, String description,
+      IconData icon, BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Palette.themeColor.withOpacity(0.9),
-            Palette.themeColor.withOpacity(0.6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: boxDecoration(context: context),
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,14 +110,8 @@ class AboutScreen extends StatelessWidget {
               _buildNumberBadge(number),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: Text(title,
+                    style: Theme.of(context).textTheme.headlineMedium),
               ),
               Container(
                 padding: const EdgeInsets.all(8.0),
@@ -148,10 +128,7 @@ class AboutScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text(
-            description,
-            style: const TextStyle(fontSize: 14, color: Colors.white70),
-          ),
+          Text(description, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

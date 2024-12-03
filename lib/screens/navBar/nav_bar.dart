@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/const/palette.dart';
-import 'package:phd_discussion/core/const/styles.dart';
-import 'package:phd_discussion/core/theme/font/font_sizer.dart';
 import 'package:phd_discussion/core/theme/font/font_slider_model.dart';
 import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CustomMenu extends ConsumerWidget {
   const CustomMenu({super.key});
@@ -18,26 +16,16 @@ class CustomMenu extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return Drawer(
-      child: Column(
-        children: [
-          // Theme Toggle Button
-
-          // Header Section
-          _buildHeader(authState, context),
-
-          // Divider
-          const Divider(thickness: 1),
-
-          // Text('data', style: Theme.of(context).textTheme.bodySmall),
-          // Text('data', style: Theme.of(context).textTheme.bodyMedium),
-          // Text('data', style: Theme.of(context).textTheme.bodyLarge),
-          // Text('data', style: Theme.of(context).textTheme.headlineSmall),
-          // Text('data', style: Theme.of(context).textTheme.headlineMedium),
-          // Text('Datas', style: Theme.of(context).textTheme.headlineLarge),
-
-          // Menu List
-          Flexible(
-            child: ListView(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Simplified Header Section
+            _buildHeader(authState, context),
+            SizedBox(height: 8),
+            // Menu List
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               children: [
                 _buildSection(
@@ -45,137 +33,152 @@ class CustomMenu extends ConsumerWidget {
                   title: "General",
                   items: [
                     _buildMenuItem(Icons.question_answer, "Ask a Question",
-                        context, '/askQuestion'),
-                    _buildMenuItem(Icons.help_outline, "Need Help", context,
-                        '/helpScreen'),
+                        context, '/askQuestion',
+                        authState: authState),
                     _buildMenuItem(
-                        Icons.category, "Categories", context, '/categories'),
-                    _buildMenuItem(Icons.info, "About Us", context, '/about'),
+                        Icons.help_outline, "Need Help", context, '/helpScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(
+                        Icons.category, "Categories", context, '/categories',
+                        authState: authState),
+                    _buildMenuItem(Icons.info, "About Us", context, '/about',
+                        authState: authState),
                   ],
                 ),
-                if (authState.value != null)
-                  _buildSection(
-                    context: context,
-                    title: "Profile / Activity",
-                    items: [
-                      _buildMenuItem(Icons.account_circle, "Profile", context,
-                          '/profileScreen'),
-                      _buildMenuItem(Icons.question_answer, "My Questions",
-                          context, '/myQuestionScreen'),
-                      _buildMenuItem(Icons.question_answer_outlined,
-                          "My Answers", context, '/myAnswerScreen'),
-                      _buildMenuItem(Icons.favorite, "My Favourites", context,
-                          '/myFavouriteScreen'),
-                      _buildMenuItem(Icons.thumb_up_alt, "My Votes", context,
-                          '/myVoteScreen'),
-                      _buildMenuItem(Icons.settings, "Settings", context,
-                          '/settingScreen'),
-                    ],
-                  ),
+                _buildSection(
+                  context: context,
+                  title: "Profile / Activity",
+                  items: [
+                    _buildMenuItem(Icons.account_circle, "Profile", context,
+                        '/profileScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(Icons.question_answer, "My Questions",
+                        context, '/myQuestionScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(Icons.question_answer_outlined, "My Answers",
+                        context, '/myAnswerScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(Icons.favorite, "My Favourites", context,
+                        '/myFavouriteScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(Icons.thumb_up_alt, "My Votes", context,
+                        '/myVoteScreen',
+                        authState: authState, requiresAuth: true),
+                    _buildMenuItem(
+                        Icons.settings, "Settings", context, '/settingScreen',
+                        authState: authState, requiresAuth: true),
+                  ],
+                ),
                 SwitchListTile(
-                  title: Text("Dark Mode",
-                      style: Theme.of(context).textTheme.headlineSmall),
+                  title: Text(
+                    "Dark Mode",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                   value: themeMode == ThemeMode.dark,
                   onChanged: (value) async {
                     await ref.read(themeProvider.notifier).toggleTheme();
                   },
                 ),
-                Text("Adjust Font Size",
-                    style: Theme.of(context).textTheme.bodyLarge),
                 FontSizeSlider(),
                 if (authState.value != null)
                   _buildLogout(Icons.logout, "Logout", context, ref),
               ],
             ),
-          ),
 
-          // Footer Section
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Divider(thickness: 1),
-                Text(
-                  "Powered by ELK ❤",
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-              ],
+            // Footer Section
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Divider(thickness: 1),
+                  Text(
+                    "Powered by ELK ❤",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  // Header Widget
   Widget _buildHeader(AsyncValue<UserModel?> authState, BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 16),
-      child: Column(
-        children: [
-          // User Avatar
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.white,
-            child: authState.when(
-              data: (user) => user != null
-                  ? Text(
-                      user.name[0].toUpperCase(),
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Palette.themeColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                    )
-                  : const Icon(Icons.person, size: 40, color: Colors.grey),
-              loading: () => const CircularProgressIndicator(),
-              error: (e, stack) => const Icon(Icons.error, color: Colors.red),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Welcome Message or Login Button
-          authState.when(
-            data: (user) {
-              if (user != null) {
-                return Text(
-                  "Welcome, ${user.name}",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                );
-              } else {
-                return Column(
-                  children: [
-                    Text("Welcome, Guest",
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/login'),
-                      child: const Text("Login"),
+      width: double.infinity,
+      color: Theme.of(context).primaryColor,
+      padding: const EdgeInsets.all(16),
+      child: authState.when(
+        data: (user) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                user != null
+                    ? "Welcome back, ${user.name}!"
+                    : "Welcome to Our Community!",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                );
-              }
-            },
-            loading: () => const CircularProgressIndicator(),
-            error: (e, stack) => const Text("Error"),
-          ),
-        ],
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                user != null
+                    ? "Discover new discussions and connect with others."
+                    : "Sign in to ask questions, share answers, and explore!",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white70,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              if (user == null)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).primaryColor,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    "Login",
+                  ),
+                ),
+            ],
+          );
+        },
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+        error: (e, stack) => const Center(
+          child: Icon(Icons.error, color: Colors.red, size: 32),
+        ),
       ),
     );
   }
 
-  Widget _buildSection(
-      {required String title,
-      required BuildContext context,
-      required List<Widget> items}) {
+  Widget _buildSection({
+    required String title,
+    required BuildContext context,
+    required List<Widget> items,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.headlineMedium),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           const SizedBox(height: 8),
           ...items,
         ],
@@ -187,18 +190,37 @@ class CustomMenu extends ConsumerWidget {
     IconData icon,
     String title,
     BuildContext context,
-    String route,
-  ) {
+    String route, {
+    required AsyncValue<UserModel?> authState,
+    bool requiresAuth = false,
+  }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: Theme.of(context).iconTheme.color,
+      leading: Icon(icon, color: Theme.of(context).iconTheme.color),
+      title: Row(
+        children: [
+          Text(title, style: Theme.of(context).textTheme.bodyMedium),
+          if (requiresAuth && authState.value == null)
+            const Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: Icon(Icons.lock, size: 16, color: Colors.grey),
+            ),
+        ],
       ),
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       onTap: () {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, route);
+        if (requiresAuth && authState.value == null) {
+          showToastWithAction(context, title);
+        } else {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, route);
+        }
       },
+    );
+  }
+
+  void showToastWithAction(BuildContext context, String title) {
+    Fluttertoast.showToast(
+      msg: 'You need to be logged in to access "$title".',
+      toastLength: Toast.LENGTH_LONG,
     );
   }
 
@@ -223,20 +245,20 @@ Future<void> _showLogoutDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Are you sure?'),
-        content: Text('Do you really want to log out?'),
+        title: const Text('Are you sure?'),
+        content: const Text('Do you really want to log out?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(false);
             },
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true);
             },
-            child: Text('Yes'),
+            child: const Text('Yes'),
           ),
         ],
       );

@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/components/dropdown2.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/NavProvider/model/withLoginQuestionSave.dart';
 import 'package:phd_discussion/provider/NavProvider/model/withoutLoginQuestionSave.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
@@ -102,6 +103,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                   if (token!.isEmpty) _title('EMAIL'),
                   if (token!.isEmpty)
                     CustomReactiveTextField(
+                      
                       formControlName: 'email',
                       hintText: 'Enter Your Email',
                       // prefixIcon: Icons.email_outlined,
@@ -381,7 +383,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     );
   }
 
-
   void _showAddCategoryDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -427,9 +428,10 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   }
 
   Widget _buildCard({String? subTitle, required Widget child}) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 4,
+    return Container(
+      decoration: cardDecoration(
+        context: context,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -449,7 +451,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.headlineMedium,
       ),
     );
   }
@@ -457,10 +459,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   Widget _subTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: Text(
-        title,
-        style: TextStyle(color: Colors.grey[600]),
-      ),
+      child: Text(title, style: Theme.of(context).textTheme.bodySmall),
     );
   }
 }

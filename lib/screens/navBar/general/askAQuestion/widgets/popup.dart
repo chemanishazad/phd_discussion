@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 
 class CustomCategoryDialog extends StatefulWidget {
   final String? title;
@@ -52,16 +53,8 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
   Widget _buildDialogContent(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: Offset(0, 6),
-          ),
-        ],
+      decoration: cardDecoration(
+        context: context,
       ),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Column(
@@ -69,16 +62,10 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Text(
-              'Add New ${widget.heading}',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.blueAccent,
-                letterSpacing: 1.1,
-              ),
-            ),
-          ),
+              child: Text(
+            'Add New ${widget.heading}',
+            style: Theme.of(context).textTheme.titleSmall,
+          )),
           SizedBox(height: 15),
           Form(
             key: _formKey,
@@ -133,11 +120,8 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
                   }
                 },
                 color: Colors.blueAccent,
-                child: const Text('Save',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold)),
+                child:
+                    Text('Save', style: Theme.of(context).textTheme.bodyMedium),
               ),
             ],
           ),
@@ -156,26 +140,12 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.withOpacity(0.4)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: cardDecoration(context: context),
         child: TextFormField(
           controller: controller,
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(
-              color: Colors.blueAccent,
-              fontWeight: FontWeight.w500,
-            ),
+            labelStyle: Theme.of(context).textTheme.bodySmall,
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             prefixIcon: Icon(icon, color: Colors.blueAccent),

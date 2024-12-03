@@ -21,25 +21,48 @@ class CustomReactiveTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ReactiveTextField(
       formControlName: formControlName,
       obscureText: obscureText,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onBackground, // Adjust text color explicitly
+      ),
       decoration: InputDecoration(
-        hintText: hintText,
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+        hintText: hintText, // Hint text
+        hintStyle: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onBackground.withOpacity(0.6), // Hint color
+        ),
+        prefixIcon: prefixIcon != null
+            ? Icon(
+                prefixIcon,
+                color: theme.colorScheme.primary, // Icon color
+              )
+            : null,
         suffixIcon: onSuffixIconPressed != null
             ? IconButton(
-                icon:
-                    Icon(obscureText ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  obscureText ? Icons.visibility : Icons.visibility_off,
+                  color: theme.colorScheme.primary,
+                ),
                 onPressed: () => onSuffixIconPressed!(),
               )
-            : SizedBox(),
+            : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Colors.grey),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: theme.colorScheme.primary),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
         ),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: theme.colorScheme.surfaceVariant, // Background color
       ),
       validationMessages: validationMessages,
     );
