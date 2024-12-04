@@ -37,14 +37,12 @@ class CustomReactiveTextField extends StatelessWidget {
         prefixIcon: prefixIcon != null
             ? Icon(
                 prefixIcon,
-                color: theme.colorScheme.primary, // Icon color
               )
             : null,
         suffixIcon: onSuffixIconPressed != null
             ? IconButton(
                 icon: Icon(
                   obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: theme.colorScheme.primary,
                 ),
                 onPressed: () => onSuffixIconPressed!(),
               )

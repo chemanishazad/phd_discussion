@@ -34,7 +34,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Palette.lightBackgroundColor,
         body: ReactiveForm(
           formGroup: form,
           child: SingleChildScrollView(
@@ -52,15 +51,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title ==
-                                'Login to ask more relevant questions or answer questions on PhD discussions.'
-                            ? 'Login to ask more relevant questions or answer questions on PhD discussions.'
-                            : 'Login',
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                          title ==
+                                  'Login to ask more relevant questions or answer questions on PhD discussions.'
+                              ? 'Login to ask more relevant questions or answer questions on PhD discussions.'
+                              : 'Login',
+                          style: Theme.of(context).textTheme.titleLarge),
                       SizedBox(height: 2.h),
                       CustomReactiveTextField(
                         formControlName: 'email',
@@ -95,7 +90,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/forgotPassword');
                           },
-                          child: const Text('Forgot Password'),
+                          child: Text('Forgot Password',
+                              style: Theme.of(context).textTheme.bodySmall),
                         ),
                       ),
                       Center(
@@ -189,7 +185,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/signUp');
                     },
-                    child: const Text('New User ? Register here')),
+                    child: Text('New User ? Register here',
+                        style: Theme.of(context).textTheme.bodySmall)),
               ],
             ),
           ),

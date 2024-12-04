@@ -54,23 +54,11 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                     SizedBox(height: 12.h),
                     Image.asset('assets/icons/logo2.png'),
                     SizedBox(height: 2.h),
-                    Text(
-                      'Forgot Password',
-                      style: TextStyle(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Palette.themeColor,
-                      ),
-                    ),
+                    Text('Forgot Password',
+                        style: Theme.of(context).textTheme.titleLarge),
                     SizedBox(height: 3.h),
-                    Text(
-                      'Enter your email to reset your password',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    Text('Enter your email to reset your password',
+                        style: Theme.of(context).textTheme.bodyLarge),
                     SizedBox(height: 5.h),
                     CustomReactiveTextField(
                       formControlName: 'email',

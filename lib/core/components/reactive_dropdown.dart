@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phd_discussion/core/const/palette.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 class CustomReactiveDropdown<T> extends StatelessWidget {
@@ -19,19 +20,36 @@ class CustomReactiveDropdown<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ReactiveDropdownField<T>(
       formControlName: formControlName,
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: Icon(prefixIcon),
+        hintStyle: theme.textTheme.bodySmall?.copyWith(
+          color: Palette.blackColor,
+        ),
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, color: theme.iconTheme.color)
+            : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Colors.grey),
+          borderSide: BorderSide(
+            color: theme.dividerColor,
+          ),
         ),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: theme.inputDecorationTheme.fillColor,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12.0,
+          vertical: 18.0,
+        ),
       ),
+      dropdownColor: theme.cardColor,
       items: items,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: Palette.blackColor,
+      ),
       validationMessages: validationMessages,
     );
   }

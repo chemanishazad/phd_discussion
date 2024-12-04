@@ -309,3 +309,16 @@ BoxDecoration boxDecoration({
     ],
   );
 }
+
+class DropdownTheme {
+  static const double borderRadius = 12.0;
+  static const Color borderColor = Colors.grey;
+  static const Color fillColor = Color(0xFFEFEFEF);
+  static const TextStyle textStyle = TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.w400,
+    color: Colors.black,
+  );
+  static const EdgeInsets contentPadding =
+      EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0);
+}

@@ -51,7 +51,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Palette.lightBackgroundColor,
         body: ReactiveForm(
           formGroup: form,
           child: SingleChildScrollView(
@@ -163,18 +162,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             formControlName: 'role',
             hintText: 'Select Designation',
             prefixIcon: Icons.design_services_outlined,
-            items: const [
+            items: [
               DropdownMenuItem(
                 value: '1',
-                child: Text('I am pursuing PhD'),
+                child: Text('I am pursuing PhD',
+                    style: Theme.of(context).textTheme.bodySmall),
               ),
               DropdownMenuItem(
                 value: '2',
-                child: Text('I have completed PhD'),
+                child: Text('I have completed PhD',
+                    style: Theme.of(context).textTheme.bodySmall),
               ),
               DropdownMenuItem(
                 value: '3',
-                child: Text('I am PhD Consultant'),
+                child: Text('I am PhD Consultant',
+                    style: Theme.of(context).textTheme.bodySmall),
               ),
             ],
             validationMessages: {
@@ -243,7 +245,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onTap: () => _showTagSelectionDialog(),
           child: InputDecorator(
             decoration: const InputDecoration(
-              labelText: 'Select Tags',
               prefixIcon: Icon(Icons.label),
               border: OutlineInputBorder(),
             ),

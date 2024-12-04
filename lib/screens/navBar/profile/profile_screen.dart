@@ -158,13 +158,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 20),
                       _buildPersonalInformationSection(),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Interest ',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey),
-                      ),
+                      Text('Interest ',
+                          style: Theme.of(context).textTheme.titleMedium),
                       asyncTags.when(
                         data: (tags) {
                           final selectedTagsList = tags
@@ -241,13 +236,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
-                      const Text(
-                        'Categories',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey),
-                      ),
+                      Text('Categories',
+                          style: Theme.of(context).textTheme.titleMedium),
                       asyncCateg.when(
                         data: (categories) {
                           final selectedCategoriesList = categories
@@ -352,8 +342,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Profile Completion: $safePercentage%',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: safePercentage / 100,
@@ -382,11 +371,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Personal Information',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey)),
+                Text('Personal Information',
+                    style: Theme.of(context).textTheme.titleMedium),
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -435,11 +421,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.blueGrey)),
+        Text(label, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 8),
         _isEditing
             ? TextFormField(
@@ -451,10 +433,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   filled: true,
                   fillColor: Colors.grey[200],
                   hintText: 'Enter your $label',
-                  hintStyle: const TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: Colors.black),
                   prefixIcon: const Icon(Icons.edit, color: Colors.blueGrey),
                 ),
-              )
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.black))
             : Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
@@ -464,8 +449,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   color: Colors.grey[100],
                 ),
                 child: Text(controller.text,
-                    style:
-                        const TextStyle(color: Colors.black54, fontSize: 16)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.black)),
               ),
       ],
     );
