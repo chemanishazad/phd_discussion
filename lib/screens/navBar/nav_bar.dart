@@ -66,20 +66,20 @@ class CustomMenu extends ConsumerWidget {
                         authState: authState, requiresAuth: true),
                     _buildMenuItem(
                         Icons.settings, "Settings", context, '/settingScreen',
-                        authState: authState, requiresAuth: true),
+                        authState: authState, requiresAuth: false),
                   ],
                 ),
-                SwitchListTile(
-                  title: Text(
-                    "Dark Mode",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  value: themeMode == ThemeMode.dark,
-                  onChanged: (value) async {
-                    await ref.read(themeProvider.notifier).toggleTheme();
-                  },
-                ),
-                FontSizeSlider(),
+                // SwitchListTile(
+                //   title: Text(
+                //     "Dark Mode",
+                //     style: Theme.of(context).textTheme.headlineSmall,
+                //   ),
+                //   value: themeMode == ThemeMode.dark,
+                //   onChanged: (value) async {
+                //     await ref.read(themeProvider.notifier).toggleTheme();
+                //   },
+                // ),
+                // FontSizeSlider(),
                 if (authState.value != null)
                   _buildLogout(Icons.logout, "Logout", context, ref),
               ],

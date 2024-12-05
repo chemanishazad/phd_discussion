@@ -304,7 +304,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       children: [
         Text(
           question['title'],
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         isExit
             ? const SizedBox()

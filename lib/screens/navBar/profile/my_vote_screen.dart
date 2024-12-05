@@ -70,14 +70,8 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                question['question_details']['title'] ?? 'No title',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.black87,
-                ),
-              ),
+              Text(question['question_details']['title'] ?? 'No title',
+                  style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 8),
               _buildDateInfo(question),
               _buildStatsRow(question),
@@ -108,17 +102,16 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, color: Colors.blue, size: 20),
+            Icon(icon),
             const SizedBox(width: 4),
-            Text(title,
-                style: const TextStyle(color: Colors.grey, fontSize: 14)),
+            Text(title, style: Theme.of(context).textTheme.labelSmall),
           ],
         ),
-        Text(value ?? '0',
-            style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child:
+              Text(value ?? '0', style: Theme.of(context).textTheme.bodySmall),
+        ),
       ],
     );
   }
@@ -143,12 +136,8 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-        Text(
-          date ?? 'N/A',
-          style: const TextStyle(
-              color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        Text(date ?? 'N/A', style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
   }

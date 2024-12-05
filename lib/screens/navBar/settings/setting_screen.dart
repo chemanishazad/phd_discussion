@@ -5,11 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
-import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/core/theme/font/font_slider_model.dart';
+import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
+import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
@@ -36,180 +37,246 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   bool isPassword = true;
   bool _obscurePassword = true;
   bool _obscurePassword2 = true;
+
   final FormGroup form = FormGroup({
     'password': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(6)]),
+      validators: [Validators.required, Validators.minLength(6)],
+    ),
     'confirmPassword': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(6)]),
+      validators: [Validators.required, Validators.minLength(6)],
+    ),
   });
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
+    final themeMode = ref.watch(themeProvider);
+    final authState = ref.watch(authProvider);
+
+    // Check if the user is logged in
+    final bool isLoggedIn = authState.asData?.value != null;
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Settings'),
-      body: profileAsyncValue.when(
-        data: (profileData) {
-          if (profileData['email_notification'] != null) {
-            isEmailNotification =
-                profileData['email_notification']['email_notification'] == "1";
-          }
-
-          return ReactiveForm(
-            formGroup: form,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Text('Email Notifications '),
-                        Switch(
-                          value: isEmailNotification,
-                          onChanged: (bool value) async {
-                            final response =
-                                await ref.read(updateEmailNotificationProvider({
-                              'value': isEmailNotification == true ? '0' : '1',
-                            }).future);
-                            final Map<String, dynamic> jsonResponse =
-                                jsonDecode(response.body);
-                            if (response.statusCode == 200) {
-                              ref.refresh(profileProvider);
-                              Fluttertoast.showToast(
-                                  msg: jsonResponse['message']);
-                            } else {
-                              Fluttertoast.showToast(
-                                  msg:
-                                      'Error voting: ${response.reasonPhrase}');
-                            }
-
-                            setState(() {
-                              isEmailNotification = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  TextButton(
-                    child: const Text(' Change Password'),
-                    onPressed: () {
-                      setState(() {
-                        isPassword = true;
-                      });
-                    },
-                  ),
-                  if (isPassword) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: CustomReactiveTextField(
-                        formControlName: 'password',
-                        hintText: 'Password',
-                        prefixIcon: Icons.lock,
-                        obscureText: _obscurePassword,
-                        onSuffixIconPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        validationMessages: {
-                          'required': (control) => 'The password is required',
-                          'minLength': (control) =>
-                              'Password must be at least 6 characters',
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: CustomReactiveTextField(
-                        formControlName: 'confirmPassword',
-                        hintText: 'Confirm Password',
-                        prefixIcon: Icons.lock,
-                        obscureText: _obscurePassword2,
-                        onSuffixIconPressed: () {
-                          setState(() {
-                            _obscurePassword2 = !_obscurePassword2;
-                          });
-                        },
-                        validationMessages: {
-                          'required': (control) => 'The password is required',
-                          'minLength': (control) =>
-                              'Password must be at least 6 characters',
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: CustomButton(
-                          onTap: () async {
-                            form.markAllAsTouched();
-                            if (form.valid) {
-                              if (form.control('password').value !=
-                                  form.control('confirmPassword').value) {
-                                Fluttertoast.showToast(
-                                    msg: 'Please Check Entered Password');
-                              } else {
-                                final response =
-                                    await ref.read(changePasswordProvider({
-                                  'password': form.control('password').value,
-                                }).future);
-                                final Map<String, dynamic> jsonResponse =
-                                    jsonDecode(response.body);
-                                if (response.statusCode == 200) {
-                                  ref.refresh(profileProvider);
-                                  Fluttertoast.showToast(
-                                      msg: jsonResponse['message']);
-
-                                  Navigator.pop(context);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          'Error voting: ${response.reasonPhrase}');
-                                }
-                              }
-                            }
-                          },
-                          child: const Text(
-                            'Change Your Password',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  SizedBox(height: 2.h),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(left: 12.0),
-                  //   child: CustomButton(
-                  //       onTap: () async {
-                  //         await ref.read(authProvider.notifier).logout();
-                  //         Navigator.pop(context);
-                  //       },
-                  //       child: const Text(
-                  //         'Logout',
-                  //         style: TextStyle(color: Colors.white),
-                  //       )),
-                  // )
-                ],
-              ),
-            ),
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.refresh(profileProvider);
+          ref.refresh(authProvider);
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        child: profileAsyncValue.when(
+          data: (profileData) {
+            // Safely update the email notification toggle
+            if (profileData['email_notification'] != null) {
+              isEmailNotification = profileData['email_notification']
+                      ['email_notification'] ==
+                  "1";
+            }
+
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Preferences Section
+                    _buildSectionHeader("Preferences"),
+                    ListTile(
+                      title: const Text('Email Notifications'),
+                      trailing: isLoggedIn
+                          ? Switch(
+                              value: isEmailNotification,
+                              onChanged: (bool value) async {
+                                try {
+                                  final response = await ref
+                                      .read(updateEmailNotificationProvider({
+                                    'value': isEmailNotification ? '0' : '1',
+                                  }).future);
+
+                                  final Map<String, dynamic> jsonResponse =
+                                      jsonDecode(response.body);
+                                  if (response.statusCode == 200) {
+                                    ref.refresh(profileProvider);
+                                    Fluttertoast.showToast(
+                                        msg: jsonResponse['message']);
+                                    setState(() {
+                                      isEmailNotification = value;
+                                    });
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: 'Error: ${response.reasonPhrase}');
+                                  }
+                                } catch (e) {
+                                  Fluttertoast.showToast(
+                                      msg: 'An error occurred: $e');
+                                }
+                              },
+                            )
+                          : _buildLoginPrompt("Enable Email Notifications"),
+                    ),
+                    const Divider(),
+
+                    // Account Security Section
+                    _buildSectionHeader("Account Security"),
+                    ListTile(
+                      title: const Text("Change Password"),
+                      trailing: isLoggedIn
+                          ? IconButton(
+                              icon: const Icon(Icons.lock_reset),
+                              onPressed: () {
+                                setState(() {
+                                  isPassword = true;
+                                });
+                              },
+                            )
+                          : _buildLoginPrompt("Change Your Password"),
+                    ),
+                    if (isPassword && isLoggedIn)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: _buildChangePasswordForm(),
+                      ),
+                    const Divider(),
+
+                    // Appearance Section
+                    _buildSectionHeader("Appearance"),
+                    SwitchListTile(
+                      title: const Text("Dark Mode"),
+                      value: themeMode == ThemeMode.dark,
+                      onChanged: (value) async {
+                        await ref.read(themeProvider.notifier).toggleTheme();
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    FontSizeSlider(),
+
+                    // // Logout Button
+                    // if (isLoggedIn)
+                    //   Center(
+                    //     child: ElevatedButton(
+                    //       onPressed: () async {
+                    //         await ref.read(authProvider.notifier).logout();
+                    //         Fluttertoast.showToast(
+                    //             msg: "Logged out successfully!");
+                    //       },
+                    //       child: const Text("Logout"),
+                    //     ),
+                    //   ),
+                  ],
+                ),
+              ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text('An error occurred: $error'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper Method: Section Headers
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  // Helper Method: Change Password Form
+  Widget _buildChangePasswordForm() {
+    return ReactiveForm(
+      formGroup: form,
+      child: Column(
+        children: [
+          CustomReactiveTextField(
+            formControlName: 'password',
+            hintText: 'New Password',
+            prefixIcon: Icons.lock,
+            obscureText: _obscurePassword,
+            onSuffixIconPressed: () {
+              setState(() {
+                _obscurePassword = !_obscurePassword;
+              });
+            },
+            validationMessages: {
+              'required': (control) => 'The password is required',
+              'minLength': (control) =>
+                  'Password must be at least 6 characters',
+            },
+          ),
+          const SizedBox(height: 10),
+          CustomReactiveTextField(
+            formControlName: 'confirmPassword',
+            hintText: 'Confirm Password',
+            prefixIcon: Icons.lock,
+            obscureText: _obscurePassword2,
+            onSuffixIconPressed: () {
+              setState(() {
+                _obscurePassword2 = !_obscurePassword2;
+              });
+            },
+            validationMessages: {
+              'required': (control) => 'The password is required',
+              'minLength': (control) =>
+                  'Password must be at least 6 characters',
+            },
+          ),
+          const SizedBox(height: 20),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: () async {
+                form.markAllAsTouched();
+                if (form.valid) {
+                  if (form.control('password').value !=
+                      form.control('confirmPassword').value) {
+                    Fluttertoast.showToast(msg: 'Passwords do not match!');
+                  } else {
+                    try {
+                      final response = await ref.read(changePasswordProvider({
+                        'password': form.control('password').value,
+                      }).future);
+
+                      final Map<String, dynamic> jsonResponse =
+                          jsonDecode(response.body);
+                      if (response.statusCode == 200) {
+                        ref.refresh(profileProvider);
+                        Fluttertoast.showToast(msg: jsonResponse['message']);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: 'Error: ${response.reasonPhrase}');
+                      }
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: 'An error occurred: $e');
+                    }
+                  }
+                }
+              },
+              child: const Text("Change Password"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper Method: Login Prompt
+  Widget _buildLoginPrompt(String actionName) {
+    return SizedBox(
+      width: 150,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/login'); // Redirect to login page
+        },
+        child: Text(
+          "Login to $actionName",
+          maxLines: null,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

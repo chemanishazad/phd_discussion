@@ -66,7 +66,7 @@ class _MyFavouriteScreenState extends ConsumerState<MyFavouriteScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             elevation: 4,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            margin: const EdgeInsets.symmetric(vertical: 4),
                             child: ListTile(
                               contentPadding: const EdgeInsets.all(16),
                               leading: CircleAvatar(
@@ -74,25 +74,21 @@ class _MyFavouriteScreenState extends ConsumerState<MyFavouriteScreen> {
                                 child:
                                     Icon(Icons.bookmark, color: Colors.white),
                               ),
-                              title: Text(
-                                data['title'],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(
-                                  data['sub_title'] ??
-                                      'No description available.',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
+                              title: Text(data['title'],
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                              // subtitle: data['sub_title'].isEmpty
+                              //     ? SizedBox()
+                              //     : Padding(
+                              //         padding: const EdgeInsets.only(top: 4),
+                              //         child: Text(
+                              //           data['sub_title'] ??
+                              //               'No description available.',
+                              //           style: Theme.of(context)
+                              //               .textTheme
+                              //               .bodyMedium,
+                              //         ),
+                              //       ),
                               trailing: IconButton(
                                 icon: Icon(
                                   Icons.delete,

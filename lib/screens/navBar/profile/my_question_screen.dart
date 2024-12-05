@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
@@ -55,139 +56,136 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                         .toList();
                   }
 
-                  return Card(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            question['title'] ?? 'No title',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                              color: Colors.black87,
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    child: Container(
+                      decoration: cardDecoration(context: context),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(question['title'] ?? 'No title',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: 4),
+                            Text(question['sub_title'] ?? '',
+                                style: Theme.of(context).textTheme.titleSmall),
+                            const SizedBox(height: 10),
+                            HtmlWidget(
+                                question['body'] ?? 'No content provided',
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyMedium),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8.0,
+                              children: tags.map<Widget>((tag) {
+                                return Chip(
+                                  label: Text(tag),
+                                  labelStyle:
+                                      Theme.of(context).textTheme.labelSmall,
+                                  backgroundColor:
+                                      Colors.blueAccent.withOpacity(0.2),
+                                );
+                              }).toList(),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            question['sub_title'] ?? '',
-                            style: const TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 16,
+                            const Divider(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildInfoColumn('Added on', question['date']),
+                                _buildInfoColumn('Votes', question['votes']),
+                                _buildInfoColumn(
+                                    'Comments', question['comments']),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          HtmlWidget(
-                            question['body'] ?? 'No content provided',
-                            textStyle: const TextStyle(
-                                fontSize: 16, color: Colors.black87),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8.0,
-                            children: tags.map<Widget>((tag) {
-                              return Chip(
-                                label: Text(tag),
-                                backgroundColor:
-                                    Colors.blueAccent.withOpacity(0.2),
-                              );
-                            }).toList(),
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildInfoColumn('Added on', question['date']),
-                              _buildInfoColumn('Votes', question['votes']),
-                              _buildInfoColumn(
-                                  'Comments', question['comments']),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.blue),
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                            context, '/editQuestionScreen',
-                                            arguments: question)
-                                        .then(
-                                      (value) {
-                                        ref.refresh(profileProvider);
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                              context, '/editQuestionScreen',
+                                              arguments: question)
+                                          .then(
+                                        (value) {
+                                          ref.refresh(profileProvider);
+                                        },
+                                      );
+                                    }),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () async {
+                                    // Show confirmation dialog
+                                    bool? confirmDelete =
+                                        await showDialog<bool>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Confirm Deletion'),
+                                          content: const Text(
+                                              'Are you sure you want to delete this question?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(false);
+                                              },
+                                              child: Text('No',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(true);
+                                              },
+                                              child: Text('Yes',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium),
+                                            ),
+                                          ],
+                                        );
                                       },
                                     );
-                                  }),
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () async {
-                                  // Show confirmation dialog
-                                  bool? confirmDelete = await showDialog<bool>(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Confirm Deletion'),
-                                        content: const Text(
-                                            'Are you sure you want to delete this question?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(
-                                                  false); // User clicks "No"
-                                            },
-                                            child: const Text('No'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(
-                                                  true); // User clicks "Yes"
-                                            },
-                                            child: const Text('Yes'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
 
-                                  // If user confirmed, proceed with the API call
-                                  if (confirmDelete == true) {
-                                    try {
-                                      final response = await ref.read(
-                                          deleteQuestionProvider(
-                                              {'id': question['id']}).future);
-                                      final Map<String, dynamic> jsonResponse =
-                                          jsonDecode(response.body);
-                                      print(jsonResponse);
+                                    // If user confirmed, proceed with the API call
+                                    if (confirmDelete == true) {
+                                      try {
+                                        final response = await ref.read(
+                                            deleteQuestionProvider(
+                                                {'id': question['id']}).future);
+                                        final Map<String, dynamic>
+                                            jsonResponse =
+                                            jsonDecode(response.body);
+                                        print(jsonResponse);
 
-                                      if (response.statusCode == 200) {
-                                        ref.refresh(
-                                            profileProvider); // Refresh the profile provider
+                                        if (response.statusCode == 200) {
+                                          ref.refresh(
+                                              profileProvider); // Refresh the profile provider
+                                          Fluttertoast.showToast(
+                                              msg: jsonResponse['message']);
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  'Error deleting: ${response.reasonPhrase}');
+                                        }
+                                      } catch (e) {
                                         Fluttertoast.showToast(
-                                            msg: jsonResponse['message']);
-                                      } else {
-                                        Fluttertoast.showToast(
-                                            msg:
-                                                'Error deleting: ${response.reasonPhrase}');
+                                            msg: 'Error: $e');
                                       }
-                                    } catch (e) {
-                                      Fluttertoast.showToast(msg: 'Error: $e');
                                     }
-                                  }
-                                },
-                              )
-                            ],
-                          ),
-                        ],
+                                  },
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -210,9 +208,8 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-        Text(value ?? '0',
-            style: const TextStyle(color: Colors.black54, fontSize: 14)),
+        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        Text(value ?? '0', style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

@@ -133,19 +133,18 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                '${answer['added_by_user']['question']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                                  '${answer['added_by_user']['question']}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium),
                             ),
                             answer['status'] == '0'
                                 ? IconButton(
                                     onPressed: () => _editAnswer(context,
                                         answer['id'], answer['answer']),
-                                    icon: Icon(Icons.edit,
-                                        color: Theme.of(context).primaryColor),
+                                    icon: Icon(
+                                      Icons.edit,
+                                    ),
                                     tooltip: 'Edit Answer',
                                   )
                                 : const SizedBox()
@@ -154,15 +153,14 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                         const SizedBox(height: 10),
                         HtmlWidget(
                           answer['answer'] ?? 'No answer provided',
-                          textStyle: const TextStyle(
-                              fontSize: 16, color: Colors.black87),
+                          textStyle: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('By ${answer['added_by_user']['name']}',
-                                style: const TextStyle(fontSize: 14)),
+                                style: Theme.of(context).textTheme.labelSmall),
                             Container(
                               color: answer['status'] == '0'
                                   ? Colors.amber
@@ -173,7 +171,7 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                                   answer['status'] == '0'
                                       ? 'Pending'
                                       : 'Approved',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
                             ),
@@ -186,26 +184,24 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Added on',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 14)),
+                                Text('Added on',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                                 Text(
                                   '${answer['added_by_user']['date']}',
-                                  style: const TextStyle(
-                                      color: Colors.black54, fontSize: 14),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Answered on',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 14)),
+                                Text('Answered on',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
                                 Text(
                                   '${answer['date']}',
-                                  style: const TextStyle(
-                                      color: Colors.black54, fontSize: 14),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
@@ -219,9 +215,9 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
               },
             );
           } else {
-            return const Center(
-                child:
-                    Text('No answers found.', style: TextStyle(fontSize: 18)));
+            return Center(
+                child: Text('No answers found.',
+                    style: Theme.of(context).textTheme.bodySmall));
           }
         },
         loading: () => const Center(child: CircularProgressIndicator()),
