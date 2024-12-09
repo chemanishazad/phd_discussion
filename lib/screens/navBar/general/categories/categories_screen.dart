@@ -76,12 +76,15 @@ class CategoriesScreen extends ConsumerWidget {
     required List<Widget> children,
     required BuildContext context,
   }) {
-    return Container(
-      decoration: cardDecoration(context: context),
-      child: ExpansionTile(
-        title: Text(title, style: Theme.of(context).textTheme.headlineMedium),
-        children: children,
-        iconColor: Palette.themeColor,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Container(
+        decoration: cardDecoration(context: context),
+        child: ExpansionTile(
+          title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+          children: children,
+          iconColor: Palette.themeColor,
+        ),
       ),
     );
   }

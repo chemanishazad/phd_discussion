@@ -31,37 +31,6 @@ class HomeScreen extends ConsumerWidget {
         false;
   }
 
-  Future<void> _showLogoutDialog(
-      BuildContext context, Function logoutFunction) async {
-    bool? shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Are you sure?'),
-          content: Text('Do you really want to log out?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Text('Yes'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (shouldLogout == true) {
-      logoutFunction();
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const String questionId = '';
@@ -130,7 +99,7 @@ class HomeScreen extends ConsumerWidget {
                                           questionData['title'],
                                           style: Theme.of(context)
                                               .textTheme
-                                              .headlineMedium,
+                                              .bodyLarge,
                                           textHeightBehavior:
                                               const TextHeightBehavior(
                                             applyHeightToFirstAscent: false,
@@ -210,7 +179,7 @@ class HomeScreen extends ConsumerWidget {
                                                   questionData['category'],
                                                   style: Theme.of(context)
                                                       .textTheme
-                                                      .headlineSmall
+                                                      .bodySmall
                                                       ?.copyWith(
                                                         color:
                                                             Palette.themeColor,

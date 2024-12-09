@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../const/palette.dart';
 import '../const/styles.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightTheme(double fontSize) {
   return ThemeData(
@@ -21,17 +21,18 @@ ThemeData lightTheme(double fontSize) {
               headingLarge(color: Palette.blackColor, fontSize: fontSize)),
       displayMedium: GoogleFonts.poppins(
           textStyle:
-              headingMedium(color: Palette.blackColor, fontSize: fontSize)),
+              headingMedium(color: Palette.blackColor, fontSize: fontSize - 2)),
       displaySmall: GoogleFonts.poppins(
           textStyle:
-              headingSmall(color: Palette.blackColor, fontSize: fontSize)),
-      headlineLarge: GoogleFonts.poppins(
+              headingSmall(color: Palette.blackColor, fontSize: fontSize - 4)),
+      titleLarge: GoogleFonts.poppins(
           textStyle: titleLarge(color: Palette.blackColor, fontSize: fontSize)),
-      headlineMedium: GoogleFonts.poppins(
+      titleMedium: GoogleFonts.poppins(
           textStyle:
-              titleMedium(color: Palette.blackColor, fontSize: fontSize)),
-      headlineSmall: GoogleFonts.poppins(
-          textStyle: titleSmall(color: Palette.blackColor, fontSize: fontSize)),
+              titleMedium(color: Palette.blackColor, fontSize: fontSize - 2)),
+      titleSmall: GoogleFonts.poppins(
+          textStyle:
+              titleSmall(color: Palette.blackColor, fontSize: fontSize - 4)),
       bodyLarge: GoogleFonts.poppins(
           textStyle: bodyLarge(color: Palette.blackColor, fontSize: fontSize)),
       bodyMedium: GoogleFonts.poppins(
@@ -45,10 +46,10 @@ ThemeData lightTheme(double fontSize) {
               buttonTextStyle(color: Palette.blackColor, fontSize: fontSize)),
       labelMedium: GoogleFonts.poppins(
           textStyle:
-              captionStyle(color: Palette.blackColor, fontSize: fontSize)),
+              captionStyle(color: Palette.blackColor, fontSize: fontSize - 2)),
       labelSmall: GoogleFonts.poppins(
           textStyle:
-              overlineStyle(color: Palette.blackColor, fontSize: fontSize)),
+              overlineStyle(color: Palette.blackColor, fontSize: fontSize - 4)),
     ),
     iconTheme: IconThemeData(color: Palette.themeColor, size: fontSize + 10),
     inputDecorationTheme: InputDecorationTheme(
@@ -57,7 +58,9 @@ ThemeData lightTheme(double fontSize) {
       filled: true,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
+      
         style: elevatedButtonStyle(
+
             fontSize: fontSize,
             foregroundColor: Palette.whiteColor,
             backgroundColor: Palette.themeColor)),
@@ -96,32 +99,35 @@ ThemeData darkTheme(double fontSize) {
               headingLarge(color: Palette.whiteColor, fontSize: fontSize)),
       displayMedium: GoogleFonts.poppins(
           textStyle:
-              headingMedium(color: Palette.whiteColor, fontSize: fontSize)),
+              headingMedium(color: Palette.whiteColor, fontSize: fontSize - 2)),
       displaySmall: GoogleFonts.poppins(
           textStyle:
-              headingSmall(color: Palette.whiteColor, fontSize: fontSize)),
-      headlineLarge: GoogleFonts.poppins(
+              headingSmall(color: Palette.whiteColor, fontSize: fontSize - 4)),
+      titleLarge: GoogleFonts.poppins(
           textStyle: titleLarge(color: Palette.whiteColor, fontSize: fontSize)),
-      headlineMedium: GoogleFonts.poppins(
+      titleMedium: GoogleFonts.poppins(
           textStyle:
-              titleMedium(color: Palette.whiteColor, fontSize: fontSize)),
-      headlineSmall: GoogleFonts.poppins(
-          textStyle: titleSmall(color: Palette.whiteColor, fontSize: fontSize)),
+              titleMedium(color: Palette.whiteColor, fontSize: fontSize - 2)),
+      titleSmall: GoogleFonts.poppins(
+          textStyle:
+              titleSmall(color: Palette.whiteColor, fontSize: fontSize - 4)),
       bodyLarge: GoogleFonts.poppins(
           textStyle: bodyLarge(color: Palette.whiteColor, fontSize: fontSize)),
       bodyMedium: GoogleFonts.poppins(
-          textStyle: bodyMedium(color: Palette.whiteColor, fontSize: fontSize)),
+          textStyle:
+              bodyMedium(color: Palette.whiteColor, fontSize: fontSize - 1)),
       bodySmall: GoogleFonts.poppins(
-          textStyle: bodySmall(color: Palette.whiteColor, fontSize: fontSize)),
+          textStyle:
+              bodySmall(color: Palette.whiteColor, fontSize: fontSize - 2)),
       labelLarge: GoogleFonts.poppins(
           textStyle:
               buttonTextStyle(color: Palette.whiteColor, fontSize: fontSize)),
       labelMedium: GoogleFonts.poppins(
           textStyle:
-              captionStyle(color: Palette.whiteColor, fontSize: fontSize)),
+              captionStyle(color: Palette.whiteColor, fontSize: fontSize - 2)),
       labelSmall: GoogleFonts.poppins(
           textStyle:
-              overlineStyle(color: Palette.whiteColor, fontSize: fontSize)),
+              overlineStyle(color: Palette.whiteColor, fontSize: fontSize - 4)),
     ),
     iconTheme: IconThemeData(
       color: Palette.lightGreyColor,

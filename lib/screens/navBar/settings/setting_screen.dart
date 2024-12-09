@@ -48,6 +48,13 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   });
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh the profileProvider
+    ref.refresh(profileProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
     final themeMode = ref.watch(themeProvider);
@@ -63,81 +70,16 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
           ref.refresh(profileProvider);
           ref.refresh(authProvider);
         },
-        child: profileAsyncValue.when(
-          data: (profileData) {
-            // Safely update the email notification toggle
-            if (profileData['email_notification'] != null) {
-              isEmailNotification = profileData['email_notification']
-                      ['email_notification'] ==
-                  "1";
-            }
-
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: !isLoggedIn
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Preferences Section
+                    SizedBox(height: 8),
                     _buildSectionHeader("Preferences"),
-                    ListTile(
-                      title: const Text('Email Notifications'),
-                      trailing: isLoggedIn
-                          ? Switch(
-                              value: isEmailNotification,
-                              onChanged: (bool value) async {
-                                try {
-                                  final response = await ref
-                                      .read(updateEmailNotificationProvider({
-                                    'value': isEmailNotification ? '0' : '1',
-                                  }).future);
-
-                                  final Map<String, dynamic> jsonResponse =
-                                      jsonDecode(response.body);
-                                  if (response.statusCode == 200) {
-                                    ref.refresh(profileProvider);
-                                    Fluttertoast.showToast(
-                                        msg: jsonResponse['message']);
-                                    setState(() {
-                                      isEmailNotification = value;
-                                    });
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: 'Error: ${response.reasonPhrase}');
-                                  }
-                                } catch (e) {
-                                  Fluttertoast.showToast(
-                                      msg: 'An error occurred: $e');
-                                }
-                              },
-                            )
-                          : _buildLoginPrompt("Enable Email Notifications"),
-                    ),
-                    const Divider(),
-
-                    // Account Security Section
+                    _buildLoginPrompt("Email Notifications"),
                     _buildSectionHeader("Account Security"),
-                    ListTile(
-                      title: const Text("Change Password"),
-                      trailing: isLoggedIn
-                          ? IconButton(
-                              icon: const Icon(Icons.lock_reset),
-                              onPressed: () {
-                                setState(() {
-                                  isPassword = true;
-                                });
-                              },
-                            )
-                          : _buildLoginPrompt("Change Your Password"),
-                    ),
-                    if (isPassword && isLoggedIn)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: _buildChangePasswordForm(),
-                      ),
-                    const Divider(),
-
-                    // Appearance Section
+                    _buildLoginPrompt("Change Your Password"),
                     _buildSectionHeader("Appearance"),
                     SwitchListTile(
                       title: const Text("Dark Mode"),
@@ -148,29 +90,103 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                     ),
                     const SizedBox(height: 10),
                     FontSizeSlider(),
-
-                    // // Logout Button
-                    // if (isLoggedIn)
-                    //   Center(
-                    //     child: ElevatedButton(
-                    //       onPressed: () async {
-                    //         await ref.read(authProvider.notifier).logout();
-                    //         Fluttertoast.showToast(
-                    //             msg: "Logged out successfully!");
-                    //       },
-                    //       child: const Text("Logout"),
-                    //     ),
-                    //   ),
                   ],
                 ),
+              )
+            : profileAsyncValue.when(
+                data: (profileData) {
+                  // Safely update the email notification toggle
+                  if (profileData['email_notification'] != null) {
+                    isEmailNotification = profileData['email_notification']
+                            ['email_notification'] ==
+                        "1";
+                  }
+
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Preferences Section
+                          _buildSectionHeader("Preferences"),
+                          ListTile(
+                              title: const Text('Email Notifications'),
+                              trailing: Switch(
+                                value: isEmailNotification,
+                                onChanged: (bool value) async {
+                                  try {
+                                    final response = await ref
+                                        .read(updateEmailNotificationProvider({
+                                      'value': isEmailNotification ? '0' : '1',
+                                    }).future);
+
+                                    final Map<String, dynamic> jsonResponse =
+                                        jsonDecode(response.body);
+                                    if (response.statusCode == 200) {
+                                      ref.refresh(profileProvider);
+                                      Fluttertoast.showToast(
+                                          msg: jsonResponse['message']);
+                                      setState(() {
+                                        isEmailNotification = value;
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'Error: ${response.reasonPhrase}');
+                                    }
+                                  } catch (e) {
+                                    Fluttertoast.showToast(
+                                        msg: 'An error occurred: $e');
+                                  }
+                                },
+                              )),
+                          const Divider(),
+
+                          // Account Security Section
+                          _buildSectionHeader("Account Security"),
+                          ListTile(
+                            title: const Text("Change Password"),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.lock_reset),
+                              onPressed: () {
+                                setState(() {
+                                  isPassword = true;
+                                });
+                              },
+                            ),
+                          ),
+                          if (isPassword && isLoggedIn)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: _buildChangePasswordForm(),
+                            ),
+                          const Divider(),
+
+                          // Appearance Section
+                          _buildSectionHeader("Appearance"),
+                          SwitchListTile(
+                            title: const Text("Dark Mode"),
+                            value: themeMode == ThemeMode.dark,
+                            onChanged: (value) async {
+                              await ref
+                                  .read(themeProvider.notifier)
+                                  .toggleTheme();
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          FontSizeSlider(),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Text('An error occurred: $error'),
+                ),
               ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Text('An error occurred: $error'),
-          ),
-        ),
       ),
     );
   }
@@ -181,7 +197,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
       padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.titleMedium,
       ),
     );
   }
@@ -265,19 +281,28 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   }
 
   // Helper Method: Login Prompt
-  Widget _buildLoginPrompt(String actionName) {
-    return SizedBox(
-      width: 150,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/login'); // Redirect to login page
-        },
-        child: Text(
-          "Login to $actionName",
-          maxLines: null,
-          textAlign: TextAlign.center,
+  Widget _buildLoginPrompt(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+            child: Text(title, style: Theme.of(context).textTheme.bodyMedium)),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/login',
+                arguments: {'title': 'withoutLogin'});
+          },
+          child: Text(
+            " Login to Enable ",
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: Colors.white),
+            maxLines: null,
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
+      ],
     );
   }
 }

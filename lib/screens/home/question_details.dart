@@ -344,7 +344,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 question['tags'],
-                style: Theme.of(context).textTheme.labelSmall,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             RichText(
@@ -510,7 +510,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('All Answers: ${answers.length}',
-            style: Theme.of(context).textTheme.headlineLarge),
+            style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: 12),
         if (answers.isNotEmpty)
           ListView.builder(
@@ -532,7 +532,7 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Answer by: ${answer['user_id']}',
-                            style: Theme.of(context).textTheme.headlineMedium),
+                            style: Theme.of(context).textTheme.bodyLarge),
                         const SizedBox(height: 8),
                         HtmlWidget(answer['answer'] ?? 'No answer provided',
                             textStyle: Theme.of(context).textTheme.bodyMedium),

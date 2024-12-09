@@ -109,7 +109,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                           children: [
                             Text(question['title'],
                                 style:
-                                    Theme.of(context).textTheme.headlineMedium),
+                                    Theme.of(context).textTheme.titleLarge),
                             const SizedBox(height: 10),
                             HtmlWidget(
                               question['body'],

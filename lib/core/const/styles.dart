@@ -29,7 +29,7 @@ TextStyle titleLarge(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
       fontSize: fontSize,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
       color: color,
     );
 
@@ -37,7 +37,7 @@ TextStyle titleMedium(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
       fontSize: fontSize,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w400,
       color: color,
     );
 
@@ -45,7 +45,7 @@ TextStyle titleSmall(
         {Color color = Palette.blackColor, required double fontSize}) =>
     TextStyle(
       fontSize: fontSize,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w300,
       color: color,
     );
 

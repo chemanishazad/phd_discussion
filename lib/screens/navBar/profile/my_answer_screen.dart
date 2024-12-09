@@ -134,9 +134,8 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                             Expanded(
                               child: Text(
                                   '${answer['added_by_user']['question']}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium),
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
                             ),
                             answer['status'] == '0'
                                 ? IconButton(

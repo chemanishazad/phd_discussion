@@ -78,14 +78,17 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                                     Theme.of(context).textTheme.bodyMedium),
                             const SizedBox(height: 12),
                             Wrap(
-                              spacing: 8.0,
+                              spacing: 4.0,
                               children: tags.map<Widget>((tag) {
-                                return Chip(
-                                  label: Text(tag),
-                                  labelStyle:
-                                      Theme.of(context).textTheme.labelSmall,
-                                  backgroundColor:
-                                      Colors.blueAccent.withOpacity(0.2),
+                                return Container(
+                                  decoration:
+                                      cardDecoration(context: context).copyWith(
+                                    color: Colors.blueAccent.withOpacity(0.2),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(tag),
+                                  ),
                                 );
                               }).toList(),
                             ),
@@ -208,7 +211,7 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
         Text(value ?? '0', style: Theme.of(context).textTheme.bodySmall),
       ],
     );

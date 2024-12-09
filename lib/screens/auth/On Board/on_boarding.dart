@@ -41,7 +41,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 ),
                 Text(
                   onboardingData[index]['title']!,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -80,7 +80,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     },
                     child: Text(
                       'Skip',
-                      style: Theme.of(context).textTheme.headlineLarge,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                   Row(
@@ -107,7 +107,7 @@ class _OnBoardingState extends State<OnBoarding> {
                       );
                     },
                     child: Text('Next',
-                        style: Theme.of(context).textTheme.headlineLarge),
+                        style: Theme.of(context).textTheme.bodyLarge),
                   ),
                 ],
               ),

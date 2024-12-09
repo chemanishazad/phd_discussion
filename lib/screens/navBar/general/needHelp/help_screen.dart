@@ -51,7 +51,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
               TextField(
                 controller: _commentsController,
                 maxLines: 5,
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: Theme.of(context).textTheme.titleLarge,
                 decoration: InputDecoration(
                   hintText: 'Describe your issue here...',
                   hintStyle: Theme.of(context).textTheme.bodyMedium,
@@ -123,6 +123,6 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
   Widget _title(String title) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
-        child: Text(title, style: Theme.of(context).textTheme.headlineMedium));
+        child: Text(title, style: Theme.of(context).textTheme.titleLarge));
   }
 }

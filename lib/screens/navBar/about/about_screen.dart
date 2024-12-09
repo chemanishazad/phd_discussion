@@ -111,7 +111,7 @@ class AboutScreen extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(title,
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: Theme.of(context).textTheme.titleLarge),
               ),
               Container(
                 padding: const EdgeInsets.all(8.0),

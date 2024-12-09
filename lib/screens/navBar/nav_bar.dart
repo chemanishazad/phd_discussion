@@ -72,7 +72,7 @@ class CustomMenu extends ConsumerWidget {
                 // SwitchListTile(
                 //   title: Text(
                 //     "Dark Mode",
-                //     style: Theme.of(context).textTheme.headlineSmall,
+                //     style: Theme.of(context).textTheme.titleLarge,
                 //   ),
                 //   value: themeMode == ThemeMode.dark,
                 //   onChanged: (value) async {
@@ -177,7 +177,7 @@ class CustomMenu extends ConsumerWidget {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 8),
           ...items,
@@ -227,7 +227,7 @@ class CustomMenu extends ConsumerWidget {
   Widget _buildLogout(
       IconData icon, String title, BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: Icon(icon, color: Palette.iconColor),
+      leading: Icon(icon),
       title: Text(
         title,
         style: Theme.of(context).textTheme.bodyMedium,

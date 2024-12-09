@@ -451,7 +451,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.headlineMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }
