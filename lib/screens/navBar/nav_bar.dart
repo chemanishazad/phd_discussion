@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:phd_discussion/core/const/palette.dart';
-import 'package:phd_discussion/core/theme/font/font_slider_model.dart';
-import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 
@@ -12,7 +9,6 @@ class CustomMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
     final authState = ref.watch(authProvider);
 
     return Drawer(
@@ -69,17 +65,6 @@ class CustomMenu extends ConsumerWidget {
                         authState: authState, requiresAuth: false),
                   ],
                 ),
-                // SwitchListTile(
-                //   title: Text(
-                //     "Dark Mode",
-                //     style: Theme.of(context).textTheme.titleLarge,
-                //   ),
-                //   value: themeMode == ThemeMode.dark,
-                //   onChanged: (value) async {
-                //     await ref.read(themeProvider.notifier).toggleTheme();
-                //   },
-                // ),
-                // FontSizeSlider(),
                 if (authState.value != null)
                   _buildLogout(Icons.logout, "Logout", context, ref),
               ],

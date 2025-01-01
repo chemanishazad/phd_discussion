@@ -15,41 +15,84 @@ ThemeData lightTheme(double fontSize) {
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Palette.whiteColor,
     ),
-    textTheme: TextTheme(
-      displayLarge: GoogleFonts.poppins(
-          textStyle:
-              headingLarge(color: Palette.blackColor, fontSize: fontSize)),
-      displayMedium: GoogleFonts.poppins(
-          textStyle:
-              headingMedium(color: Palette.blackColor, fontSize: fontSize - 2)),
-      displaySmall: GoogleFonts.poppins(
-          textStyle:
-              headingSmall(color: Palette.blackColor, fontSize: fontSize - 4)),
-      titleLarge: GoogleFonts.poppins(
-          textStyle: titleLarge(color: Palette.blackColor, fontSize: fontSize)),
-      titleMedium: GoogleFonts.poppins(
-          textStyle:
-              titleMedium(color: Palette.blackColor, fontSize: fontSize - 2)),
-      titleSmall: GoogleFonts.poppins(
-          textStyle:
-              titleSmall(color: Palette.blackColor, fontSize: fontSize - 4)),
-      bodyLarge: GoogleFonts.poppins(
-          textStyle: bodyLarge(color: Palette.blackColor, fontSize: fontSize)),
-      bodyMedium: GoogleFonts.poppins(
-          textStyle:
-              bodyMedium(color: Palette.blackColor, fontSize: fontSize - 1)),
-      bodySmall: GoogleFonts.poppins(
-          textStyle:
-              bodySmall(color: Palette.blackColor, fontSize: fontSize - 2)),
-      labelLarge: GoogleFonts.poppins(
-          textStyle:
-              buttonTextStyle(color: Palette.blackColor, fontSize: fontSize)),
-      labelMedium: GoogleFonts.poppins(
-          textStyle:
-              captionStyle(color: Palette.blackColor, fontSize: fontSize - 2)),
-      labelSmall: GoogleFonts.poppins(
-          textStyle:
-              overlineStyle(color: Palette.blackColor, fontSize: fontSize - 4)),
+    textTheme: GoogleFonts.poppinsTextTheme(
+      TextTheme(
+        displayLarge: TextStyle(
+          fontSize: fontSize + 6,
+          fontWeight: FontWeight.bold,
+          color: Palette.blackColor,
+        ),
+        displayMedium: TextStyle(
+          fontSize: fontSize + 4,
+          fontWeight: FontWeight.w600,
+          color: Palette.blackColor,
+        ),
+        displaySmall: TextStyle(
+          fontSize: fontSize + 2,
+          fontWeight: FontWeight.w500,
+          color: Palette.blackColor,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Palette.blackColor,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w600,
+          color: Palette.blackColor,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.blackColor,
+        ),
+        titleLarge: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w600,
+          color: Palette.blackColor,
+        ),
+        titleMedium: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.blackColor,
+        ),
+        titleSmall: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w400,
+          color: Palette.blackColor,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w400,
+          color: Palette.blackColor,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w400,
+          color: Palette.blackColor,
+        ),
+        bodySmall: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w300,
+          color: Palette.blackColor,
+        ),
+        labelLarge: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.blackColor,
+        ),
+        labelMedium: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w400,
+          color: Palette.blackColor,
+        ),
+        labelSmall: TextStyle(
+          fontSize: fontSize - 8,
+          fontWeight: FontWeight.w300,
+          color: Palette.blackColor,
+        ),
+      ),
     ),
     iconTheme: IconThemeData(color: Palette.themeColor, size: fontSize + 10),
     inputDecorationTheme: InputDecorationTheme(
@@ -58,26 +101,25 @@ ThemeData lightTheme(double fontSize) {
       filled: true,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      
-        style: elevatedButtonStyle(
-
-            fontSize: fontSize,
-            foregroundColor: Palette.whiteColor,
-            backgroundColor: Palette.themeColor)),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-        style: outlinedButtonStyle(
-            fontSize: fontSize,
-            foregroundColor: Palette.themeColor,
-            borderColor: Palette.themeColor)),
-    textButtonTheme: TextButtonThemeData(
-        style: textButtonStyle(
-            foregroundColor: Palette.themeColor, fontSize: fontSize)),
-    extensions: <ThemeExtension<dynamic>>[
-      BoxDecorationTheme(
-        primaryDecoration: primaryBoxDecoration(color: Palette.whiteColor),
-        secondaryDecoration: secondaryBoxDecoration(color: Palette.greyColor),
+      style: elevatedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        backgroundColor: Palette.buttonColor,
       ),
-    ],
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: outlinedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.themeColor,
+        borderColor: Palette.buttonColor,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: textButtonStyle(
+        foregroundColor: Palette.buttonColor,
+        fontSize: fontSize,
+      ),
+    ),
   );
 }
 
@@ -93,41 +135,84 @@ ThemeData darkTheme(double fontSize) {
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Palette.blackColor,
     ),
-    textTheme: TextTheme(
-      displayLarge: GoogleFonts.poppins(
-          textStyle:
-              headingLarge(color: Palette.whiteColor, fontSize: fontSize)),
-      displayMedium: GoogleFonts.poppins(
-          textStyle:
-              headingMedium(color: Palette.whiteColor, fontSize: fontSize - 2)),
-      displaySmall: GoogleFonts.poppins(
-          textStyle:
-              headingSmall(color: Palette.whiteColor, fontSize: fontSize - 4)),
-      titleLarge: GoogleFonts.poppins(
-          textStyle: titleLarge(color: Palette.whiteColor, fontSize: fontSize)),
-      titleMedium: GoogleFonts.poppins(
-          textStyle:
-              titleMedium(color: Palette.whiteColor, fontSize: fontSize - 2)),
-      titleSmall: GoogleFonts.poppins(
-          textStyle:
-              titleSmall(color: Palette.whiteColor, fontSize: fontSize - 4)),
-      bodyLarge: GoogleFonts.poppins(
-          textStyle: bodyLarge(color: Palette.whiteColor, fontSize: fontSize)),
-      bodyMedium: GoogleFonts.poppins(
-          textStyle:
-              bodyMedium(color: Palette.whiteColor, fontSize: fontSize - 1)),
-      bodySmall: GoogleFonts.poppins(
-          textStyle:
-              bodySmall(color: Palette.whiteColor, fontSize: fontSize - 2)),
-      labelLarge: GoogleFonts.poppins(
-          textStyle:
-              buttonTextStyle(color: Palette.whiteColor, fontSize: fontSize)),
-      labelMedium: GoogleFonts.poppins(
-          textStyle:
-              captionStyle(color: Palette.whiteColor, fontSize: fontSize - 2)),
-      labelSmall: GoogleFonts.poppins(
-          textStyle:
-              overlineStyle(color: Palette.whiteColor, fontSize: fontSize - 4)),
+    textTheme: GoogleFonts.poppinsTextTheme(
+      TextTheme(
+        displayLarge: TextStyle(
+          fontSize: fontSize + 6,
+          fontWeight: FontWeight.bold,
+          color: Palette.whiteColor,
+        ),
+        displayMedium: TextStyle(
+          fontSize: fontSize + 4,
+          fontWeight: FontWeight.w600,
+          color: Palette.whiteColor,
+        ),
+        displaySmall: TextStyle(
+          fontSize: fontSize + 2,
+          fontWeight: FontWeight.w500,
+          color: Palette.whiteColor,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Palette.whiteColor,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w600,
+          color: Palette.whiteColor,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.whiteColor,
+        ),
+        titleLarge: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w600,
+          color: Palette.whiteColor,
+        ),
+        titleMedium: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.whiteColor,
+        ),
+        titleSmall: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w400,
+          color: Palette.whiteColor,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: fontSize - 2,
+          fontWeight: FontWeight.w400,
+          color: Palette.whiteColor,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w400,
+          color: Palette.whiteColor,
+        ),
+        bodySmall: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w300,
+          color: Palette.whiteColor,
+        ),
+        labelLarge: TextStyle(
+          fontSize: fontSize - 4,
+          fontWeight: FontWeight.w500,
+          color: Palette.whiteColor,
+        ),
+        labelMedium: TextStyle(
+          fontSize: fontSize - 6,
+          fontWeight: FontWeight.w400,
+          color: Palette.whiteColor,
+        ),
+        labelSmall: TextStyle(
+          fontSize: fontSize - 8,
+          fontWeight: FontWeight.w300,
+          color: Palette.whiteColor,
+        ),
+      ),
     ),
     iconTheme: IconThemeData(
       color: Palette.lightGreyColor,
@@ -139,24 +224,24 @@ ThemeData darkTheme(double fontSize) {
       filled: true,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-        style: elevatedButtonStyle(
-            fontSize: fontSize,
-            foregroundColor: Palette.whiteColor,
-            backgroundColor: Palette.themeColor)),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-        style: outlinedButtonStyle(
-            fontSize: fontSize,
-            foregroundColor: Palette.whiteColor,
-            borderColor: Palette.themeColor)),
-    textButtonTheme: TextButtonThemeData(
-        style: textButtonStyle(
-            foregroundColor: Palette.whiteColor, fontSize: fontSize)),
-    extensions: <ThemeExtension<dynamic>>[
-      BoxDecorationTheme(
-        primaryDecoration:
-            primaryBoxDecoration(color: Palette.darkBackgroundColor),
-        secondaryDecoration: secondaryBoxDecoration(color: Palette.greyColor),
+      style: elevatedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        backgroundColor: Palette.buttonColor,
       ),
-    ],
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: outlinedButtonStyle(
+        fontSize: fontSize,
+        foregroundColor: Palette.whiteColor,
+        borderColor: Palette.buttonColor,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: textButtonStyle(
+        foregroundColor: Palette.whiteColor,
+        fontSize: fontSize,
+      ),
+    ),
   );
 }

@@ -21,15 +21,14 @@ class FontSizeSlider extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
 
-          // Font size slider with preview
           Row(
             children: [
               const Icon(Icons.text_fields, size: 20, color: Colors.grey),
               Expanded(
                 child: Slider(
                   value: fontSizeOption,
-                  min: 8.0,
-                  max: 16.0,
+                  min: 12.0,
+                  max: 20.0,
                   divisions: 4,
                   label: fontSizeOption.toStringAsFixed(0),
                   onChanged: (newValue) {

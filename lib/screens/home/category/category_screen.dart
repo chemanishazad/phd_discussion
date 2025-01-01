@@ -108,8 +108,7 @@ class _HomeCategoryScreenState extends ConsumerState<HomeCategoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(question['title'],
-                                style:
-                                    Theme.of(context).textTheme.titleLarge),
+                                style: Theme.of(context).textTheme.bodyLarge),
                             const SizedBox(height: 10),
                             HtmlWidget(
                               question['body'],

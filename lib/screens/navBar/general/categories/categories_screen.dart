@@ -5,9 +5,29 @@ import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 
+// Future provider to get categories
 final categoriesProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  return getCategories();
+  return await getCategories(); // Assuming getCategories is an async function that fetches the data
 });
+
+// StateNotifierProvider to manage the expanded index state
+final expandedIndexProvider =
+    StateNotifierProvider<ExpandedIndexNotifier, int?>((ref) {
+  return ExpandedIndexNotifier();
+});
+
+// StateNotifier to manage the expanded index
+class ExpandedIndexNotifier extends StateNotifier<int?> {
+  ExpandedIndexNotifier() : super(null);
+
+  void setExpandedIndex(int? index) {
+    if (state == index) {
+      state = null; // Collapse the tile if it's already expanded
+    } else {
+      state = index; // Expand the clicked tile
+    }
+  }
+}
 
 class Category {
   final String id;
@@ -29,19 +49,18 @@ class Category {
   }
 }
 
-// Main Categories Screen
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsyncValue = ref.watch(categoriesProvider);
+    final expandedIndex = ref.watch(expandedIndexProvider);
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Categories'),
       body: categoriesAsyncValue.when(
         data: (data) {
-          // Parse the categories from the response
           List<Category> categories = (data['categories'] as List)
               .map((categoryJson) => Category.fromJson(categoryJson))
               .toList();
@@ -50,14 +69,25 @@ class CategoriesScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                children: categories.map((category) {
-                  return _buildExpansionTile(
+                children: categories.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  Category category = entry.value;
+
+                  return _buildCustomExpansionTile(
                     context: context,
                     title: category.category,
+                    index: index,
+                    isOpen:
+                        expandedIndex == index, // Check if the tile is expanded
                     children: category.children?.map((child) {
                           return _buildListTile(context, child);
                         }).toList() ??
                         [],
+                    onExpansionChanged: () {
+                      ref
+                          .read(expandedIndexProvider.notifier)
+                          .setExpandedIndex(index);
+                    },
                   );
                 }).toList(),
               ),
@@ -70,33 +100,40 @@ class CategoriesScreen extends ConsumerWidget {
     );
   }
 
-  // ExpansionTile for each category
-  Widget _buildExpansionTile({
+  Widget _buildCustomExpansionTile({
     required String title,
     required List<Widget> children,
     required BuildContext context,
+    required int index,
+    required bool isOpen,
+    required Function onExpansionChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Container(
         decoration: cardDecoration(context: context),
-        child: ExpansionTile(
-          title: Text(title, style: Theme.of(context).textTheme.titleLarge),
-          children: children,
-          iconColor: Palette.themeColor,
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+              trailing: Icon(
+                  isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                  color: Palette.themeColor),
+              onTap: () => onExpansionChanged(), // Trigger expansion toggle
+            ),
+            if (isOpen) ...children, // Show children if expanded
+          ],
         ),
       ),
     );
   }
 
-  // ListTile for each sub-category
   Widget _buildListTile(BuildContext context, Category category) {
     return ListTile(
       title: Text(category.category,
           style: Theme.of(context).textTheme.bodyMedium),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.teal),
       onTap: () {
-        // Pass the selected category to the next screen
         Navigator.pushNamed(
           context,
           '/categoryQuestion',
