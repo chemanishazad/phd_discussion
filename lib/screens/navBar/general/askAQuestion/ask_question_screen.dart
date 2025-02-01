@@ -52,8 +52,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     ToolBarStyle.listBullet,
     ToolBarStyle.listOrdered,
     ToolBarStyle.clean,
-    ToolBarStyle.addTable,
-    ToolBarStyle.editTable,
   ];
   String token = '';
   @override
@@ -103,7 +101,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                   if (token!.isEmpty) _title('EMAIL'),
                   if (token!.isEmpty)
                     CustomReactiveTextField(
-                      
                       formControlName: 'email',
                       hintText: 'Enter Your Email',
                       // prefixIcon: Icons.email_outlined,
@@ -144,7 +141,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                     child: Column(
                       children: [
                         Container(
-                          color: Colors.white,
                           child: ToolBar(
                             controller: bodyController,
                             toolBarConfig: customToolBarList,
@@ -336,15 +332,16 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                               final responseData =
                                   await postQuestionWith(questionWithLogin);
                               final String message = responseData['message'];
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(message)),
                               );
                               setState(() {
                                 isSubmit = false;
                               });
-
-                              Navigator.of(context)
-                                  .pushReplacementNamed('/home');
+                              if (responseData['status'] == 'success')
+                                Navigator.of(context)
+                                    .pushReplacementNamed('/home');
 
                               print("Question saved successfully");
                             } catch (e) {
@@ -386,7 +383,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   void _showAddCategoryDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) {
         return CustomCategoryDialog(
           heading: 'Category',
@@ -397,8 +393,17 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
               newCateTitle = title;
               newCateDesc = description;
             });
+
             print('Category Title: $newCateTitle');
             print('Category Description: $newCateDesc');
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Category will be confirmed by the admin and added to the list.'),
+                duration: Duration(seconds: 3),
+              ),
+            );
           },
         );
       },
@@ -421,6 +426,13 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
             });
             print('Category Title: $newCateTitle');
             print('Category Description: $newCateDesc');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Tag will be confirmed by the admin and added to the list.'),
+                duration: Duration(seconds: 3),
+              ),
+            );
           },
         );
       },
@@ -451,7 +463,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineMedium,
       ),
     );
   }
@@ -459,7 +471,7 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
   Widget _subTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: Text(title, style: Theme.of(context).textTheme.bodySmall),
+      child: Text(title, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 }

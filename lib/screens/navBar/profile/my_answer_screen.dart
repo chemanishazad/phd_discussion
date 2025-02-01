@@ -102,6 +102,12 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    ref.refresh(profileProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
 
@@ -111,6 +117,36 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
         data: (profile) {
           if (profile['status'] == true) {
             final userData = profile['my_answers'];
+            if (userData == null || userData.isEmpty) {
+              // Show message when there's no data
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No Answers yet!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'When you add Answers, they will show up here.',
+                      style: TextStyle(fontSize: 14, color: Colors.black38),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
 
             return ListView.builder(
               itemCount: userData.length,
@@ -135,7 +171,7 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                               child: Text(
                                   '${answer['added_by_user']['question']}',
                                   style:
-                                      Theme.of(context).textTheme.labelLarge),
+                                      Theme.of(context).textTheme.bodyMedium),
                             ),
                             answer['status'] == '0'
                                 ? IconButton(
@@ -159,7 +195,7 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('By ${answer['added_by_user']['name']}',
-                                style: Theme.of(context).textTheme.labelSmall),
+                                style: Theme.of(context).textTheme.bodyMedium),
                             Container(
                               color: answer['status'] == '0'
                                   ? Colors.amber
@@ -197,10 +233,10 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
                               children: [
                                 Text('Answered on',
                                     style:
-                                        Theme.of(context).textTheme.bodySmall),
+                                        Theme.of(context).textTheme.bodyMedium),
                                 Text(
                                   '${answer['date']}',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),
@@ -216,7 +252,7 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
           } else {
             return Center(
                 child: Text('No answers found.',
-                    style: Theme.of(context).textTheme.bodySmall));
+                    style: Theme.of(context).textTheme.bodyMedium));
           }
         },
         loading: () => const Center(child: CircularProgressIndicator()),

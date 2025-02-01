@@ -158,29 +158,34 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             },
           ),
           SizedBox(height: 2.h),
-          CustomReactiveDropdown<String>(
-            formControlName: 'role',
+          CustomDropdown<String>(
             hintText: 'Select Designation',
+            
             prefixIcon: Icons.design_services_outlined,
+            value: null, // No value selected initially
             items: [
               DropdownMenuItem(
                 value: '1',
                 child: Text('I am pursuing PhD',
-                    style: Theme.of(context).textTheme.bodySmall),
+                    style: Theme.of(context).textTheme.bodyMedium),
               ),
               DropdownMenuItem(
                 value: '2',
                 child: Text('I have completed PhD',
-                    style: Theme.of(context).textTheme.bodySmall),
+                    style: Theme.of(context).textTheme.bodyMedium),
               ),
               DropdownMenuItem(
                 value: '3',
                 child: Text('I am PhD Consultant',
-                    style: Theme.of(context).textTheme.bodySmall),
+                    style: Theme.of(context).textTheme.bodyMedium),
               ),
             ],
-            validationMessages: {
-              'required': (control) => 'Please select a role',
+            onChanged: (value) {
+              print('Selected value: $value');
+              setState(() {
+                form.control('role').value = value;
+              });
+              print('Selected value2: ${form.control('role').value}');
             },
           ),
           SizedBox(height: 2.h),
@@ -288,7 +293,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select Tags'),
+              title: Text('Select Tags',
+                  style: Theme.of(context).textTheme.headlineMedium),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: tagsAsyncValue.map((tag) {
@@ -298,6 +304,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       value: tagSelectionState[tag['id']],
                       onChanged: (isChecked) {
                         setState(() {
+                          final selectedCount = _selectedTags.length;
+
+                          if (isChecked == true && selectedCount >= 5) {
+                            // Show a message when max selection is reached
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('You can only select up to 5 tags.'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            return;
+                          }
+
                           tagSelectionState[tag['id']] = isChecked ?? false;
                           if (isChecked == true) {
                             _selectedTags[tag['id']] =

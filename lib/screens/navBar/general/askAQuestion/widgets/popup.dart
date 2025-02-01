@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
+import 'package:phd_discussion/core/const/palette.dart';
 import 'package:phd_discussion/core/const/styles.dart';
 
 class CustomCategoryDialog extends StatefulWidget {
@@ -64,7 +65,7 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
           Center(
               child: Text(
             'Add New ${widget.heading}',
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.headlineMedium,
           )),
           SizedBox(height: 15),
           Form(
@@ -107,8 +108,7 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
                   descriptionController.clear();
                   Navigator.pop(context);
                 },
-                child: const Text('Clear',
-                    style: TextStyle(fontSize: 14, color: Colors.red)),
+                child: const Text('Clear', style: TextStyle(fontSize: 14)),
               ),
               CustomButton(
                 onTap: () {
@@ -119,9 +119,11 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
                     Navigator.pop(context);
                   }
                 },
-                color: Colors.blueAccent,
-                child:
-                    Text('Save', style: Theme.of(context).textTheme.bodyMedium),
+                child: Text('Save',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.white)),
               ),
             ],
           ),
@@ -145,10 +147,10 @@ class _CustomCategoryDialogState extends State<CustomCategoryDialog> {
           controller: controller,
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: Theme.of(context).textTheme.bodySmall,
+            labelStyle: Theme.of(context).textTheme.bodyMedium,
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
-            prefixIcon: Icon(icon, color: Colors.blueAccent),
+            prefixIcon: Icon(icon),
             contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           ),
           maxLines: maxLines ?? 1,

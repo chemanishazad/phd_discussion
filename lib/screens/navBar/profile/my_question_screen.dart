@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
+import 'package:intl/intl.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
@@ -27,6 +28,12 @@ class MyQuestionScreen extends ConsumerStatefulWidget {
 
 class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
   @override
+  void initState() {
+    super.initState();
+    ref.refresh(profileProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
 
@@ -40,6 +47,35 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
           data: (profile) {
             if (profile['status'] == true) {
               final userData = profile['my_questions'];
+              if (userData == null || userData.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 80,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No questions yet!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'When you add questions, they will show up here.',
+                        style: TextStyle(fontSize: 14, color: Colors.black38),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
 
               return ListView.builder(
                 itemCount: userData.length,
@@ -67,10 +103,12 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(question['title'] ?? 'No title',
-                                style: Theme.of(context).textTheme.titleMedium),
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge),
                             const SizedBox(height: 4),
                             Text(question['sub_title'] ?? '',
-                                style: Theme.of(context).textTheme.titleSmall),
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall),
                             const SizedBox(height: 10),
                             HtmlWidget(
                                 question['body'] ?? 'No content provided',
@@ -82,9 +120,7 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                               children: tags.map<Widget>((tag) {
                                 return Container(
                                   decoration:
-                                      cardDecoration(context: context).copyWith(
-                                    color: Colors.blueAccent.withOpacity(0.2),
-                                  ),
+                                      BoxDecoration(border: Border.all()),
                                   child: Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Text(tag),
@@ -96,20 +132,27 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _buildInfoColumn('Added on', question['date']),
-                                _buildInfoColumn('Votes', question['votes']),
+                                _buildInfoColumn(Icons.calendar_today,
+                                    _formatDate(question['date'])),
                                 _buildInfoColumn(
-                                    'Comments', question['comments']),
+                                    Icons.thumb_up, question['votes']),
+                                _buildInfoColumn(
+                                    Icons.comment, question['comments']),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        color: Colors.blue),
-                                    onPressed: () {
+                                InkWell(
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.edit,
+                                            color: Colors.blue),
+                                        Text('Edit')
+                                      ],
+                                    ),
+                                    onTap: () {
                                       Navigator.pushNamed(
                                               context, '/editQuestionScreen',
                                               arguments: question)
@@ -119,10 +162,16 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                                         },
                                       );
                                     }),
-                                IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
-                                  onPressed: () async {
+                                SizedBox(width: 16),
+                                InkWell(
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.delete,
+                                          color: Colors.red),
+                                      Text('Delete')
+                                    ],
+                                  ),
+                                  onTap: () async {
                                     // Show confirmation dialog
                                     bool? confirmDelete =
                                         await showDialog<bool>(
@@ -169,8 +218,7 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
                                         print(jsonResponse);
 
                                         if (response.statusCode == 200) {
-                                          ref.refresh(
-                                              profileProvider); // Refresh the profile provider
+                                          ref.refresh(profileProvider);
                                           Fluttertoast.showToast(
                                               msg: jsonResponse['message']);
                                         } else {
@@ -207,12 +255,17 @@ class _MyQuestionScreenState extends ConsumerState<MyQuestionScreen> {
     );
   }
 
-  Widget _buildInfoColumn(String title, String? value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  String _formatDate(String dateString) {
+    DateTime dateTime = DateTime.parse(dateString);
+    return DateFormat('dd MM yyyy').format(dateTime);
+  }
+
+  Widget _buildInfoColumn(IconData icon, String? value) {
+    return Row(
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
-        Text(value ?? '0', style: Theme.of(context).textTheme.bodySmall),
+        Icon(icon, size: 16),
+        SizedBox(width: 4),
+        Text(value ?? '0', style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
   }

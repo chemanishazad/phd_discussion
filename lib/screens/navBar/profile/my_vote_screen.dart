@@ -16,6 +16,12 @@ class MyVoteScreen extends ConsumerStatefulWidget {
 
 class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
   @override
+  void initState() {
+    ref.refresh(profileProvider);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
 
@@ -30,6 +36,37 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
             if (profile['status'] == true) {
               final userData = profile['my_votes'];
 
+              if (userData == null || userData.isEmpty) {
+                // Show message when there's no data
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 80,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No Votes yet!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'When you add Votes, they will show up here.',
+                        style: TextStyle(fontSize: 14, color: Colors.black38),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               return ListView.builder(
                 itemCount: userData.length,
                 itemBuilder: (context, index) {
@@ -38,14 +75,34 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
                 },
               );
             } else {
-              return const Center(
-                  child: Text('No questions found.',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600)));
+              return Center(
+                child: Text(
+                  'Unable to fetch data. Please try again later.',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              );
             }
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          error: (error, stack) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'An error occurred: $error',
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    ref.refresh(profileProvider);
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -57,7 +114,11 @@ class _MyVoteScreenState extends ConsumerState<MyVoteScreen> {
         Navigator.pushNamed(context, '/questionDetails', arguments: {
           'id': question['question_details']['id'],
           'isHide': false,
-        });
+        }).then(
+          (value) {
+            ref.refresh(profileProvider);
+          },
+        );
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),

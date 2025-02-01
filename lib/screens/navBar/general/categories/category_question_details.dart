@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
@@ -93,7 +94,24 @@ class _CategoryQuestionState extends ConsumerState<CategoryQuestion> {
       appBar: const CustomAppBar(title: 'Category Details'),
       body: hasLoadedInitial
           ? categoryQuestions.isEmpty
-              ? const Center(child: Text('No questions available'))
+              ? Center(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('No questions available this category'),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    CustomButton(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Try Different Category',
+                          style: TextStyle(color: Colors.white),
+                        ))
+                  ],
+                ))
               : ListView.builder(
                   controller: _scrollController,
                   itemCount: categoryQuestions.length + (isLoading ? 1 : 0),
@@ -138,14 +156,14 @@ class _CategoryQuestionState extends ConsumerState<CategoryQuestion> {
                                     Text(question['date'],
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelSmall),
+                                            .labelMedium),
                                     const SizedBox(width: 16),
                                     const Icon(Icons.remove_red_eye, size: 14),
                                     const SizedBox(width: 4),
                                     Text(question['views'].toString(),
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelSmall),
+                                            .labelMedium),
                                   ],
                                 ),
                                 const SizedBox(height: 12),
@@ -162,7 +180,9 @@ class _CategoryQuestionState extends ConsumerState<CategoryQuestion> {
                                             child: Text(question['user_id'][0],
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .headlineMedium),
+                                                    .headlineMedium
+                                                    ?.copyWith(
+                                                        color: Colors.white)),
                                           ),
                                           const SizedBox(width: 8),
                                           Expanded(
@@ -170,7 +190,7 @@ class _CategoryQuestionState extends ConsumerState<CategoryQuestion> {
                                                 "Posted by: ${question['user_id']}",
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .labelSmall),
+                                                    .labelMedium),
                                           ),
                                         ],
                                       ),

@@ -91,7 +91,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             Navigator.pushNamed(context, '/forgotPassword');
                           },
                           child: Text('Forgot Password',
-                              style: Theme.of(context).textTheme.bodySmall),
+                              style: Theme.of(context).textTheme.bodyMedium),
                         ),
                       ),
                       Center(
@@ -186,7 +186,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Navigator.pushNamed(context, '/signUp');
                     },
                     child: Text('New User ? Register here',
-                        style: Theme.of(context).textTheme.bodySmall)),
+                        style: Theme.of(context).textTheme.bodyMedium)),
               ],
             ),
           ),

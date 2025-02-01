@@ -36,7 +36,8 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _title('Issue Type'),
-              CustomDropDown(
+              AnimatedDropDown(
+                icon: Icons.report_problem,
                 items: const ['Technical Issue', 'General Issue'],
                 dropdownWidth: MediaQuery.sizeOf(context).width / 1.5,
                 onSelectionChanged: (value) {

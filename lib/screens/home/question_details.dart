@@ -336,15 +336,16 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                       ?.copyWith(color: Palette.whiteColor),
                 ),
               ),
+        !isExit ? const SizedBox() : SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
               decoration: boxDecoration(context: context),
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Text(
                 question['tags'],
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
             RichText(

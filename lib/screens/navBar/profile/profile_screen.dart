@@ -97,8 +97,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (response.statusCode == 200) {
       ref.refresh(profileProvider);
       Fluttertoast.showToast(msg: jsonResponse['message']);
-
-      Navigator.pop(context);
+      setState(() {
+        _isEditing = false;
+      });
+      // Navigator.pop(context);
     } else {
       Fluttertoast.showToast(msg: 'Error voting: ${response.reasonPhrase}');
     }
@@ -387,7 +389,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             const SizedBox(height: 8),
             _buildProfileField('Name', nameController),
             const SizedBox(height: 8),
-            _buildProfileField('Email', emailController),
+            _buildProfileField('Email', emailController, isEditable: false),
             const SizedBox(height: 8),
             _buildProfileField('Mobile', mobileController),
             if (_isEditing) ...[
@@ -417,7 +419,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildProfileField(String label, TextEditingController controller,
-      {int maxLines = 1}) {
+      {int maxLines = 1, bool isEditable = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -431,6 +433,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   filled: true,
+                  enabled: isEditable,
                   fillColor: Colors.grey[200],
                   hintText: 'Enter your $label',
                   hintStyle: const TextStyle(color: Colors.black),

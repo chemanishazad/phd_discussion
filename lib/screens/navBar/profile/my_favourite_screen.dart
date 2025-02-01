@@ -34,6 +34,12 @@ class _MyFavouriteScreenState extends ConsumerState<MyFavouriteScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    ref.refresh(profileProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileAsyncValue = ref.watch(profileProvider);
 

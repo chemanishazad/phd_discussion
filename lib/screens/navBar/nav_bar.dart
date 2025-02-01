@@ -71,18 +71,7 @@ class CustomMenu extends ConsumerWidget {
             ),
 
             // Footer Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Divider(thickness: 1),
-                  Text(
-                    "Powered by ELK ❤",
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
-            ),
+            
           ],
         ),
       ),

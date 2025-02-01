@@ -183,6 +183,10 @@ Future<Map<String, dynamic>> postQuestionWith(
       final Map<String, dynamic> data = json.decode(response.body);
       print("Question saved successfully: $data");
       return data;
+    } else if (response.statusCode == 400) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      print("Failed to save question: $data");
+      return data;
     } else {
       throw Exception('Failed to save question: ${response.body}');
     }

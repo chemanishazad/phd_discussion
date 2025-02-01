@@ -88,6 +88,9 @@ class CategoriesScreen extends ConsumerWidget {
                           .read(expandedIndexProvider.notifier)
                           .setExpandedIndex(index);
                     },
+                    showNoData: category.children == null ||
+                        category
+                            .children!.isEmpty, // Show No Data if no children
                   );
                 }).toList(),
               ),
@@ -107,6 +110,7 @@ class CategoriesScreen extends ConsumerWidget {
     required int index,
     required bool isOpen,
     required Function onExpansionChanged,
+    required bool showNoData,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
@@ -122,6 +126,13 @@ class CategoriesScreen extends ConsumerWidget {
               onTap: () => onExpansionChanged(), // Trigger expansion toggle
             ),
             if (isOpen) ...children, // Show children if expanded
+            if (isOpen &&
+                showNoData) // Display No Data message if there are no children
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('No data available',
+                    style: Theme.of(context).textTheme.bodySmall),
+              ),
           ],
         ),
       ),

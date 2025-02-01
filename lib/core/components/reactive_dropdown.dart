@@ -1,56 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:phd_discussion/core/const/palette.dart';
-import 'package:reactive_forms/reactive_forms.dart';
 
-class CustomReactiveDropdown<T> extends StatelessWidget {
-  final String formControlName;
+class CustomDropdown<T> extends StatelessWidget {
   final String hintText;
   final IconData? prefixIcon;
   final List<DropdownMenuItem<T>> items;
-  final Map<String, ValidationMessageFunction>? validationMessages;
+  final T? value;
+  final ValueChanged<T?> onChanged;
 
-  const CustomReactiveDropdown({
-    super.key,
-    required this.formControlName,
+  const CustomDropdown({
+    Key? key,
     required this.hintText,
     required this.items,
-    this.validationMessages,
+    required this.onChanged,
+    this.value,
     this.prefixIcon,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ReactiveDropdownField<T>(
-      formControlName: formControlName,
+    return DropdownButtonFormField<T>(
+      value: value,
+      onChanged: onChanged,
       decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: theme.textTheme.bodySmall?.copyWith(
-          color: Palette.blackColor,
-        ),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: theme.iconTheme.color)
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(
-            color: theme.dividerColor,
-          ),
+          borderSide: BorderSide(color: theme.dividerColor),
         ),
         filled: true,
         fillColor: theme.inputDecorationTheme.fillColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12.0,
-          vertical: 18.0,
+          vertical: 15.0,
         ),
       ),
       dropdownColor: theme.cardColor,
-      items: items,
-      style: theme.textTheme.bodyMedium?.copyWith(
-        color: Palette.blackColor,
+      hint: Center(
+        child: Text(
+          hintText,
+          style: theme.textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
       ),
-      validationMessages: validationMessages,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: Colors.black,
+      ),
+      items: items,
     );
   }
 }
