@@ -16,62 +16,95 @@ class _OnBoardingState extends State<OnBoarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView.builder(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentPage = index;
-          });
-        },
-        itemCount: onboardingData.length,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 30),
-                  child: Image.asset(
-                    onboardingData[index]['image']!,
-                    height: 300,
-                    fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemCount: onboardingData.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade200, Colors.white],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
-                Text(
-                  onboardingData[index]['title']!,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Text(
-                    onboardingData[index]['description']!,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                if (index == onboardingData.length - 1)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/home');
-                      },
-                      child: const Text('  Get Started  '),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      onboardingData[index]['image']!,
+                      height: 300,
+                      fit: BoxFit.cover,
                     ),
+                    const SizedBox(height: 40),
+                    Text(onboardingData[index]['title']!,
+                        style: Theme.of(context).textTheme.headlineLarge),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                        onboardingData[index]['description']!,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(onboardingData.length, (index) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 6),
+                  width: _currentPage == index ? 16 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: _currentPage == index
+                        ? Palette.themeColor
+                        : Colors.grey[400],
+                    borderRadius: BorderRadius.circular(8),
                   ),
-              ],
+                );
+              }),
             ),
-          );
-        },
+          ),
+        ],
       ),
-      bottomNavigationBar: _currentPage < onboardingData.length - 1
-          ? Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: _currentPage == onboardingData.length - 1
+            ? ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.themeColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text(
+                  'Get Started',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              )
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
@@ -80,39 +113,35 @@ class _OnBoardingState extends State<OnBoarding> {
                     },
                     child: Text(
                       'Skip',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Palette.themeColor,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Row(
-                    children: List.generate(onboardingData.length, (index) {
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentPage == index ? 12 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? Palette.themeColor
-                              : Colors.grey,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      );
-                    }),
-                  ),
-                  TextButton(
+                  ElevatedButton(
                     onPressed: () {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
+                        curve: Curves.easeInOut,
                       );
                     },
-                    child: Text('Next',
-                        style: Theme.of(context).textTheme.bodyLarge),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.themeColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                    ),
+                    child: const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
-            )
-          : null,
+      ),
     );
   }
 }
