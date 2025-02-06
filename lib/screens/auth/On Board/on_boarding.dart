@@ -16,6 +16,7 @@ class _OnBoardingState extends State<OnBoarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           PageView.builder(
@@ -47,13 +48,19 @@ class _OnBoardingState extends State<OnBoarding> {
                     ),
                     const SizedBox(height: 40),
                     Text(onboardingData[index]['title']!,
-                        style: Theme.of(context).textTheme.headlineLarge),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(color: Colors.black)),
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Text(
                         onboardingData[index]['description']!,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: Colors.black),
                         textAlign: TextAlign.center,
                       ),
                     ),

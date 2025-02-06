@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_textfield.dart';
+import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/theme/font/font_slider_model.dart';
 import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
@@ -244,8 +245,8 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
           const SizedBox(height: 20),
           Align(
             alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () async {
+            child: CustomButton(
+              onTap: () async {
                 form.markAllAsTouched();
                 if (form.valid) {
                   if (form.control('password').value !=
@@ -287,8 +288,8 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
       children: [
         SizedBox(
             child: Text(title, style: Theme.of(context).textTheme.bodyMedium)),
-        ElevatedButton(
-          onPressed: () {
+        CustomButton(
+          onTap: () {
             Navigator.pushNamed(context, '/login',
                 arguments: {'title': 'withoutLogin'});
           },

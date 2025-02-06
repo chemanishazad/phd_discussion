@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
@@ -7,6 +5,18 @@ import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/nav_bar.dart';
+import 'widgets/home_askquestion.dart';
+import 'widgets/home_category.dart';
+import 'widgets/home_question.dart';
+import 'widgets/home_tag.dart';
+
+final List<Map<String, dynamic>> tags = [
+  {"icon": Icons.code, "name": "Programming", "count": 120},
+  {"icon": Icons.science, "name": "Research", "count": 98},
+  {"icon": Icons.language, "name": "Linguistics", "count": 75},
+  {"icon": Icons.history_edu, "name": "History", "count": 88},
+  {"icon": Icons.psychology, "name": "Psychology", "count": 60},
+];
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -51,7 +61,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: Palette.themeColor,
@@ -71,245 +80,184 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         drawer: const CustomMenu(),
-        body: Padding(
-          padding: const EdgeInsets.all(12.0),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0x66D0E8FF),
+                Color(0xE6B3D9FF),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: _printText,
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Top Categories',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: 8),
-                categoriesAsyncValue.when(
-                  data: (data) {
-                    print(data);
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: data['categories'].map<Widget>((category) {
-                          int childrenCount = category['children']?.length ?? 0;
-
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Container(
-                              decoration: cardDecoration(context: context),
-                              padding: EdgeInsets.all(12.0),
-                              child: Column(
-                                children: [
-                                  Text(category['category'],
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    '$childrenCount',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall,
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      hintStyle: TextStyle(color: Colors.black),
+                      prefixIcon: const Icon(Icons.search, color: Colors.black),
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.black,
+                        ),
+                        onPressed: _printText,
                       ),
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Top Questions For You',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: 8),
-                asyncValue.when(
-                  data: (response) {
-                    final Map<String, dynamic> jsonResponse =
-                        jsonDecode(response.body);
-                    final List<dynamic> questions = jsonResponse['data'];
-                    final List<dynamic> limitedQuestions =
-                        questions.take(5).toList();
-
-                    return Column(
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: limitedQuestions.length,
-                          itemBuilder: (context, index) {
-                            final questionData = limitedQuestions[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/questionDetails',
-                                    arguments: {
-                                      'id': questionData['id'],
-                                      'isHide': false,
-                                    });
-                              },
-                              child: Container(
-                                width: 100,
-                                margin: const EdgeInsets.symmetric(vertical: 2),
-                                decoration: cardDecoration(context: context),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        questionData['title'],
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                        textHeightBehavior:
-                                            const TextHeightBehavior(
-                                          applyHeightToFirstAscent: false,
-                                          applyHeightToLastDescent: false,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              '${questionData['date']}',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
-                                              textHeightBehavior:
-                                                  const TextHeightBehavior(
-                                                applyHeightToFirstAscent: false,
-                                                applyHeightToLastDescent: false,
-                                              ),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              final response = await ref.read(
-                                                categoryQuestionProvider({
-                                                  'id': questionData[
-                                                      'category_id'],
-                                                  'page': '1',
-                                                }).future,
-                                              );
-                                              final Map<String, dynamic>
-                                                  relatedJson =
-                                                  jsonDecode(response.body);
-                                              final categoryQuestions =
-                                                  relatedJson['data'] ?? [];
-
-                                              if (categoryQuestions
-                                                  .isNotEmpty) {
-                                                await Navigator.pushNamed(
-                                                  context,
-                                                  '/homeCategoryScreen',
-                                                  arguments: categoryQuestions,
-                                                );
-                                              } else {
-                                                print("No questions found");
-                                              }
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: 2.0,
-                                                horizontal: 6.0,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                border: Border.all(
-                                                    color: Palette.themeColor),
-                                                borderRadius:
-                                                    BorderRadius.circular(4.0),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.2),
-                                                    blurRadius: 2.0,
-                                                    offset: Offset(0, 1),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Text(
-                                                questionData['category'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                      color: Palette.themeColor,
-                                                    ),
-                                                textHeightBehavior:
-                                                    const TextHeightBehavior(
-                                                  applyHeightToFirstAscent:
-                                                      false,
-                                                  applyHeightToLastDescent:
-                                                      false,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Error: ${error.toString()}',
-                            style: const TextStyle(color: Colors.red)),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.refresh(topQuestionProvider(questionId));
-                          },
-                          child: const Text('Retry'),
-                        ),
-                      ],
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      ),
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Top Categories',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/categories');
+                          },
+                          child: Text('View All'))
+                    ],
+                  ),
+                ),
+                CategoryListWidget(categoriesAsyncValue: categoriesAsyncValue),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Top Questions For You',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/topQuestion');
+                          },
+                          child: Text('View All'))
+                    ],
+                  ),
+                ),
+                QuestionListWidget(
+                  asyncValue: asyncValue,
+                  onQuestionTap: (context, questionData) {
+                    Navigator.pushNamed(
+                      context,
+                      '/questionDetails',
+                      arguments: {
+                        'id': questionData['id'],
+                        'isHide': false,
+                      },
+                    );
+                  },
+                ),
+                HomeAskQuestion(),
                 const SizedBox(height: 8),
-                Text(
-                  'Discover More',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Text(
+                    'Most used tags',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
                 ),
                 const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Column(
+                    children: tags.map((tag) {
+                      return TagCard(
+                        icon: tag["icon"],
+                        tagName: tag["name"],
+                        tagCount: tag["count"],
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Text(
+                    "Didn't Find Anything Useful? Talk to us",
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const CallCard(),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CallCard extends StatelessWidget {
+  const CallCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      child: Container(
+        decoration: cardDecoration(context: context),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Join a 30-minute session to share feedback and ask questions',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/scheduleCall');
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Schedule a call',
+                            style: TextStyle(
+                              color: Colors.blue.shade700,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward, color: Colors.blue),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Icon(Icons.phone, size: 40, color: Colors.blueAccent),
+            ],
           ),
         ),
       ),

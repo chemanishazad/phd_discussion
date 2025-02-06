@@ -7,6 +7,7 @@ import 'package:phd_discussion/screens/auth/splash/splash_screen.dart';
 import 'package:phd_discussion/screens/home/category/category_screen.dart';
 import 'package:phd_discussion/screens/home/question_details.dart';
 import 'package:phd_discussion/screens/home/home_screen.dart';
+import 'package:phd_discussion/screens/home/schedule_call.dart';
 import 'package:phd_discussion/screens/home/top_question.dart';
 import 'package:phd_discussion/screens/navBar/about/about_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
@@ -50,5 +51,6 @@ class AppRoutes {
     '/editQuestionScreen': (context) => const EditQuestionScreen(),
     '/forgotPassword': (context) => const ForgotPassword(),
     '/topQuestion': (context) => const TopQuestion(),
+    '/scheduleCall': (context) => const ScheduleCall(),
   };
 }
