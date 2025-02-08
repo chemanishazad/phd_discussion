@@ -55,6 +55,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     print('Device token: $deviceToken');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String? token = prefs.getString('token');
+    print('Token: $token');
     if (deviceToken != null) {
       await prefs.setString('deviceToken', deviceToken);
     }
@@ -63,14 +66,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       NotificationServices.handleNotificationTapFromTerminated(
           initialMessage.data);
     } else {
-      Navigator.pushNamed(context, '/onBoard');
-      // if (authState == null) {
-      //   print('Navigating to login');
-      //   Navigator.pushNamed(context, '/login');
-      // } else {
-      //   print('Navigating to home');
-      //   Navigator.pushNamed(context, '/bottomNavigation');
-      // }
+      // Navigator.pushNamed(context, '/onBoard');
+      if (token == null) {
+        print('Navigating to login');
+        Navigator.pushNamed(context, '/onBoard');
+      } else {
+        print('Navigating to home');
+        Navigator.pushNamed(context, '/home');
+      }
     }
   }
 

@@ -125,7 +125,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           title == 'withoutLogin'
                                               ? Navigator.pop(context)
                                               : Navigator.pushReplacementNamed(
-                                                  context, '/home');
+                                                  context, '/homeForm');
                                         }
                                       } catch (e) {
                                         print(e);
@@ -170,7 +170,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 : const Text(
                                     'Login',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),

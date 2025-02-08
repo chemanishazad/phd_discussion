@@ -4,76 +4,86 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 
+final expandedSectionProvider = StateProvider<int?>((ref) => null);
+
 class CustomMenu extends ConsumerWidget {
   const CustomMenu({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+    final expandedSection = ref.watch(expandedSectionProvider);
 
     return Drawer(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Simplified Header Section
-            _buildHeader(authState, context),
-            SizedBox(height: 8),
-            // Menu List
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              children: [
-                _buildSection(
-                  context: context,
-                  title: "General",
-                  items: [
-                    _buildMenuItem(Icons.question_answer, "Ask a Question",
-                        context, '/askQuestion',
-                        authState: authState),
-                    _buildMenuItem(
-                        Icons.help_outline, "Need Help", context, '/helpScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(
-                        Icons.category, "Categories", context, '/categories',
-                        authState: authState),
-                    _buildMenuItem(Icons.info, "About Us", context, '/about',
-                        authState: authState),
-                  ],
-                ),
-                _buildSection(
-                  context: context,
-                  title: "Profile / Activity",
-                  items: [
-                    _buildMenuItem(Icons.account_circle, "Profile", context,
-                        '/profileScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(Icons.question_answer, "My Questions",
-                        context, '/myQuestionScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(Icons.question_answer_outlined, "My Answers",
-                        context, '/myAnswerScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(Icons.favorite, "My Favourites", context,
-                        '/myFavouriteScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(Icons.thumb_up_alt, "My Votes", context,
-                        '/myVoteScreen',
-                        authState: authState, requiresAuth: true),
-                    _buildMenuItem(
-                        Icons.settings, "Settings", context, '/settingScreen',
-                        authState: authState, requiresAuth: false),
-                  ],
-                ),
-                if (authState.value != null)
-                  _buildLogout(Icons.logout, "Logout", context, ref),
-              ],
+      child: Column(
+        children: [
+          _buildHeader(authState, context),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildSection(
+                    context: context,
+                    title: "General",
+                    sectionIndex: 0,
+                    isExpanded: expandedSection == 0,
+                    ref: ref,
+                    items: [
+                      _buildMenuItem(Icons.question_answer, "Ask a Question",
+                          context, '/askQuestion',
+                          authState: authState),
+                      _buildMenuItem(Icons.help_outline, "Need Help", context,
+                          '/helpScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(
+                          Icons.category, "Categories", context, '/categories',
+                          authState: authState),
+                      _buildMenuItem(Icons.info, "About Us", context, '/about',
+                          authState: authState),
+                    ],
+                  ),
+                  _buildSection(
+                    context: context,
+                    title: "Profile / Activity",
+                    sectionIndex: 1,
+                    isExpanded: expandedSection == 1,
+                    ref: ref,
+                    items: [
+                      _buildMenuItem(Icons.account_circle, "Profile", context,
+                          '/profileScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(Icons.question_answer, "My Questions",
+                          context, '/myQuestionScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(Icons.question_answer_outlined,
+                          "My Answers", context, '/myAnswerScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(Icons.favorite, "My Favourites", context,
+                          '/myFavouriteScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(Icons.thumb_up_alt, "My Votes", context,
+                          '/myVoteScreen',
+                          authState: authState, requiresAuth: true),
+                      _buildMenuItem(
+                          Icons.settings, "Settings", context, '/settingScreen',
+                          authState: authState, requiresAuth: false),
+                    ],
+                  ),
+                  ListTile(
+                    title: Text('Merchandise',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: Icon(Icons.shop),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/merchandiseBottom');
+                    },
+                  ),
+                ],
+              ),
             ),
-
-            // Footer Section
-            
-          ],
-        ),
+          ),
+          if (authState.value != null)
+            _buildLogout(Icons.logout, "Logout", context, ref),
+        ],
       ),
     );
   }
@@ -88,6 +98,7 @@ class CustomMenu extends ConsumerWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 14),
               Text(
                 user != null
                     ? "Welcome back, ${user.name}!"
@@ -141,22 +152,30 @@ class CustomMenu extends ConsumerWidget {
 
   Widget _buildSection({
     required String title,
+    required int sectionIndex,
+    required bool isExpanded,
+    required WidgetRef ref,
     required BuildContext context,
     required List<Widget> items,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodyLarge,
+    return Column(
+      children: [
+        ListTile(
+          title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
+          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+          onTap: () {
+            ref.read(expandedSectionProvider.notifier).state =
+                isExpanded ? null : sectionIndex;
+          },
+        ),
+        if (isExpanded)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: items,
+            ),
           ),
-          const SizedBox(height: 8),
-          ...items,
-        ],
-      ),
+      ],
     );
   }
 

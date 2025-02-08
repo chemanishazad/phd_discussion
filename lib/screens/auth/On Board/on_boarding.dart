@@ -98,7 +98,7 @@ class _OnBoardingState extends State<OnBoarding> {
         child: _currentPage == onboardingData.length - 1
             ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/home');
+                  Navigator.of(context).pushReplacementNamed('/login');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Palette.themeColor,

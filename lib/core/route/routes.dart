@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phd_discussion/screens/auth/On%20Board/on_boarding.dart';
 import 'package:phd_discussion/screens/auth/login/forgot_password.dart';
+import 'package:phd_discussion/screens/auth/login/home_form.dart';
 import 'package:phd_discussion/screens/auth/login/login_screen.dart';
 import 'package:phd_discussion/screens/auth/login/signUp_screen.dart';
 import 'package:phd_discussion/screens/auth/splash/splash_screen.dart';
@@ -14,6 +15,7 @@ import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
 import 'package:phd_discussion/screens/navBar/general/needHelp/help_screen.dart';
+import 'package:phd_discussion/screens/navBar/merchandise/merchandise_bottomnavigation.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_answer_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_favourite_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_question_screen.dart';
@@ -52,5 +54,7 @@ class AppRoutes {
     '/forgotPassword': (context) => const ForgotPassword(),
     '/topQuestion': (context) => const TopQuestion(),
     '/scheduleCall': (context) => const ScheduleCall(),
+    '/homeForm': (context) => const HomeForm(),
+    '/merchandiseBottom': (context) => const MerchandiseBottomNavigation(),
   };
 }
