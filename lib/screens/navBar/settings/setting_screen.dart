@@ -273,7 +273,10 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                   }
                 }
               },
-              child: const Text("Change Password"),
+              child: const Text(
+                "Change Password",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ],

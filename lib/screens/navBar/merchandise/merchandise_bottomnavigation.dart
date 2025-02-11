@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 
-import 'merchandise_home.dart';
+import 'merchandiseHome/merchandise_home.dart';
 
 // Providers
 final bottomNavProvider = StateProvider<int>((ref) => 0);
