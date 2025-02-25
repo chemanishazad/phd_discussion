@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/screens/navBar/merchandise/merchandiseHome/merchandise_category.dart';
 
+import 'cart/merchandiseCartScreen.dart';
+import 'history/merchandise_history_screen.dart';
 import 'merchandiseHome/merchandise_home.dart';
 
 // Providers
@@ -9,39 +12,15 @@ final bottomNavProvider = StateProvider<int>((ref) => 0);
 
 // Screens
 
-class MerchandiseCategoriesScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-        child: Text("📦 Categories Screen", style: TextStyle(fontSize: 18)));
-  }
-}
-
-class MerchandiseCartScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-        child: Text("🛒 Cart Screen", style: TextStyle(fontSize: 18)));
-  }
-}
-
-class MerchandiseProfileScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-        child: Text("👤 History Screen", style: TextStyle(fontSize: 18)));
-  }
-}
-
 // Main Bottom Navigation Widget
 class MerchandiseBottomNavigation extends ConsumerWidget {
   const MerchandiseBottomNavigation({super.key});
 
   static final List<Widget> _pages = [
     MerchandiseHome(),
-    MerchandiseCategoriesScreen(),
+    MerchandiseCategory(),
     MerchandiseCartScreen(),
-    MerchandiseProfileScreen(),
+    MerchandiseHistoryScreen(),
   ];
 
   static final List<String> _titles = [
@@ -63,13 +42,6 @@ class MerchandiseBottomNavigation extends ConsumerWidget {
     final selectedIndex = ref.watch(bottomNavProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_titles[selectedIndex],
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        centerTitle: true,
-        backgroundColor: Palette.themeColor,
-        foregroundColor: Colors.white,
-      ),
       body: IndexedStack(
         index: selectedIndex,
         children: _pages,

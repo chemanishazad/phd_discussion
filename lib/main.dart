@@ -55,7 +55,7 @@ class MyApp extends ConsumerWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
-          title: 'RIM',
+          title: 'PhD',
           themeMode: themeMode,
           theme: lightTheme(fontSize),
           darkTheme: darkTheme(fontSize),
