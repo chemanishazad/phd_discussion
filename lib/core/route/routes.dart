@@ -11,6 +11,7 @@ import 'package:phd_discussion/screens/home/home_screen.dart';
 import 'package:phd_discussion/screens/home/schedule_call.dart';
 import 'package:phd_discussion/screens/home/top_question.dart';
 import 'package:phd_discussion/screens/navBar/about/about_screen.dart';
+import 'package:phd_discussion/screens/navBar/career/career_bottom_navigation.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
@@ -56,5 +57,6 @@ class AppRoutes {
     '/scheduleCall': (context) => const ScheduleCall(),
     '/homeForm': (context) => const HomeForm(),
     '/merchandiseBottom': (context) => const MerchandiseBottomNavigation(),
+    '/careerBottom': (context) => const CareerBottomNavigation(),
   };
 }

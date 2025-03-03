@@ -77,6 +77,14 @@ class CustomMenu extends ConsumerWidget {
                       Navigator.pushNamed(context, '/merchandiseBottom');
                     },
                   ),
+                  ListTile(
+                    title: Text('Career',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: Icon(Icons.business_center),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/careerBottom');
+                    },
+                  ),
                 ],
               ),
             ),

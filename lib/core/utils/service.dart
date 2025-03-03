@@ -20,7 +20,7 @@ enum MultipartFileType { image, audio, video, text }
 enum ContentType { json, formData, urlEncoded }
 
 class ApiMaster {
-  static String? _token; // Store token in memory
+  static String? _token;
 
   ApiMaster._();
 
@@ -30,14 +30,12 @@ class ApiMaster {
     return _instance;
   }
 
-  // Set the token after login
   static Future<void> setToken(String token) async {
     _token = token;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
   }
 
-  // Clear the token on logout
   static Future<void> clearToken() async {
     _token = null;
     final prefs = await SharedPreferences.getInstance();
@@ -82,7 +80,7 @@ class ApiMaster {
       if (auth!) {
         if (_token != null) {
           finalHeaders = {...?finalHeaders, "Authorization": "Bearer $_token"};
-          print('Using headers: $finalHeaders'); // Debug print
+          print('Using headers: $finalHeaders');
         } else {
           throw Exception("Access token is null");
         }
@@ -136,7 +134,6 @@ class ApiMaster {
   }
 
   void _handleUnauthorized() {
-    // Notify the app to refresh or navigate to login screen
     ApiMaster.clearToken();
 
     if (navigatorKey.currentContext != null) {
@@ -153,9 +150,7 @@ class ApiMaster {
         return 'multipart/form-data';
       case ContentType.urlEncoded:
         return 'application/x-www-form-urlencoded';
-      default:
-        return 'application/json';
-    }
+      }
   }
 
   Future<http.Response> _handlePostRequest(

@@ -157,3 +157,14 @@ final List<Product> books = [
     reviews: 220,
   ),
 ];
+
+final List<Map<String, String>> locationType = [
+  {"value": '1', "name": "Delhi"},
+  {"value": '2', "name": "Bangalore"},
+  {"value": '3', "name": "Mumbai"},
+  {"value": '4', "name": "Chennai"},
+  {"value": '5', "name": "Bhubaneswar"},
+  {"value": '6', "name": "Pune"}
+];
+
+

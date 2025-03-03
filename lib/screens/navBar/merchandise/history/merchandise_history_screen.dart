@@ -118,8 +118,7 @@ class _MerchandiseHistoryScreenState
                                     ?.copyWith(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
                             Text("Purchased on ${item.purchaseDate}",
-                                style: theme.bodySmall
-                                    ?.copyWith(color: Colors.grey.shade600)),
+                                style: theme.bodySmall),
                             const SizedBox(height: 4),
                             Text(
                               "\$${item.price.toStringAsFixed(2)}",
@@ -146,11 +145,9 @@ class _MerchandiseHistoryScreenState
                     const SizedBox(height: 8),
                     Text("Review:",
                         style: theme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade700)),
-                    Text(item.review!,
-                        style: theme.bodySmall
-                            ?.copyWith(color: Colors.grey.shade800)),
+                          fontWeight: FontWeight.bold,
+                        )),
+                    Text(item.review!, style: theme.bodySmall),
                   ],
                   if (item.review == null || item.rating == null)
                     Align(

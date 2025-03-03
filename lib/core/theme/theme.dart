@@ -216,7 +216,7 @@ ThemeData darkTheme(double fontSize) {
     ),
     iconTheme: IconThemeData(
       color: Palette.lightGreyColor,
-      size: fontSize + 10,
+      size: fontSize + 6,
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
