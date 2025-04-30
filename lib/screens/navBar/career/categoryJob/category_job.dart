@@ -66,11 +66,7 @@ class _CategoryJobState extends ConsumerState<CategoryJob> {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/categoryJob',
-                    arguments: {
-                      'id': category['id'],
-                      'name': category['title'],
-                    },
+                    '/categoryDetailsJob',
                   );
                   print(category['id']);
                 },

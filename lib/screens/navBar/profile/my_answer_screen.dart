@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:http/http.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/provider/NavProvider/profile/profileProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
 
 final profileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await getProfile();
@@ -30,10 +30,9 @@ class MyAnswerScreen extends ConsumerStatefulWidget {
 }
 
 class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
+  late final HtmlEditorController bodyController;
   Future<void> _editAnswer(
       BuildContext context, String answerId, String currentAnswer) async {
-    final QuillEditorController bodyController = QuillEditorController();
-
     // Set the current answer as the initial text in the editor
     bodyController.setText(currentAnswer);
 
@@ -49,25 +48,27 @@ class _MyAnswerScreenState extends ConsumerState<MyAnswerScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                color: Colors.white,
-                child: ToolBar(
-                  controller: bodyController,
-                ),
-              ),
-              QuillHtmlEditor(
-                hintText: 'Type your answer here...',
+              HtmlEditor(
                 controller: bodyController,
-                text: currentAnswer,
-                isEnabled: true,
-                minHeight: 300,
-                hintTextAlign: TextAlign.start,
-                padding: const EdgeInsets.only(left: 10, top: 5),
-                hintTextPadding: EdgeInsets.zero,
-                loadingBuilder: (context) {
-                  return const Center(
-                      child: CircularProgressIndicator(strokeWidth: 0.4));
-                },
+                htmlEditorOptions: const HtmlEditorOptions(
+                  hint: "Add comment for Basic plan",
+                ),
+                otherOptions: const OtherOptions(
+                  height: 300,
+                ),
+                htmlToolbarOptions: const HtmlToolbarOptions(
+                  defaultToolbarButtons: [
+                    FontButtons(clearAll: false),
+                    ParagraphButtons(
+                      alignCenter: true,
+                      alignLeft: true,
+                      alignRight: true,
+                      lineHeight: false,
+                      textDirection: false,
+                    ),
+                    InsertButtons(table: false, video: false, audio: false),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               CustomButton(

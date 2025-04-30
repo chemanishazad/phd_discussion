@@ -58,8 +58,8 @@ class _LatestJobState extends ConsumerState<LatestJob> {
   ];
 
   Future<void> _refreshJobs() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulated delay
-    setState(() {}); // Just to simulate refreshing UI
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {});
   }
 
   final FormGroup form = FormGroup({
@@ -219,13 +219,17 @@ class _LatestJobState extends ConsumerState<LatestJob> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/jobDetailsScreen');
+                            },
                             child: const Text(
                               'View Details >',
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () async {},
+                            onPressed: () async {
+                              Navigator.pushNamed(context, '/jobApplyForm');
+                            },
                             child: const Text(
                               ' Apply Now > ',
                             ),

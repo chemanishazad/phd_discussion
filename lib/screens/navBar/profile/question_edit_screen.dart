@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/components/dropdown2.dart';
 import 'package:phd_discussion/provider/NavProvider/dropdownClass.dart';
 import 'package:phd_discussion/provider/NavProvider/model/editQuestionApiModel.dart';
 import 'package:phd_discussion/provider/NavProvider/navProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -27,7 +27,7 @@ class EditQuestionScreen extends ConsumerStatefulWidget {
 }
 
 class _EditQuestionScreenState extends ConsumerState<EditQuestionScreen> {
-  final QuillEditorController bodyController = QuillEditorController();
+  late final HtmlEditorController bodyController;
   String? selectedTags;
   String? selectedCate;
 
@@ -69,20 +69,6 @@ class _EditQuestionScreenState extends ConsumerState<EditQuestionScreen> {
     }
   }
 
-  final customToolBarList = [
-    ToolBarStyle.bold,
-    ToolBarStyle.italic,
-    ToolBarStyle.underline,
-    ToolBarStyle.size,
-    ToolBarStyle.align,
-    ToolBarStyle.color,
-    ToolBarStyle.background,
-    ToolBarStyle.listBullet,
-    ToolBarStyle.listOrdered,
-    ToolBarStyle.clean,
-    ToolBarStyle.addTable,
-    ToolBarStyle.editTable,
-  ];
   @override
   Widget build(BuildContext context) {
     final asyncTags = ref.watch(tagDropdownProvider);
@@ -151,27 +137,27 @@ class _EditQuestionScreenState extends ConsumerState<EditQuestionScreen> {
                 ),
                 const SizedBox(height: 10),
                 const Text('Body'),
-                Container(
-                  color: Colors.white,
-                  child: ToolBar(
-                    controller: bodyController,
-                    toolBarConfig: customToolBarList,
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                QuillHtmlEditor(
-                  hintText: 'Type your question details here...',
+                HtmlEditor(
                   controller: bodyController,
-                  text: form.control('body').value,
-                  isEnabled: true,
-                  minHeight: 300,
-                  hintTextAlign: TextAlign.start,
-                  padding: const EdgeInsets.only(left: 10, top: 5),
-                  hintTextPadding: EdgeInsets.zero,
-                  loadingBuilder: (context) {
-                    return const Center(
-                        child: CircularProgressIndicator(strokeWidth: 0.4));
-                  },
+                  htmlEditorOptions: const HtmlEditorOptions(
+                    hint: "Add comment for Basic plan",
+                  ),
+                  otherOptions: const OtherOptions(
+                    height: 300,
+                  ),
+                  htmlToolbarOptions: const HtmlToolbarOptions(
+                    defaultToolbarButtons: [
+                      FontButtons(clearAll: false),
+                      ParagraphButtons(
+                        alignCenter: true,
+                        alignLeft: true,
+                        alignRight: true,
+                        lineHeight: false,
+                        textDirection: false,
+                      ),
+                      InsertButtons(table: false, video: false, audio: false),
+                    ],
+                  ),
                 ),
                 _title('Category'),
                 _subTitle("Select Question Category (You can choose multiple)"),

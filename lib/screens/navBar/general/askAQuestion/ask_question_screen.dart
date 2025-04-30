@@ -12,7 +12,7 @@ import 'package:phd_discussion/screens/navBar/general/askAQuestion/widgets/popup
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AskQuestionScreen extends ConsumerStatefulWidget {
@@ -24,7 +24,7 @@ class AskQuestionScreen extends ConsumerStatefulWidget {
 }
 
 class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
-  final QuillEditorController bodyController = QuillEditorController();
+  late final HtmlEditorController bodyController;
   String? selectedTags;
   String? selectedCate;
   String? newCateTitle;
@@ -41,18 +41,6 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
     'tags': FormControl<List<String>>(validators: [Validators.required]),
   });
 
-  final customToolBarList = [
-    ToolBarStyle.bold,
-    ToolBarStyle.italic,
-    ToolBarStyle.underline,
-    ToolBarStyle.size,
-    ToolBarStyle.align,
-    ToolBarStyle.color,
-    ToolBarStyle.background,
-    ToolBarStyle.listBullet,
-    ToolBarStyle.listOrdered,
-    ToolBarStyle.clean,
-  ];
   String token = '';
   @override
   void initState() {
@@ -140,27 +128,50 @@ class _AskQuestionScreenState extends ConsumerState<AskQuestionScreen> {
                   _buildCard(
                     child: Column(
                       children: [
-                        Container(
-                          child: ToolBar(
-                            controller: bodyController,
-                            toolBarConfig: customToolBarList,
+                        HtmlEditor(
+                          controller: bodyController,
+                          htmlEditorOptions: const HtmlEditorOptions(
+                            hint: "Add comment for Basic plan",
+                          ),
+                          otherOptions: const OtherOptions(
+                            height: 300,
+                          ),
+                          htmlToolbarOptions: const HtmlToolbarOptions(
+                            defaultToolbarButtons: [
+                              FontButtons(clearAll: false),
+                              ParagraphButtons(
+                                alignCenter: true,
+                                alignLeft: true,
+                                alignRight: true,
+                                lineHeight: false,
+                                textDirection: false,
+                              ),
+                              InsertButtons(
+                                  table: false, video: false, audio: false),
+                            ],
                           ),
                         ),
-                        SizedBox(height: 2.h),
-                        QuillHtmlEditor(
-                          hintText: 'Type your question details here...',
-                          controller: bodyController,
-                          isEnabled: true,
-                          minHeight: 300,
-                          hintTextAlign: TextAlign.start,
-                          padding: const EdgeInsets.only(left: 10, top: 5),
-                          hintTextPadding: EdgeInsets.zero,
-                          loadingBuilder: (context) {
-                            return const Center(
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 0.4));
-                          },
-                        ),
+                        // Container(
+                        //   child: ToolBar(
+                        //     controller: bodyController,
+                        //     toolBarConfig: customToolBarList,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 2.h),
+                        // QuillHtmlEditor(
+                        //   hintText: 'Type your question details here...',
+                        //   controller: bodyController,
+                        //   isEnabled: true,
+                        //   minHeight: 300,
+                        //   hintTextAlign: TextAlign.start,
+                        //   padding: const EdgeInsets.only(left: 10, top: 5),
+                        //   hintTextPadding: EdgeInsets.zero,
+                        //   loadingBuilder: (context) {
+                        //     return const Center(
+                        //         child: CircularProgressIndicator(
+                        //             strokeWidth: 0.4));
+                        //   },
+                        // ),
                       ],
                     ),
                   ),

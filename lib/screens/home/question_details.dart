@@ -10,8 +10,7 @@ import 'package:phd_discussion/core/const/styles.dart';
 import 'package:phd_discussion/provider/auth/authProvider.dart';
 import 'package:phd_discussion/provider/homeProvider/homeProvider.dart';
 import 'package:phd_discussion/screens/navBar/widget/appBar.dart';
-import 'package:quill_html_editor/quill_html_editor.dart';
-
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'widgets/comment_section.dart';
 import 'widgets/related_question.dart';
 
@@ -43,7 +42,7 @@ class QuestionDetails extends ConsumerStatefulWidget {
 }
 
 class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
-  final QuillEditorController bodyController = QuillEditorController();
+  late final HtmlEditorController bodyController;
   ScrollController _scrollController = ScrollController();
 
   String questionId = '';
@@ -55,20 +54,6 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
   List<dynamic> like = [];
   List<dynamic> relatedQuestions = [];
   List<dynamic> categoryQuestions = [];
-  final customToolBarList = [
-    ToolBarStyle.bold,
-    ToolBarStyle.italic,
-    ToolBarStyle.underline,
-    ToolBarStyle.size,
-    ToolBarStyle.align,
-    ToolBarStyle.color,
-    ToolBarStyle.background,
-    ToolBarStyle.listBullet,
-    ToolBarStyle.listOrdered,
-    ToolBarStyle.clean,
-    ToolBarStyle.addTable,
-    ToolBarStyle.editTable,
-  ];
 
   @override
   void didChangeDependencies() {
@@ -152,27 +137,28 @@ class _QuestionDetailsState extends ConsumerState<QuestionDetails> {
                     _buildCard(
                       child: Column(
                         children: [
-                          Container(
-                            child: ToolBar(
-                              controller: bodyController,
-                              toolBarConfig: customToolBarList,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          QuillHtmlEditor(
-                            hintText: 'Type your question details here...',
+                          HtmlEditor(
                             controller: bodyController,
-                            isEnabled: true,
-                            minHeight: 300,
-                            hintTextAlign: TextAlign.start,
-                            padding: const EdgeInsets.only(left: 10, top: 5),
-                            hintTextPadding: EdgeInsets.zero,
-                            loadingBuilder: (context) {
-                              return const Center(
-                                  child: CircularProgressIndicator(
-                                strokeWidth: 0.4,
-                              ));
-                            },
+                            htmlEditorOptions: const HtmlEditorOptions(
+                              hint: "Add comment for Basic plan",
+                            ),
+                            otherOptions: const OtherOptions(
+                              height: 300,
+                            ),
+                            htmlToolbarOptions: const HtmlToolbarOptions(
+                              defaultToolbarButtons: [
+                                FontButtons(clearAll: false),
+                                ParagraphButtons(
+                                  alignCenter: true,
+                                  alignLeft: true,
+                                  alignRight: true,
+                                  lineHeight: false,
+                                  textDirection: false,
+                                ),
+                                InsertButtons(
+                                    table: false, video: false, audio: false),
+                              ],
+                            ),
                           ),
                         ],
                       ),

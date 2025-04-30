@@ -12,10 +12,15 @@ import 'package:phd_discussion/screens/home/schedule_call.dart';
 import 'package:phd_discussion/screens/home/top_question.dart';
 import 'package:phd_discussion/screens/navBar/about/about_screen.dart';
 import 'package:phd_discussion/screens/navBar/career/career_bottom_navigation.dart';
+import 'package:phd_discussion/screens/navBar/career/categoryJob/category_details_job.dart';
+import 'package:phd_discussion/screens/navBar/career/latestJob/job_apply_form.dart';
+import 'package:phd_discussion/screens/navBar/career/latestJob/job_details_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
 import 'package:phd_discussion/screens/navBar/general/needHelp/help_screen.dart';
+import 'package:phd_discussion/screens/navBar/honoraryDoctorate/honorary_doctorate.dart';
+import 'package:phd_discussion/screens/navBar/honoraryDoctorate/show_interest_screen.dart';
 import 'package:phd_discussion/screens/navBar/merchandise/merchandise_bottomnavigation.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_answer_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/my_favourite_screen.dart';
@@ -58,5 +63,10 @@ class AppRoutes {
     '/homeForm': (context) => const HomeForm(),
     '/merchandiseBottom': (context) => const MerchandiseBottomNavigation(),
     '/careerBottom': (context) => const CareerBottomNavigation(),
+    '/jobDetailsScreen': (context) => const JobDetailsScreen(),
+    '/categoryDetailsJob': (context) => const CategoryDetailsJob(),
+    '/jobApplyForm': (context) => const JobApplyForm(),
+    '/honoraryDoctorate': (context) => const HonoraryDoctorate(),
+    '/showInterestScreen': (context) => const ShowInterestScreen(),
   };
 }

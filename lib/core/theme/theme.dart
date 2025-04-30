@@ -104,19 +104,19 @@ ThemeData lightTheme(double fontSize) {
       style: elevatedButtonStyle(
         fontSize: fontSize,
         foregroundColor: Palette.whiteColor,
-        backgroundColor: Palette.buttonColor,
+        backgroundColor: Palette.themeColor,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: outlinedButtonStyle(
         fontSize: fontSize,
         foregroundColor: Palette.themeColor,
-        borderColor: Palette.buttonColor,
+        borderColor: Palette.themeColor,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: textButtonStyle(
-        foregroundColor: Palette.buttonColor,
+        foregroundColor: Palette.themeColor,
         fontSize: fontSize,
       ),
     ),
@@ -227,14 +227,14 @@ ThemeData darkTheme(double fontSize) {
       style: elevatedButtonStyle(
         fontSize: fontSize,
         foregroundColor: Palette.whiteColor,
-        backgroundColor: Palette.buttonColor,
+        backgroundColor: Palette.themeColor,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: outlinedButtonStyle(
         fontSize: fontSize,
         foregroundColor: Palette.whiteColor,
-        borderColor: Palette.buttonColor,
+        borderColor: Palette.themeColor,
       ),
     ),
     textButtonTheme: TextButtonThemeData(

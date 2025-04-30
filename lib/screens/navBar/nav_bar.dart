@@ -78,6 +78,14 @@ class CustomMenu extends ConsumerWidget {
                     },
                   ),
                   ListTile(
+                    title: Text('Honorary Doctorate',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: Icon(Icons.school),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/honoraryDoctorate');
+                    },
+                  ),
+                  ListTile(
                     title: Text('Career',
                         style: Theme.of(context).textTheme.bodyLarge),
                     trailing: Icon(Icons.business_center),
