@@ -105,13 +105,23 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             },
           ),
           SizedBox(height: 2.h),
+          // CustomReactiveTextField(
+          //   formControlName: 'email',
+          //   hintText: 'Email *',
+          //   prefixIcon: Icons.email_outlined,
+          //   validationMessages: {
+          //     'required': (control) => 'The email is required',
+          //     'email': (control) => 'Please enter a valid email',
+          //   },
+          // ),
+          // SizedBox(height: 2.h),
+
           CustomReactiveTextField(
-            formControlName: 'email',
-            hintText: 'Email *',
-            prefixIcon: Icons.email_outlined,
+            formControlName: 'mobile',
+            hintText: 'Mobile',
+            prefixIcon: Icons.mobile_friendly,
             validationMessages: {
-              'required': (control) => 'The email is required',
-              'email': (control) => 'Please enter a valid email',
+              'mobile': (control) => 'Please enter a valid mobile number',
             },
           ),
           SizedBox(height: 2.h),
@@ -148,48 +158,40 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   'Confirm password must be at least 8 characters',
             },
           ),
+
           SizedBox(height: 2.h),
-          CustomReactiveTextField(
-            formControlName: 'mobile',
-            hintText: 'Mobile',
-            prefixIcon: Icons.mobile_friendly,
-            validationMessages: {
-              'mobile': (control) => 'Please enter a valid mobile number',
-            },
-          ),
-          SizedBox(height: 2.h),
-          CustomDropdown<String>(
-            hintText: 'Select Designation',
-            
-            prefixIcon: Icons.design_services_outlined,
-            value: null, // No value selected initially
-            items: [
-              DropdownMenuItem(
-                value: '1',
-                child: Text('I am pursuing PhD',
-                    style: Theme.of(context).textTheme.bodyMedium),
-              ),
-              DropdownMenuItem(
-                value: '2',
-                child: Text('I have completed PhD',
-                    style: Theme.of(context).textTheme.bodyMedium),
-              ),
-              DropdownMenuItem(
-                value: '3',
-                child: Text('I am PhD Consultant',
-                    style: Theme.of(context).textTheme.bodyMedium),
-              ),
-            ],
-            onChanged: (value) {
-              print('Selected value: $value');
-              setState(() {
-                form.control('role').value = value;
-              });
-              print('Selected value2: ${form.control('role').value}');
-            },
-          ),
-          SizedBox(height: 2.h),
-          _buildTagDropdown(),
+          // CustomDropdown<String>(
+          //   hintText: 'Select Designation',
+
+          //   prefixIcon: Icons.design_services_outlined,
+          //   value: null, // No value selected initially
+          //   items: [
+          //     DropdownMenuItem(
+          //       value: '1',
+          //       child: Text('I am pursuing PhD',
+          //           style: Theme.of(context).textTheme.bodyMedium),
+          //     ),
+          //     DropdownMenuItem(
+          //       value: '2',
+          //       child: Text('I have completed PhD',
+          //           style: Theme.of(context).textTheme.bodyMedium),
+          //     ),
+          //     DropdownMenuItem(
+          //       value: '3',
+          //       child: Text('I am PhD Consultant',
+          //           style: Theme.of(context).textTheme.bodyMedium),
+          //     ),
+          //   ],
+          //   onChanged: (value) {
+          //     print('Selected value: $value');
+          //     setState(() {
+          //       form.control('role').value = value;
+          //     });
+          //     print('Selected value2: ${form.control('role').value}');
+          //   },
+          // ),
+          // SizedBox(height: 2.h),
+          // _buildTagDropdown(),
           SizedBox(height: 2.h),
           Center(
             child: CustomButton(

@@ -32,6 +32,8 @@ import 'package:phd_discussion/screens/navBar/settings/setting_screen.dart';
 import 'package:phd_discussion/screens/navBar/profile/summary_screen.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
 import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
+import 'package:phd_discussion/screens/navBar/webinar/webinar_apply_screen.dart';
+import 'package:phd_discussion/screens/navBar/webinar/webinar_screen.dart';
 
 class AppRoutes {
   static final Map<String, Widget Function(BuildContext)> routes = {
@@ -68,5 +70,7 @@ class AppRoutes {
     '/jobApplyForm': (context) => const JobApplyForm(),
     '/honoraryDoctorate': (context) => const HonoraryDoctorate(),
     '/showInterestScreen': (context) => const ShowInterestScreen(),
+    '/webinarScreen': (context) => const WebinarScreen(),
+    '/webinarApplyScreen': (context) => const WebinarApplyScreen(),
   };
 }

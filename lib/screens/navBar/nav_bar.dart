@@ -86,6 +86,14 @@ class CustomMenu extends ConsumerWidget {
                     },
                   ),
                   ListTile(
+                    title: Text('Webinars',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: Icon(Icons.video_call),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/webinarScreen');
+                    },
+                  ),
+                  ListTile(
                     title: Text('Career',
                         style: Theme.of(context).textTheme.bodyLarge),
                     trailing: Icon(Icons.business_center),

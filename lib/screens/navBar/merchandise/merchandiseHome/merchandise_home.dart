@@ -196,7 +196,7 @@ class _MerchandiseHomeState extends ConsumerState<MerchandiseHome> {
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                   childAspectRatio: MediaQuery.of(context).size.width /
-                      (MediaQuery.of(context).size.height / 1.30),
+                      (MediaQuery.of(context).size.height / 1.26),
                 ),
                 itemBuilder: (context, index) {
                   final book = books[index];

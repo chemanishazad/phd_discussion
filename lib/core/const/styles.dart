@@ -1,131 +1,6 @@
 import 'package:flutter/material.dart';
 import 'palette.dart';
 
-TextStyle headingLarge(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.bold,
-      color: color,
-    );
-
-TextStyle headingMedium(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.bold,
-      color: color,
-    );
-
-TextStyle headingSmall(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.bold,
-      color: color,
-    );
-
-TextStyle titleLarge(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w500,
-      color: color,
-    );
-
-TextStyle titleMedium(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w400,
-      color: color,
-    );
-
-TextStyle titleSmall(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w300,
-      color: color,
-    );
-
-// Body Text Styles
-TextStyle bodyLarge(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w500,
-      color: color,
-    );
-
-TextStyle bodyMedium(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w400,
-      color: color,
-    );
-
-TextStyle bodySmall(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w400,
-      color: color,
-    );
-
-// Button and Input Styles
-TextStyle buttonTextStyle({
-  required Color color,
-  required double fontSize,
-}) {
-  return TextStyle(
-    color: color,
-    fontSize: fontSize,
-    fontWeight: FontWeight.w500,
-  );
-}
-
-TextStyle inputTextStyle(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w500,
-      color: color,
-    );
-
-// Caption/Label Styles
-TextStyle captionStyle(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w400,
-      color: color,
-    );
-
-TextStyle labelLarge(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      color: color,
-    );
-
-TextStyle labelSmall(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      color: color,
-    );
-
-// Overline
-TextStyle overlineStyle(
-        {Color color = Palette.blackColor, required double fontSize}) =>
-    TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w300,
-      color: color,
-    );
-
 // Box Decorations
 BoxDecoration primaryBoxDecoration({required Color color}) => BoxDecoration(
       color: color,
@@ -178,9 +53,14 @@ ButtonStyle elevatedButtonStyle({
         horizontal: fontSize * 0.3,
         vertical: fontSize * 0.3,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
-      minimumSize: Size(fontSize * 5, fontSize * 2),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      minimumSize: Size(fontSize * 5, fontSize),
+      textStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+      ),
     );
 
 ButtonStyle outlinedButtonStyle({
@@ -196,8 +76,11 @@ ButtonStyle outlinedButtonStyle({
         vertical: fontSize * 0.3,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
       minimumSize: Size(fontSize * 5, fontSize * 2),
+      textStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+      ),
     );
 
 ButtonStyle textButtonStyle({
@@ -211,8 +94,11 @@ ButtonStyle textButtonStyle({
         vertical: fontSize * 0.3,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
-      textStyle: bodyMedium(color: foregroundColor, fontSize: fontSize),
       minimumSize: Size(fontSize * 5, fontSize * 2),
+      textStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+      ),
     );
 
 // Icon Themes
@@ -255,7 +141,7 @@ class BoxDecorationTheme extends ThemeExtension<BoxDecorationTheme> {
 BoxDecoration cardDecoration({
   required BuildContext context,
   double borderRadius = 8.0,
-  double elevation = 8.0,
+  double elevation = 4.0,
   bool isHovering = false,
 }) {
   final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -264,18 +150,19 @@ BoxDecoration cardDecoration({
     color: isDarkMode ? Palette.darkGreyColor : Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
     border: Border.all(
-      color:
-          isDarkMode ? Palette.themeColor : Palette.blackColor.withOpacity(0.2),
-      width: 1.5,
+      color: isDarkMode
+          ? Palette.lightGreyColor
+          : Palette.blackColor.withOpacity(0.2),
+      width: 0.5,
     ),
     boxShadow: [
       BoxShadow(
         color: isDarkMode
-            ? Colors.black.withOpacity(0.3)
-            : Colors.black.withOpacity(0.15),
+            ? Colors.white.withOpacity(0.2)
+            : Colors.black.withOpacity(0.1),
         blurRadius: elevation,
-        offset: Offset(0, elevation),
-        spreadRadius: 1.5,
+        offset: Offset(0, elevation / 2),
+        spreadRadius: 1,
       ),
     ],
   );

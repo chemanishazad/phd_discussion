@@ -1,0 +1,2 @@
+D:/Elk Projects/phd_discussion/android/app/.cxx/RelWithDebInfo/2d2t3e2f/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Elk Projects/phd_discussion/android/app/.cxx/RelWithDebInfo/2d2t3e2f/armeabi-v7a/CMakeFiles/rebuild_cache.dir
