@@ -94,6 +94,14 @@ class CustomMenu extends ConsumerWidget {
                     },
                   ),
                   ListTile(
+                    title: Text('conference',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: Icon(Icons.connect_without_contact_rounded),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/conferenceScreen');
+                    },
+                  ),
+                  ListTile(
                     title: Text('Career',
                         style: Theme.of(context).textTheme.bodyLarge),
                     trailing: Icon(Icons.business_center),

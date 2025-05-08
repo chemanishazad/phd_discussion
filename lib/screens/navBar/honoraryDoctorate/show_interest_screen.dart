@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_filed2.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/provider/NavProvider/doctrate/honorary_doctorate_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 class ShowInterestScreen extends ConsumerStatefulWidget {
@@ -19,7 +20,7 @@ class _ShowInterestScreenState extends ConsumerState<ShowInterestScreen> {
       validators: [Validators.required, Validators.minLength(2)],
     ),
     'lastName': FormControl<String>(
-      validators: [Validators.required, Validators.minLength(2)],
+      validators: [Validators.required, Validators.minLength(1)],
     ),
     'emailId': FormControl<String>(
       validators: [Validators.required, Validators.email],
@@ -84,10 +85,33 @@ class _ShowInterestScreenState extends ConsumerState<ShowInterestScreen> {
                 child: SizedBox(
                   width: MediaQuery.sizeOf(context).width / 3,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       form.markAllAsTouched();
+
                       if (form.valid) {
-                        Fluttertoast.showToast(msg: "Application Submitted!");
+                        try {
+                          final res =
+                              await ref.read(submitInterestFormProvider({
+                            'firstName': form.control('firstName').value,
+                            'lastName': form.control('lastName').value,
+                            'email': form.control('emailId').value,
+                            'mobile': form.control('mobileNo').value,
+                            'requirementDetails':
+                                form.control('interest').value,
+                          }).future);
+
+                          if (res['status'] == true) {
+                            Navigator.pushReplacementNamed(context, '/home');
+                            Fluttertoast.showToast(
+                                msg:
+                                    res['message'] ?? "Application Submitted!");
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: res['message'] ?? "Submission failed!");
+                          }
+                        } catch (e) {
+                          Fluttertoast.showToast(msg: "Error: ${e.toString()}");
+                        }
                       } else {
                         Fluttertoast.showToast(
                             msg: "Please fill all required fields correctly!");

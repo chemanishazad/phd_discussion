@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phd_discussion/core/const/palette.dart';
 import 'package:phd_discussion/core/const/styles.dart';
+import 'package:phd_discussion/provider/NavProvider/career/careerProvider.dart';
 
 class CategoryJob extends ConsumerStatefulWidget {
   const CategoryJob({super.key});
@@ -11,41 +12,9 @@ class CategoryJob extends ConsumerStatefulWidget {
 }
 
 class _CategoryJobState extends ConsumerState<CategoryJob> {
-  final List<Map<String, String>> data = [
-    {
-      'id': '1',
-      'title': 'Software Development',
-      'icon_url': 'https://cdn-icons-png.flaticon.com/512/2721/2721275.png',
-      'job_count': '150'
-    },
-    {
-      'id': '2',
-      'title': 'Data Science',
-      'icon_url': 'https://cdn-icons-png.flaticon.com/512/4140/4140037.png',
-      'job_count': '120'
-    },
-    {
-      'id': '3',
-      'title': 'Cyber Security',
-      'icon_url': 'https://cdn-icons-png.flaticon.com/512/3197/3197561.png',
-      'job_count': '90'
-    },
-    {
-      'id': '4',
-      'title': 'Marketing',
-      'icon_url': 'https://cdn-icons-png.flaticon.com/512/1995/1995539.png',
-      'job_count': '200'
-    },
-    {
-      'id': '5',
-      'title': 'Project Management',
-      'icon_url': 'https://cdn-icons-png.flaticon.com/512/3272/3272390.png',
-      'job_count': '75'
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final res = ref.watch(jobCategoriesProvider);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -53,24 +22,28 @@ class _CategoryJobState extends ConsumerState<CategoryJob> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            var category = data[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: CategoryCard(
-                categoryName: category['title']!,
-                categoryIconUrl: category['icon_url']!,
-                jobCount: category['job_count']!,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/categoryDetailsJob',
-                  );
-                  print(category['id']);
-                },
-              ),
+        child: res.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text('Error: $error')),
+          data: (data) {
+            return ListView.builder(
+              itemCount: data['data']['categories'].length,
+              itemBuilder: (context, index) {
+                final category = data['data']['categories'][index];
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: CategoryCard(
+                    categoryName: category['category_name'] ?? '',
+                    categoryIconUrl: category['category_image'] ?? '',
+                    jobCount: category['job_count'] ?? '',
+                    onTap: () {
+                      Navigator.pushNamed(context, '/categoryDetailsJob',
+                          arguments: category['category_id']);
+                    },
+                  ),
+                );
+              },
             );
           },
         ),

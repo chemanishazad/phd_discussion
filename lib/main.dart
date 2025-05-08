@@ -7,6 +7,7 @@ import 'package:phd_discussion/core/theme/font/font_sizer.dart';
 import 'package:phd_discussion/core/theme/theme.dart';
 import 'package:phd_discussion/core/theme/theme_provider.dart';
 import 'package:phd_discussion/core/utils/service.dart';
+import 'package:phd_discussion/core/utils/service2.dart';
 import 'package:phd_discussion/firebase_options.dart';
 import 'package:phd_discussion/notification_service.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await ApiMaster.loadToken();
+  await ApiMaster2.loadToken();
 
   final deviceToken = await NotificationServices.getDeviceToken();
   print('Device Token: $deviceToken');

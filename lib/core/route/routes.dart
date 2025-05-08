@@ -15,6 +15,7 @@ import 'package:phd_discussion/screens/navBar/career/career_bottom_navigation.da
 import 'package:phd_discussion/screens/navBar/career/categoryJob/category_details_job.dart';
 import 'package:phd_discussion/screens/navBar/career/latestJob/job_apply_form.dart';
 import 'package:phd_discussion/screens/navBar/career/latestJob/job_details_screen.dart';
+import 'package:phd_discussion/screens/navBar/conference/conference_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/askAQuestion/ask_question_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/categories_screen.dart';
 import 'package:phd_discussion/screens/navBar/general/categories/category_question_details.dart';
@@ -33,6 +34,7 @@ import 'package:phd_discussion/screens/navBar/profile/summary_screen.dart';
 import 'package:phd_discussion/screens/navBar/related/phdAdmission/phd_admission.dart';
 import 'package:phd_discussion/screens/navBar/variousSubjects/tag_details.dart';
 import 'package:phd_discussion/screens/navBar/webinar/webinar_apply_screen.dart';
+import 'package:phd_discussion/screens/navBar/webinar/webinar_details_screen.dart';
 import 'package:phd_discussion/screens/navBar/webinar/webinar_screen.dart';
 
 class AppRoutes {
@@ -72,5 +74,7 @@ class AppRoutes {
     '/showInterestScreen': (context) => const ShowInterestScreen(),
     '/webinarScreen': (context) => const WebinarScreen(),
     '/webinarApplyScreen': (context) => const WebinarApplyScreen(),
+    '/webinarDetailsScreen': (context) => const WebinarDetailsScreen(),
+    '/conferenceScreen': (context) => const ConferenceScreen(),
   };
 }

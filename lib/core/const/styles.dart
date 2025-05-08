@@ -58,7 +58,7 @@ ButtonStyle elevatedButtonStyle({
       ),
       minimumSize: Size(fontSize * 5, fontSize),
       textStyle: TextStyle(
-        fontSize: fontSize,
+        fontSize: fontSize - 3,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -78,7 +78,7 @@ ButtonStyle outlinedButtonStyle({
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
       minimumSize: Size(fontSize * 5, fontSize * 2),
       textStyle: TextStyle(
-        fontSize: fontSize,
+        fontSize: fontSize - 3,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -96,7 +96,7 @@ ButtonStyle textButtonStyle({
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.0)),
       minimumSize: Size(fontSize * 5, fontSize * 2),
       textStyle: TextStyle(
-        fontSize: fontSize,
+        fontSize: fontSize - 3,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -201,11 +201,39 @@ class DropdownTheme {
   static const double borderRadius = 12.0;
   static const Color borderColor = Colors.grey;
   static const Color fillColor = Color(0xFFEFEFEF);
+
   static const TextStyle textStyle = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.w400,
     color: Colors.black,
   );
+
   static const EdgeInsets contentPadding =
       EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0);
+
+  static InputDecoration inputDecoration(BuildContext context,
+      {String? label}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: isDark ? Colors.white : fillColor,
+      labelStyle: TextStyle(
+        color: isDark ? Colors.black : Colors.grey[800],
+      ),
+      contentPadding: contentPadding,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        borderSide: BorderSide(color: Palette.themeColor, width: 2.0),
+      ),
+    );
+  }
 }

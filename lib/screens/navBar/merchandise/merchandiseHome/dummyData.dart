@@ -167,4 +167,35 @@ final List<Map<String, String>> locationType = [
   {"value": '6', "name": "Pune"}
 ];
 
-
+final List<Map<String, String>> locationPrefer = [
+  {"value": "Tamil Nadu", "name": "Tamil Nadu"},
+  {"value": "Kerala", "name": "Kerala"},
+  {"value": "Karnataka", "name": "Karnataka"},
+  {"value": "Maharashtra", "name": "Maharashtra"},
+  {"value": "Andhra Pradesh", "name": "Andhra Pradesh"},
+  {"value": "Gujarat", "name": "Gujarat"},
+  {"value": "Uttar Pradesh", "name": "Uttar Pradesh"},
+  {"value": "Rajasthan", "name": "Rajasthan"},
+  {"value": "Madhya Pradesh", "name": "Madhya Pradesh"},
+  {"value": "Bihar", "name": "Bihar"},
+  {"value": "West Bengal", "name": "West Bengal"},
+  {"value": "Odisha", "name": "Odisha"},
+  {"value": "Punjab", "name": "Punjab"},
+  {"value": "Haryana", "name": "Haryana"},
+  {"value": "Chhattisgarh", "name": "Chhattisgarh"},
+  {"value": "Jharkhand", "name": "Jharkhand"},
+  {"value": "Assam", "name": "Assam"},
+  {"value": "Himachal Pradesh", "name": "Himachal Pradesh"},
+  {"value": "Jammu & Kashmir", "name": "Jammu & Kashmir"},
+  {"value": "Uttarakhand", "name": "Uttarakhand"},
+  {"value": "Tripura", "name": "Tripura"},
+  {"value": "Meghalaya", "name": "Meghalaya"},
+  {"value": "Manipur", "name": "Manipur"},
+  {"value": "Mizoram", "name": "Mizoram"},
+  {"value": "Nagaland", "name": "Nagaland"},
+  {"value": "Goa", "name": "Goa"},
+  {"value": "Arunachal Pradesh", "name": "Arunachal Pradesh"},
+  {"value": "Sikkim", "name": "Sikkim"},
+  {"value": "Delhi", "name": "Delhi"},
+  {"value": "Puducherry", "name": "Puducherry"},
+];

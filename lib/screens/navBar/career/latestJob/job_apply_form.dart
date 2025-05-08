@@ -5,9 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/TextField.dart/reactive_filed2.dart';
 import 'package:phd_discussion/core/const/palette.dart';
+import 'package:phd_discussion/core/const/styles.dart';
+import 'package:phd_discussion/models/auth/jobApplyModel.dart';
+import 'package:phd_discussion/provider/NavProvider/career/careerProvider.dart';
+import 'package:phd_discussion/screens/navBar/merchandise/merchandiseHome/dummyData.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:open_file/open_file.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class JobApplyForm extends ConsumerStatefulWidget {
   const JobApplyForm({super.key});
@@ -18,41 +21,66 @@ class JobApplyForm extends ConsumerStatefulWidget {
 
 class _JobApplyFormState extends ConsumerState<JobApplyForm> {
   final FormGroup form = FormGroup({
+    'name': FormControl<String>(validators: [Validators.required]),
+    'mobile': FormControl<String>(validators: [Validators.required]),
     'highQualification': FormControl<String>(validators: [Validators.required]),
     'workExp': FormControl<String>(validators: [Validators.required]),
     'location': FormControl<String>(validators: [Validators.required]),
-    'expSalary': FormControl<String>(validators: [Validators.required]),
-    'joiningTime': FormControl<String>(),
+    'currentLocation': FormControl<String>(validators: [Validators.required]),
+    'expSalary': FormControl<String>(),
+    'current_ctc': FormControl<String>(),
+    'reasonForApply': FormControl<String>(),
   });
 
-  File? selectedResume;
+  String jobId = '';
+  List<File> selectedResume = [];
+  int _selectedTabIndex = 0;
+  List<dynamic> locationData = [];
+  bool isLoading = false;
+  @override
+  void didChangeDependencies() {
+    final arg =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    setState(() {
+      jobId = arg['id'];
+    });
+    initData();
+    super.didChangeDependencies();
+  }
+
+  Future<void> initData() async {
+    final loc = await ref.read(locationProvider.future);
+
+    setState(() {
+      locationData = loc['categories'];
+    });
+
+    print('locationData>>$locationData');
+  }
 
   Future<void> _pickResume() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
-    );
+    final result = await FilePicker.platform.pickFiles();
 
     if (result != null && result.files.isNotEmpty) {
       setState(() {
-        selectedResume = File(result.files.first.path!);
+        selectedResume = result.files.map((file) => File(file.path!)).toList();
       });
+    } else {
+      Fluttertoast.showToast(msg: "No file selected");
     }
   }
 
-  void _removeResume() {
+  void _removeResume(File file) {
     setState(() {
-      selectedResume = null;
+      selectedResume.remove(file);
     });
   }
 
-  void _openResume() async {
-    if (selectedResume != null) {
-      try {
-        OpenFile.open(selectedResume!.path);
-      } catch (e) {
-        Fluttertoast.showToast(msg: "Could not open resume: $e");
-      }
+  void _openResume(File file) async {
+    try {
+      await OpenFile.open(file.path);
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Could not open resume: $e");
     }
   }
 
@@ -63,202 +91,243 @@ class _JobApplyFormState extends ConsumerState<JobApplyForm> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Palette.themeColor,
+        title: const Text(
+          'Job Application',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: ReactiveForm(
-        formGroup: form,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: ListView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ReactiveForm(
+          formGroup: form,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        backgroundColor: _selectedTabIndex == 0
+                            ? Palette.themeColor
+                            : Colors.grey[300],
+                        foregroundColor: _selectedTabIndex == 0
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      onPressed: () => setState(() => _selectedTabIndex = 0),
+                      child: const Text('Fresher'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        backgroundColor: _selectedTabIndex == 1
+                            ? Palette.themeColor
+                            : Colors.grey[300],
+                        foregroundColor: _selectedTabIndex == 1
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      onPressed: () => setState(() => _selectedTabIndex = 1),
+                      child: const Text('Experienced'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
 
+              // Common Fields
+              CustomReactiveTextField2(
+                formControlName: 'name',
+                label: 'Full Name',
+                hint: 'Enter your name',
+                icon: Icons.person,
+              ),
+              CustomReactiveTextField2(
+                formControlName: 'mobile',
+                label: 'Mobile Number',
+                hint: 'Enter your mobile number',
+                icon: Icons.phone,
+              ),
               CustomReactiveTextField2(
                 formControlName: 'highQualification',
                 label: 'Highest Qualification',
                 hint: 'Enter your qualification',
                 icon: Icons.school,
               ),
-              CustomReactiveTextField2(
-                formControlName: 'workExp',
-                label: 'Total Work Experience',
-                hint: 'Enter your experience',
-                icon: Icons.business_center,
+              if (_selectedTabIndex == 1) ...[
+                CustomReactiveTextField2(
+                  formControlName: 'workExp',
+                  label: 'Work Experience (in years)',
+                  hint: 'Enter your work experience',
+                  icon: Icons.business_center,
+                ),
+                CustomReactiveTextField2(
+                  formControlName: 'current_ctc',
+                  label: 'Current CTC (₹)',
+                  hint: 'Enter your current CTC',
+                  icon: Icons.monetization_on,
+                ),
+              ],
+              // Location Dropdown - Fixed
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Location'),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 45,
+                    child: ReactiveDropdownField<String>(
+                      isDense: true,
+                      formControlName: 'location',
+                      hint: Text('Location'),
+                      style: Theme.of(context).brightness == Brightness.dark
+                          ? const TextStyle(color: Colors.black)
+                          : null,
+                      dropdownColor: Colors.white,
+                      items: locationData
+                          .map<DropdownMenuItem<String>>((location) {
+                        return DropdownMenuItem<String>(
+                          value: location['id'],
+                          child: Text(location['location_name'],
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.black)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
               ),
-              CustomReactiveTextField2(
-                formControlName: 'location',
-                label: 'Current Location',
-                hint: 'Enter your location',
-                icon: Icons.location_on,
+
+              const SizedBox(height: 16),
+
+              // Current Location Dropdown
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Current Location'),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 45,
+                    child: ReactiveDropdownField<String>(
+                      formControlName: 'currentLocation',
+                      hint: Text('Current Location'),
+                      isDense: true,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      dropdownColor: Colors.white,
+                      style: Theme.of(context).brightness == Brightness.dark
+                          ? const TextStyle(color: Colors.black)
+                          : null,
+                      items: locationPrefer.map((exp) {
+                        return DropdownMenuItem<String>(
+                          value: exp['value'],
+                          child: Text(
+                            exp['name'] ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.black,
+                                ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
               ),
+
+              // Tab Specific Fields
+
               CustomReactiveTextField2(
                 formControlName: 'expSalary',
                 label: 'Expected Salary',
                 hint: 'Enter expected salary',
                 icon: Icons.currency_rupee_rounded,
               ),
-              Text(
-                'Days to take up new job',
-                style: theme.headlineMedium,
+              CustomReactiveTextField2(
+                formControlName: 'reasonForApply',
+                label: 'Reason For Apply',
+                hint: 'Enter Reason',
+                icon: Icons.work,
               ),
-              SizedBox(height: 1.h),
-              ReactiveDropdownField<String>(
-                formControlName: 'joiningTime',
-                hint: Text(
-                  'Select',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Palette.themeColor.withOpacity(0.1),
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
-                items: [
-                  'Available for Immediate Joining',
-                  'One Week Notice Period',
-                  '15 Days Notice Period',
-                  '30 Days',
-                  '45 Days',
-                  '60 Days',
-                  '75 Days',
-                  '90 Days'
-                ]
-                    .map(
-                      (label) => DropdownMenuItem(
-                        value: label,
-                        child: Container(
-                          child: Text(label),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  print("Selected: $value");
-                },
-                dropdownColor: Colors.white,
-              ),
-
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               // Resume Upload Section
-              _buildSection(
-                title: "Resume Upload",
-                children: [
-                  if (selectedResume == null)
-                    GestureDetector(
-                      onTap: _pickResume,
-                      child: Container(
-                        width: MediaQuery.sizeOf(context).width / 3,
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF2196F3),
-                              Color(0xFF1976D2)
-                            ], // Blue gradient
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: const Offset(2, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.upload_file, color: Colors.white),
-                            const SizedBox(width: 10),
-                            Text("Upload Resume",
-                                style: theme.titleLarge
-                                    ?.copyWith(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.insert_drive_file,
-                                size: 30, color: Colors.blue),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Resume Selected",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                  Text(
-                                    selectedResume!.path.split('/').last,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: _openResume,
-                              icon: const Icon(Icons.visibility,
-                                  color: Colors.green),
-                            ),
-                            IconButton(
-                              onPressed: _removeResume,
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
+              _buildResumeSection(),
               const SizedBox(height: 20),
 
               // Submit Button
-              Align(
-                alignment: Alignment.center,
+              Center(
                 child: SizedBox(
-                  width: MediaQuery.sizeOf(context).width / 3,
+                  width: 200,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      print(form.value);
                       form.markAllAsTouched();
-                      if (form.valid) {
-                        Fluttertoast.showToast(msg: "Application Submitted!");
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: "Please fill all required fields!");
+
+                      try {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        final res = await ref.read(jobApplyProvider(
+                          JobApplyModel(
+                              file: selectedResume,
+                              jobId: jobId,
+                              name: form.control('name').value,
+                              mobile: form.control('mobile').value,
+                              currentLocation:
+                                  form.control('currentLocation').value,
+                              prefLocation: form.control('location').value,
+                              highestQualification:
+                                  form.control('highQualification').value,
+                              workExperience:
+                                  form.control('workExp').value ?? '',
+                              currentCtc:
+                                  form.control('current_ctc').value ?? '',
+                              reasonForApply:
+                                  form.control('reasonForApply').value ?? ''),
+                        ).future);
+                        print('object>>>$res');
+                        Fluttertoast.showToast(msg: res['message']);
+
+                        if (res['status'] == true) {
+                          Navigator.pop(context);
+                          Fluttertoast.showToast(msg: res['message']);
+                          setState(() {
+                            isLoading = false;
+                          });
+                        } else {
+                          Fluttertoast.showToast(msg: res['message']);
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      } catch (e) {
+                        print(e);
+                        setState(() {
+                          isLoading = false;
+                        });
                       }
+                      print('Form Values: ${form.value}');
                     },
-                    child: const Text("Submit"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                     ),
+                    child: const Text("Submit Application"),
                   ),
                 ),
               ),
@@ -269,14 +338,82 @@ class _JobApplyFormState extends ConsumerState<JobApplyForm> {
     );
   }
 
-  Widget _buildSection(
-      {required String title, required List<Widget> children}) {
+  Widget _buildResumeSection() {
+    final theme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        Text('Resume Upload', style: theme.titleLarge),
         const SizedBox(height: 8),
-        ...children,
+        GestureDetector(
+          onTap: _pickResume,
+          child: Container(
+            width: 200,
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.upload_file, color: Colors.white),
+                SizedBox(width: 10),
+                Text("Upload Resume", style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        ...selectedResume.map((file) => Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: cardDecoration(context: context),
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.insert_drive_file,
+                        size: 30, color: Colors.blue),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Resume Selected",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            file.path.split('/').last,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _openResume(file),
+                      icon: const Icon(Icons.visibility, color: Colors.green),
+                    ),
+                    IconButton(
+                      onPressed: () => _removeResume(file),
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            )),
       ],
     );
   }

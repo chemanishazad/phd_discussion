@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/components/custom_button.dart';
 import 'package:phd_discussion/core/const/palette.dart';
-import 'package:phd_discussion/core/const/styles.dart';
+import 'package:phd_discussion/provider/NavProvider/career/careerProvider.dart';
 
 class WebinarApplyScreen extends ConsumerStatefulWidget {
   const WebinarApplyScreen({super.key});
@@ -17,13 +18,28 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
+  final TextEditingController _universityController = TextEditingController();
+  String id = '';
 
   String? selectedCountry;
   String? selectedState;
-  String? selectedUniversity;
+  String? selectedArea;
+  String? selectedStage;
   String fullName = '';
   String email = '';
   String phoneNumber = '';
+  bool isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    final arg = ModalRoute.of(context)!.settings.arguments as String;
+    print('arg$arg');
+    setState(() {
+      id = arg;
+    });
+
+    super.didChangeDependencies();
+  }
 
   final List<String> researchAreas = [
     'Management',
@@ -74,19 +90,10 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
     'Uttarakhand',
     'West Bengal'
   ];
-  final List<String> universities = [
-    'Harvard University',
-    'Stanford University',
-    'MIT',
-    'University of Oxford',
-    'University of Cambridge',
-    'ETH Zurich',
-    'University of Toronto',
-    'National University of Singapore'
-  ];
 
   @override
   void dispose() {
+    _universityController.dispose();
     _addressController.dispose();
     _cityController.dispose();
     _pincodeController.dispose();
@@ -99,7 +106,10 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Palette.themeColor,
-        title: const Text('Webinar Application'),
+        title: const Text(
+          'Webinar Application',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -127,7 +137,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                 },
                 onChanged: (value) => fullName = value,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               // Email Field
               TextFormField(
@@ -148,7 +158,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                 },
                 onChanged: (value) => email = value,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               // Phone Number Field
               TextFormField(
@@ -165,7 +175,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                 },
                 onChanged: (value) => phoneNumber = value,
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 6),
 
               DropdownButtonFormField<String>(
                 decoration: inputDecoration(context).copyWith(
@@ -180,13 +190,15 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                         ))
                     .toList(),
                 onChanged: (value) {
-                  // Handle selection
+                  setState(() {
+                    selectedArea = value;
+                  });
                 },
                 validator: (value) =>
                     value == null ? 'Please select area of research' : null,
                 style: theme.bodySmall,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
 // Current Stage of Research Dropdown
               DropdownButtonFormField<String>(
@@ -202,15 +214,33 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                         ))
                     .toList(),
                 onChanged: (value) {
-                  // Handle selection
+                  setState(() {
+                    selectedStage = value;
+                  });
                 },
                 validator: (value) =>
                     value == null ? 'Please select your current stage' : null,
                 style: theme.bodySmall,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               // Address Field
+              TextFormField(
+                controller: _universityController,
+                decoration: inputDecoration(context).copyWith(
+                  labelText: 'University Name',
+                  labelStyle: theme.bodySmall,
+                  prefixIcon: const Icon(Icons.school),
+                ),
+                maxLines: 2,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your University';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 6),
               TextFormField(
                 controller: _addressController,
                 decoration: inputDecoration(context).copyWith(
@@ -226,7 +256,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               // City Field
               TextFormField(
@@ -243,7 +273,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               DropdownButtonFormField<String>(
                 decoration: inputDecoration(context).copyWith(
@@ -266,7 +296,7 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
                 validator: (value) =>
                     value == null ? 'Please select your state' : null,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 6),
 
               // Pincode Field
               TextFormField(
@@ -289,31 +319,45 @@ class _WebinarApplyScreenState extends ConsumerState<WebinarApplyScreen> {
               // Submit Button
               Center(
                 child: CustomButton(
-                  onTap: () {
+                  onTap: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Form is valid, proceed with submission
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Application submitted successfully!'),
-                        ),
-                      );
-                      print({
-                        'fullName': fullName,
+                      setState(() {
+                        isLoading = true;
+                      });
+                      final response = await ref.read(webinarRegister({
+                        'webinar_id': id,
+                        'full_name': fullName,
                         'email': email,
-                        'phoneNumber': phoneNumber,
-                        'address': _addressController.text,
+                        'phone': phoneNumber,
+                        'area_of_research': selectedArea,
+                        'current_stage': selectedStage,
+                        'university_name': _universityController.text,
+                        'full_address': _addressController.text,
                         'city': _cityController.text,
-                        'country': selectedCountry,
                         'state': selectedState,
                         'pincode': _pincodeController.text,
-                        'university': selectedUniversity,
-                      });
+                      }).future);
+                      print(response);
+                      if (response['status'] == true) {
+                        Navigator.pop(context);
+                        Fluttertoast.showToast(msg: response['message']);
+                        setState(() {
+                          isLoading = false;
+                        });
+                      } else {
+                        Fluttertoast.showToast(msg: response['message']);
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
                     }
                   },
-                  child: const Text(
-                    'Submit Application',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : Text(
+                          'Submit Application',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
             ],

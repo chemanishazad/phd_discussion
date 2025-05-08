@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phd_discussion/core/utils/service.dart';
+import 'package:phd_discussion/core/utils/service2.dart' show ApiMaster2;
 import 'package:phd_discussion/models/auth/userModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,6 +71,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
         final token = data['data']['token'];
         await _saveUserToPrefs(user, token);
         ApiMaster.setToken(token);
+        ApiMaster2.setToken(token);
         state = AsyncData(user); // Notify listeners
 
         print('User logged in: ${user.name}');
